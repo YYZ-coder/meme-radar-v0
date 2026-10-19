@@ -1,0 +1,36 @@
+{
+  "tip_slot": 457658187,
+  "skipped_slots_in_range": [],
+  "blocks": [
+    {
+      "slot": 457658127,
+      "tx_count": 938,
+      "vote_tx_count": 661,
+      "failed_tx_count": 63,
+      "json_bytes": 2666298,
+      "zstd3_bytes": 448130,
+      "zstd19_bytes": 416375,
+      "non_vote_zstd3_bytes": 332005
+    },
+    {
+      "slot": 457658128,
+      "tx_count": 1485,
+      "vote_tx_count": 729,
+      "failed_tx_count": 216,
+      "json_bytes": 5560510,
+      "zstd3_bytes": 700578,
+      "zstd19_bytes": 617181,
+      "non_vote_zstd3_bytes": 570257
+    },
+    {
+      "slot": 457658129,
+      "tx_count": 1184,
+      "vote_tx_count": 658,
+      "failed_tx_count": 146,
+      "json_bytes": 3534971,
+      "zstd3_bytes": 618331,
+      "zstd19_bytes": 566870,
+      "non_vote_zstd3_bytes": 500236
+    }
+  ]
+}

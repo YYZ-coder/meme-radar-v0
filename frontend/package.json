@@ -1,0 +1,56 @@
+{
+  "name": "meme-radar-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && npx playwright install --with-deps chromium",
+    "dev": "next dev",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,mjs,json}\" \"e2e/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"*.{ts,mjs,json}\" \"e2e/**/*.ts\"",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "build": "next build",
+    "start": "next start",
+    "test:smoke": "NO_PROXY='*' ALL_PROXY='' HTTPS_PROXY='' HTTP_PROXY='' playwright test e2e/smoke --project=chromium",
+    "test:e2e": "npm run build && NO_PROXY='*' ALL_PROXY='' HTTPS_PROXY='' HTTP_PROXY='' playwright test",
+    "check": "npm run format:check && npm run lint && npm run api:check && npm run typecheck && npm run test && npm run build && npm run test:smoke",
+    "api:types": "openapi-typescript ../api/openapi.yaml -o src/lib/api/schema.gen.ts",
+    "api:check": "openapi-typescript ../api/openapi.yaml -o .next/schema.check.ts >/dev/null && cmp -s .next/schema.check.ts src/lib/api/schema.gen.ts || (echo \"src/lib/api/schema.gen.ts is stale: run npm run api:types\" && exit 1)"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.104.4",
+    "@tanstack/react-virtual": "^3.14.21",
+    "lightweight-charts": "^5.2.1",
+    "next": "^16.4.2",
+    "next-intl": "^4.14.9",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.2",
+    "jsdom": "^29.1.1",
+    "openapi-typescript": "^7.13.0",
+    "postcss": "^8.5.30",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
+  }
+}

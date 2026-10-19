@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Pre-commit hook: runs checks for whichever parts of the repo have staged changes.
+# Automatically installed by `make setup` via: git config core.hooksPath .githooks
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+STAGED=$(git diff --cached --name-only)
+
+run_backend=0
+run_frontend=0
+
+for f in $STAGED; do
+  case "$f" in
+    backend/*) run_backend=1 ;;
+    frontend/*) run_frontend=1 ;;
+    api/*)      run_frontend=1 ;;  # openapi.yaml change needs typecheck
+  esac
+done
+
+if [ "$run_backend" -eq 1 ]; then
+  echo "==> pre-commit: backend checks"
+  make -C "$ROOT/backend" fmt-check vet lint-go build test
+fi
+
+if [ "$run_frontend" -eq 1 ]; then
+  echo "==> pre-commit: frontend checks"
+  npm --prefix "$ROOT/frontend" run format:check
+  npm --prefix "$ROOT/frontend" run lint
+  npm --prefix "$ROOT/frontend" run api:check
+  npm --prefix "$ROOT/frontend" run typecheck
+  npm --prefix "$ROOT/frontend" run test
+fi

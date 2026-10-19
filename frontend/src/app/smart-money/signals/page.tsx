@@ -1,0 +1,13 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { LockedView } from "@/features/smart-money/locked-view";
+
+export const metadata: Metadata = { title: "Signals" };
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <LockedView view="signals" />
+    </Suspense>
+  );
+}

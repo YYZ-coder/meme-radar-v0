@@ -1,0 +1,41 @@
+# Go
+backend/bin/
+backend/testdata/tmp/
+*.prof
+*.test
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/playwright-report/
+frontend/test-results/
+frontend/.playwright/
+frontend/coverage/
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Local development
+.local/
+*.log
+*.pid
+**/__pycache__/
+*.pyc
+
+# Secrets — never commit
+*.env
+.env
+/config.yaml
+backend/config.yaml
+
+# Third-party reference material stays local (not redistributed)
+docs/references/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp

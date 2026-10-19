@@ -1,0 +1,1564 @@
+openapi: "3.0.3"
+info:
+  title: Meme Radar API
+  version: "1.0.0-m1"
+  description: |
+    M1 正式契约（资金流入、Token 详情、全局、管理后台）。端点说明见 docs/engineering/07-api.md。
+
+    通用规则：
+    - 公开接口前缀 `/api/v1`；`/healthz` 不带前缀。
+    - 金额、价格、数量一律为十进制字符串（`Decimal`），前端只做展示不做运算。
+    - 未知值为 `null`，前端显示 `--`；已知为 0 时返回 `"0"`。
+    - 地址：Solana 为 base58，EVM 为 EIP-55 校验和 0x 地址。
+    - 时间为 RFC 3339 UTC 字符串；K 线时间戳为 Unix 秒。
+    - 错误统一为 `ErrorResponse`，`error.code` 取值见 `ErrorCode`（目录见 docs/engineering/18-observability.md）。
+    - 每个响应带 `X-Trace-Id`（32 位十六进制）；请求可带合法的 `X-Trace-Id` 或 `traceparent` 以沿用同一 trace，错误体 `error.trace_id` 与响应头一致。
+    - 管理接口需 `Authorization: Bearer <RADAR_ADMIN_TOKEN>`（D106），缺失或错误返回 403。
+    - 前端从本文件用 openapi-typescript 生成类型，并在边界用 zod 校验。
+
+servers:
+  - url: http://localhost:8080
+    description: Local Go API
+
+security: []
+
+tags:
+  - name: system
+    description: 健康检查
+  - name: market
+    description: 主流币价格与全局搜索
+  - name: inflow
+    description: 资金流入列表与概览
+  - name: token
+    description: Token 详情
+  - name: admin
+    description: 管理后台（RADAR_ADMIN_TOKEN）
+
+paths:
+  /healthz:
+    get:
+      operationId: healthz
+      tags: [system]
+      summary: 健康检查
+      responses:
+        "200":
+          description: 进程就绪且数据库可达
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthResponse" }
+        "503":
+          description: 数据库不可达
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthResponse" }
+
+  /api/v1/market/natives:
+    get:
+      operationId: getNativePrices
+      tags: [market]
+      summary: SOL / ETH / BNB 美元价（底部栏）
+      description: 价格来自 quote_asset_prices（D54），超过 5 分钟标 stale，超过 30 分钟返回 null。
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NativePricesResponse" }
+
+  /api/v1/search:
+    get:
+      operationId: search
+      tags: [market]
+      summary: 全局搜索 Token 与钱包
+      description: 合约/钱包地址精确匹配；名称与符号模糊匹配（pg_trgm），同名不合并。
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 128 }
+        - $ref: "#/components/parameters/ChainFilter"
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 20, default: 10 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SearchResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/v1/smart-money/overview:
+    get:
+      operationId: getSmartMoneyOverview
+      tags: [inflow]
+      summary: 资金流入页顶部概览卡片
+      parameters:
+        - $ref: "#/components/parameters/ChainFilter"
+        - $ref: "#/components/parameters/Window"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OverviewResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/v1/smart-money/inflow/facets:
+    get:
+      operationId: getInflowFacets
+      tags: [inflow]
+      summary: DEX 与发射平台候选（工具栏下拉）
+      parameters:
+        - $ref: "#/components/parameters/ChainFilter"
+        - $ref: "#/components/parameters/Window"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FacetsResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/v1/smart-money/inflow:
+    get:
+      operationId: listInflow
+      tags: [inflow]
+      summary: 资金流入列表（快照排序＋按需取值）
+      description: |
+        首次请求（不带 query_id）按筛选与排序取前 2,000 个 Token ID 存入进程内 LRU（TTL 10 分钟），
+        返回 `query_id` 与第一批。翻页只传 `query_id` + `offset`，其余参数被忽略，顺序不变、数值为当前值。
+        排序值相同按 Token ID 升序；排序列为 null 时无论升降序都排最后；设置了某字段的 min/max 时该字段为 null 的 Token 被排除。
+      parameters:
+        - name: query_id
+          in: query
+          description: 翻页锚点；带上时只读 offset。
+          schema: { type: string }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - $ref: "#/components/parameters/ChainFilter"
+        - $ref: "#/components/parameters/Window"
+        - $ref: "#/components/parameters/Currency"
+        - name: sort
+          in: query
+          schema: { $ref: "#/components/schemas/InflowSortKey" }
+        - name: order
+          in: query
+          schema: { type: string, enum: [asc, desc], default: desc }
+        - name: dex
+          in: query
+          description: 逗号分隔的 DEX id（来自 facets），与 platform 取交集。
+          schema: { type: string }
+        - name: platform
+          in: query
+          description: 逗号分隔的发射平台 id。
+          schema: { type: string }
+        - { name: min_market_cap, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: max_market_cap, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_price_change, in: query, description: 百分比数值，如 "-20" 表示 -20%, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: max_price_change, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_liquidity, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: max_liquidity, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_trades, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: max_trades, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: min_volume, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: max_volume, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_net_inflow, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: max_net_inflow, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_sm_holders, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: max_sm_holders, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: min_sm_trades, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: max_sm_trades, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: min_holders, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: max_holders, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: min_age, in: query, description: 币龄下限（秒）, schema: { type: integer, minimum: 0 } }
+        - { name: max_age, in: query, description: 币龄上限（秒）, schema: { type: integer, minimum: 0 } }
+        - name: dev_status
+          in: query
+          description: 开发者已清仓 / 未清仓（M3 起有数据，M1 传入时按 null 排除）。
+          schema: { type: string, enum: [sold, holding] }
+        - name: socials
+          in: query
+          description: 逗号分隔，要求同时具备：twitter,telegram,github,website。
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InflowPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "410":
+          description: query_id 过期或不在本实例；前端用 URL 中的条件重新查询
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "503": { $ref: "#/components/responses/Busy" }
+
+  /api/v1/tokens/batch:
+    post:
+      operationId: batchTokens
+      tags: [inflow]
+      summary: 可见行 10 秒刷新（不重排）
+      description: 新查询限流不计入。不存在或不再收录的 Token 不出现在 items 中，前端保留旧值并标记过期。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BatchRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BatchResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/v1/tokens/{chain}/{address}:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: getToken
+      tags: [token]
+      summary: Token 头部、行情、窗口摘要、开发者、同名代币
+      parameters:
+        - $ref: "#/components/parameters/Currency"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenDetail" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/candles:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: getCandles
+      tags: [token]
+      summary: K 线（主池，D55/D105）
+      description: 只接受 6 个周期，其他返回 400。1s/30s 超过 24 小时的区间由 pool_trades 现算（D89）。单次最多 1,000 根。
+      parameters:
+        - name: interval
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/CandleInterval" }
+        - name: metric
+          in: query
+          schema: { type: string, enum: [price, market_cap], default: price }
+        - $ref: "#/components/parameters/Currency"
+        - name: from
+          in: query
+          description: Unix 秒（含）
+          schema: { type: integer }
+        - name: to
+          in: query
+          description: Unix 秒（不含），默认当前
+          schema: { type: integer }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 300 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CandlesResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/activities:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: listActivities
+      tags: [token]
+      summary: 活动流（成交、加减池）
+      parameters:
+        - name: kind
+          in: query
+          schema: { type: string, enum: [all, trade, liquidity], default: all }
+        - name: label
+          in: query
+          description: 地址类型筛选；M1 只有 all 与 smart_money，其余标签 M3 起生效。未归因成交只出现在 all 中。
+          schema: { $ref: "#/components/schemas/ActivityLabelFilter" }
+        - name: from
+          in: query
+          description: Unix 秒（含），K 线打点用
+          schema: { type: integer }
+        - name: to
+          in: query
+          schema: { type: integer }
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ActivitiesResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/holders:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: listHolders
+      tags: [token]
+      summary: 持有者（D107：仅采集范围内创建的 Token 完整覆盖）
+      parameters:
+        - name: label
+          in: query
+          schema: { type: string, enum: [all, smart_money], default: all }
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HoldersResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/pools:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: listPools
+      tags: [token]
+      summary: 流动性池
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PoolsResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/liquidity-events:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: listLiquidityEvents
+      tags: [token]
+      summary: 流动性变化
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LiquidityEventsResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/tokens/{chain}/{address}/smart-money:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    get:
+      operationId: getTokenSmartMoney
+      tags: [token]
+      summary: 该 Token 的聪明钱持仓与近期动作
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenSmartMoneyResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/admin/smart-money/imports:
+    post:
+      operationId: createSmartMoneyImport
+      tags: [admin]
+      summary: 上传名单（CSV/JSON，≤10,000 行、≤5MB），只校验不生效
+      security: [{ adminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: 校验报告
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "413":
+          description: 文件超过 5MB 或 10,000 行
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /api/v1/admin/smart-money/imports/{id}/apply:
+    post:
+      operationId: applySmartMoneyImport
+      tags: [admin]
+      summary: 确认导入，生成新名单版本（D92）
+      security: [{ adminToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: 报告已应用或已过期
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /api/v1/admin/smart-money/members:
+    get:
+      operationId: listSmartMoneyMembers
+      tags: [admin]
+      summary: 当前名单成员
+      security: [{ adminToken: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ChainFilter"
+        - name: source
+          in: query
+          schema: { type: string, enum: [all, import, auto], default: all }
+        - name: tag
+          in: query
+          schema: { type: string }
+        - name: q
+          in: query
+          description: 地址前缀或名称
+          schema: { type: string }
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MembersResponse" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/admin/smart-money/members/{chain}/{address}:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    delete:
+      operationId: removeSmartMoneyMember
+      tags: [admin]
+      summary: 移除导入来源的地址，生成新名单版本
+      security: [{ adminToken: [] }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/admin/smart-money/exclusions:
+    get:
+      operationId: listSmartMoneyExclusions
+      tags: [admin]
+      summary: 排除名单
+      security: [{ adminToken: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ChainFilter"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExclusionsResponse" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      operationId: addSmartMoneyExclusion
+      tags: [admin]
+      summary: 排除地址（自动识别不再纳入），生成新名单版本
+      security: [{ adminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ExclusionRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/admin/smart-money/exclusions/{chain}/{address}:
+    parameters:
+      - $ref: "#/components/parameters/ChainPath"
+      - $ref: "#/components/parameters/AddressPath"
+    delete:
+      operationId: removeSmartMoneyExclusion
+      tags: [admin]
+      summary: 恢复地址
+      security: [{ adminToken: [] }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/admin/health:
+    get:
+      operationId: getAdminHealth
+      tags: [admin]
+      summary: 运行质量：采集、解析、失败任务、预算
+      security: [{ adminToken: [] }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminHealth" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/admin/parse-failures/{id}/retry:
+    post:
+      operationId: retryParseFailure
+      tags: [admin]
+      summary: 重试失败的解析任务
+      security: [{ adminToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "202":
+          description: 已重新排队
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ParseFailure" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+components:
+  securitySchemes:
+    adminToken:
+      type: http
+      scheme: bearer
+      description: M1 使用环境变量 RADAR_ADMIN_TOKEN（D106）；M4 改为钱包签名会话。
+
+  parameters:
+    ChainFilter:
+      name: chain
+      in: query
+      description: 不传表示全部链
+      schema: { $ref: "#/components/schemas/Chain" }
+    ChainPath:
+      name: chain
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/Chain" }
+    AddressPath:
+      name: address
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/Address" }
+    Window:
+      name: window
+      in: query
+      schema: { $ref: "#/components/schemas/Window" }
+    Currency:
+      name: currency
+      in: query
+      description: 计价，usd 或该链原生币（D53）
+      schema: { type: string, enum: [usd, native], default: usd }
+    Cursor:
+      name: cursor
+      in: query
+      description: 上一页返回的 next_cursor
+      schema: { type: string }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+
+  headers:
+    XTraceId:
+      description: 本次请求的 trace id（32 位十六进制）
+      schema: { type: string, pattern: '^[0-9a-f]{32}$' }
+
+  responses:
+    BadRequest:
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+      description: 参数不合法；error.field 指出字段
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    NotFound:
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+      description: 不存在
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Forbidden:
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+      description: 管理凭证缺失或错误
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    RateLimited:
+      description: 单 IP 每分钟超过 60 次新查询
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Busy:
+      description: 数据库查询超过 2 秒；前端保留已加载行并提示重试
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  schemas:
+    Chain:
+      type: string
+      enum: [solana, base, bsc]
+
+    Window:
+      type: string
+      enum: [1m, 5m, 1h, 4h, 24h]
+      default: 1h
+
+    SummaryWindow:
+      type: string
+      enum: [5m, 1h, 4h, 24h]
+
+    CandleInterval:
+      type: string
+      enum: [1s, 30s, 1m, 5m, 1h, 1d]
+
+    Address:
+      type: string
+      description: Solana base58（32 字节）或 EVM 0x 校验和地址（20 字节）
+      minLength: 32
+      maxLength: 44
+
+    TxHash:
+      type: string
+      description: Solana base58 签名或 EVM 0x 交易 hash
+
+    Decimal:
+      type: string
+      pattern: '^-?\d+(\.\d+)?$'
+      example: "30786.83"
+
+    NullableDecimal:
+      type: string
+      nullable: true
+      pattern: '^-?\d+(\.\d+)?$'
+
+    Currency:
+      type: string
+      description: USD 或原生币符号
+      enum: [USD, SOL, ETH, BNB]
+
+    Timestamp:
+      type: string
+      format: date-time
+
+    ListVersion:
+      type: string
+      description: 聪明钱名单版本（不透明字符串，D30/D92）
+
+    ErrorCode:
+      type: string
+      description: 业务错误码（与 backend/internal/obs 目录一致，测试强制同步）
+      enum:
+        - invalid_param
+        - invalid_range
+        - unauthorized
+        - forbidden
+        - not_found
+        - import_closed
+        - query_expired
+        - file_too_large
+        - too_many_rows
+        - invalid_file
+        - secret_detected
+        - rate_limited
+        - busy
+        - api_unavailable
+        - internal
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, trace_id]
+          properties:
+            code: { $ref: "#/components/schemas/ErrorCode" }
+            message:
+              type: string
+            field:
+              type: string
+              nullable: true
+            trace_id:
+              type: string
+              pattern: '^[0-9a-f]{32}$'
+              description: 与响应头 X-Trace-Id 相同，用于在日志中定位
+
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        db:
+          type: string
+
+    NativePrice:
+      type: object
+      required: [chain, symbol, price_usd, change_24h_pct, stale, as_of]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        symbol: { type: string, enum: [SOL, ETH, BNB] }
+        price_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        change_24h_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        stale: { type: boolean, description: 最近价格超过 5 分钟 }
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+
+    NativePricesResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/NativePrice" }
+
+    Socials:
+      type: object
+      properties:
+        twitter: { type: string, nullable: true }
+        telegram: { type: string, nullable: true }
+        website: { type: string, nullable: true }
+        github: { type: string, nullable: true }
+
+    TokenRef:
+      type: object
+      required: [chain, address, symbol, name]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+        symbol: { type: string, maxLength: 32 }
+        name: { type: string, maxLength: 128 }
+        image_url:
+          type: string
+          nullable: true
+          description: 经后端代理的图标地址；为空时前端按地址生成像素头像
+        launch_platform: { type: string, nullable: true }
+        launch_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 经核验的 Launch 时间（D27）
+
+    SearchToken:
+      allOf:
+        - $ref: "#/components/schemas/TokenRef"
+        - type: object
+          required: [market_cap_usd, age_seconds, last_trade_at]
+          properties:
+            market_cap_usd: { $ref: "#/components/schemas/NullableDecimal" }
+            age_seconds: { type: integer, nullable: true }
+            last_trade_at: { type: string, format: date-time, nullable: true }
+
+    SearchWallet:
+      type: object
+      required: [chain, address, label, is_smart_money]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+        label: { type: string, nullable: true }
+        is_smart_money: { type: boolean }
+
+    SearchResponse:
+      type: object
+      required: [tokens, wallets]
+      properties:
+        tokens:
+          type: array
+          items: { $ref: "#/components/schemas/SearchToken" }
+        wallets:
+          type: array
+          items: { $ref: "#/components/schemas/SearchWallet" }
+
+    OverviewResponse:
+      type: object
+      required:
+        - as_of
+        - list_version
+        - window
+        - net_inflow_usd
+        - net_inflow_change_pct
+        - active_wallets
+        - tracked_tokens
+        - new_tokens
+        - buy_volume_usd
+        - sell_volume_usd
+        - buy_share_pct
+        - inflow_bars
+      properties:
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        window: { $ref: "#/components/schemas/Window" }
+        net_inflow_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 窗口内聪明钱买入额 − 卖出额（全部收录 Token）
+        net_inflow_change_pct:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 与上一个等长窗口相比的变化百分比；上一窗口为 0 或未知时为 null
+        active_wallets:
+          type: integer
+          nullable: true
+          description: 窗口内有成交的去重聪明钱地址数
+        tracked_tokens:
+          type: integer
+          description: 列表收录的 Token 数（窗口内至少 1 笔成交）
+        new_tokens:
+          type: integer
+          nullable: true
+          description: 窗口内新发行且被收录的 Token 数
+        buy_volume_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 窗口内聪明钱买入额
+        sell_volume_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 窗口内聪明钱卖出额
+        buy_share_pct:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 买入额 ÷（买入额＋卖出额）×100，“市场脉搏”卡片
+        inflow_bars:
+          type: array
+          description: 窗口等分 16 桶的聪明钱净流入，用于卡片柱图
+          maxItems: 16
+          items: { $ref: "#/components/schemas/NullableDecimal" }
+
+    Facet:
+      type: object
+      required: [id, name, volume_usd, token_count]
+      properties:
+        id: { type: string, example: pumpswap }
+        name: { type: string, example: PumpSwap }
+        chain: { $ref: "#/components/schemas/Chain" }
+        volume_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        token_count: { type: integer }
+
+    FacetsResponse:
+      type: object
+      required: [dexes, platforms]
+      properties:
+        dexes:
+          type: array
+          items: { $ref: "#/components/schemas/Facet" }
+        platforms:
+          type: array
+          items: { $ref: "#/components/schemas/Facet" }
+
+    InflowSortKey:
+      type: string
+      enum: [age, sm_holders, sm_trades, market_cap, liquidity, trades, volume, net_inflow]
+      default: sm_trades
+
+    InflowRow:
+      type: object
+      description: 列表行；同一 Token 多池只出现一次，金额为全部池合计（D53/D56）。
+      required:
+        - token
+        - currency
+        - price
+        - market_cap
+        - price_change_pct
+        - liquidity
+        - trades
+        - buys
+        - sells
+        - volume
+        - net_inflow
+        - sm_holders
+        - sm_trades
+        - holders
+        - age_seconds
+        - dexes
+        - socials
+        - sparkline
+      properties:
+        token: { $ref: "#/components/schemas/TokenRef" }
+        currency: { $ref: "#/components/schemas/Currency" }
+        price: { $ref: "#/components/schemas/NullableDecimal" }
+        market_cap: { $ref: "#/components/schemas/NullableDecimal" }
+        price_change_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        liquidity: { $ref: "#/components/schemas/NullableDecimal" }
+        trades: { type: integer, nullable: true }
+        buys: { type: integer, nullable: true }
+        sells: { type: integer, nullable: true }
+        volume: { $ref: "#/components/schemas/NullableDecimal" }
+        net_inflow:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 聪明钱买入额 − 卖出额
+        sm_holders: { type: integer, nullable: true }
+        sm_trades: { type: integer, nullable: true }
+        holders: { type: integer, nullable: true }
+        age_seconds: { type: integer, nullable: true }
+        dexes:
+          type: array
+          items: { type: string }
+        socials: { $ref: "#/components/schemas/Socials" }
+        sparkline:
+          type: array
+          description: 窗口等分 20 桶收盘价；无成交的桶为 null
+          maxItems: 20
+          items: { $ref: "#/components/schemas/NullableDecimal" }
+
+    InflowPage:
+      type: object
+      required: [query_id, list_version, as_of, window, total, truncated, offset, next_offset, items]
+      properties:
+        query_id: { type: string }
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        window: { $ref: "#/components/schemas/Window" }
+        total:
+          type: integer
+          description: 本次快照的 Token 数（≤2,000）
+        truncated:
+          type: boolean
+          description: 实际匹配超过 2,000 个，只缓存前 2,000 个
+        offset: { type: integer }
+        next_offset:
+          type: integer
+          nullable: true
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/InflowRow" }
+
+    TokenKey:
+      type: object
+      required: [chain, address]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+
+    BatchRequest:
+      type: object
+      required: [window, tokens]
+      properties:
+        window: { $ref: "#/components/schemas/Window" }
+        currency:
+          type: string
+          enum: [usd, native]
+          default: usd
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        tokens:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items: { $ref: "#/components/schemas/TokenKey" }
+
+    BatchResponse:
+      type: object
+      required: [as_of, items]
+      properties:
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/InflowRow" }
+
+    WindowSummary:
+      type: object
+      description: 全部钱包口径（token-metrics §3）
+      required: [window, volume, net_inflow, traders, buys, sells, buy_volume, sell_volume, price_change_pct]
+      properties:
+        window: { $ref: "#/components/schemas/SummaryWindow" }
+        volume: { $ref: "#/components/schemas/NullableDecimal" }
+        net_inflow: { $ref: "#/components/schemas/NullableDecimal" }
+        traders: { type: integer, nullable: true }
+        buys: { type: integer, nullable: true }
+        sells: { type: integer, nullable: true }
+        buy_volume: { $ref: "#/components/schemas/NullableDecimal" }
+        sell_volume: { $ref: "#/components/schemas/NullableDecimal" }
+        price_change_pct: { $ref: "#/components/schemas/NullableDecimal" }
+
+    HolderCoverage:
+      type: object
+      required: [status, since, as_of]
+      properties:
+        status:
+          type: string
+          enum: [full, partial, unknown]
+          description: full＝创建于采集下界 L 之后（D107）；partial＝更早创建，余额不完整
+        since:
+          type: string
+          format: date-time
+          nullable: true
+          description: 覆盖起点（采集下界 L 或创建时间）
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+
+    PoolRef:
+      type: object
+      required: [address, dex, quote_symbol]
+      properties:
+        address: { $ref: "#/components/schemas/Address" }
+        dex: { type: string, example: PumpSwap }
+        quote_symbol: { type: string, example: SOL }
+
+    TokenDetail:
+      type: object
+      required:
+        - token
+        - currency
+        - as_of
+        - decimals
+        - total_supply
+        - socials
+        - creator
+        - main_pool
+        - price
+        - market_cap
+        - liquidity
+        - volume_24h
+        - price_change_24h_pct
+        - holders
+        - sm_holders
+        - ath_market_cap
+        - ath_since
+        - holder_coverage
+        - windows
+        - same_name
+      properties:
+        token: { $ref: "#/components/schemas/TokenRef" }
+        currency: { $ref: "#/components/schemas/Currency" }
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        decimals: { type: integer }
+        total_supply:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 已按 decimals 换算的总供应量
+        socials: { $ref: "#/components/schemas/Socials" }
+        creator:
+          type: object
+          nullable: true
+          required: [address, holding_pct]
+          properties:
+            address: { $ref: "#/components/schemas/Address" }
+            holding_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        main_pool:
+          type: object
+          nullable: true
+          allOf: [{ $ref: "#/components/schemas/PoolRef" }]
+        price: { $ref: "#/components/schemas/NullableDecimal" }
+        market_cap: { $ref: "#/components/schemas/NullableDecimal" }
+        liquidity: { $ref: "#/components/schemas/NullableDecimal" }
+        volume_24h: { $ref: "#/components/schemas/NullableDecimal" }
+        price_change_24h_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        holders: { type: integer, nullable: true }
+        sm_holders: { type: integer, nullable: true }
+        ath_market_cap: { $ref: "#/components/schemas/NullableDecimal" }
+        ath_since:
+          type: string
+          format: date-time
+          nullable: true
+          description: 历史最高市值的统计起点（早于采集下界时为 L）
+        holder_coverage: { $ref: "#/components/schemas/HolderCoverage" }
+        windows:
+          type: array
+          items: { $ref: "#/components/schemas/WindowSummary" }
+        same_name:
+          type: array
+          description: 同名候选，只做提示不合并
+          items: { $ref: "#/components/schemas/SearchToken" }
+
+    Candle:
+      type: object
+      required: [t, o, h, l, c, v]
+      properties:
+        t: { type: integer, description: 桶起点 Unix 秒 }
+        o: { $ref: "#/components/schemas/Decimal" }
+        h: { $ref: "#/components/schemas/Decimal" }
+        l: { $ref: "#/components/schemas/Decimal" }
+        c: { $ref: "#/components/schemas/Decimal" }
+        v:
+          allOf: [{ $ref: "#/components/schemas/Decimal" }]
+          description: 成交额（currency 计价）
+
+    PoolSwitch:
+      type: object
+      required: [t, from_pool, to_pool, reason]
+      properties:
+        t: { type: integer }
+        from_pool: { type: string, nullable: true }
+        to_pool: { type: string }
+        reason:
+          type: string
+          enum: [liquidity, graduation]
+
+    CandlesResponse:
+      type: object
+      required: [interval, metric, currency, items, pool_switches]
+      properties:
+        interval: { $ref: "#/components/schemas/CandleInterval" }
+        metric: { type: string, enum: [price, market_cap] }
+        currency: { $ref: "#/components/schemas/Currency" }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Candle" }
+        pool_switches:
+          type: array
+          items: { $ref: "#/components/schemas/PoolSwitch" }
+
+    WalletLabel:
+      type: string
+      enum: [smart_money, kol, insider, whale, sniper, dev, bundler, pro_trader]
+
+    ActivityLabelFilter:
+      type: string
+      enum: [all, smart_money, kol, insider, whale, sniper, dev, bundler]
+      default: all
+
+    WalletRef:
+      type: object
+      required: [address, labels, display_name]
+      properties:
+        address: { $ref: "#/components/schemas/Address" }
+        labels:
+          type: array
+          items: { $ref: "#/components/schemas/WalletLabel" }
+        display_name:
+          type: string
+          nullable: true
+          description: 名单中的名称（如 KOL 名）
+
+    Activity:
+      type: object
+      required:
+        - id
+        - time
+        - kind
+        - wallet
+        - attribution
+        - token_amount
+        - quote_amount
+        - quote_symbol
+        - value_usd
+        - price_usd
+        - market_cap_usd
+        - tx_hash
+        - pool
+        - dex
+      properties:
+        id:
+          type: string
+          description: 链上位置 block_num:tx_index:item_index（D78）
+        time: { $ref: "#/components/schemas/Timestamp" }
+        kind:
+          type: string
+          enum: [buy, sell, add, remove]
+        wallet:
+          type: object
+          nullable: true
+          allOf: [{ $ref: "#/components/schemas/WalletRef" }]
+          description: 归因未证明时为 null（D25）
+        attribution:
+          type: string
+          nullable: true
+          enum: [confirmed, inferred, ambiguous, null]
+        token_amount: { $ref: "#/components/schemas/Decimal" }
+        quote_amount: { $ref: "#/components/schemas/Decimal" }
+        quote_symbol: { type: string }
+        value_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        price_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        market_cap_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        tx_hash: { $ref: "#/components/schemas/TxHash" }
+        pool: { $ref: "#/components/schemas/Address" }
+        dex: { type: string }
+
+    LabelCounts:
+      type: object
+      additionalProperties: { type: integer }
+      description: 每个地址类型筛选项的数量（M1 只有 all、smart_money）
+
+    ActivitiesResponse:
+      type: object
+      required: [items, next_cursor, label_counts]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Activity" }
+        next_cursor: { type: string, nullable: true }
+        label_counts: { $ref: "#/components/schemas/LabelCounts" }
+
+    Holder:
+      type: object
+      required:
+        - rank
+        - wallet
+        - amount
+        - share_pct
+        - native_balance
+        - avg_buy_price_usd
+        - avg_sell_price_usd
+        - realized_pnl_usd
+        - unrealized_pnl_usd
+      properties:
+        rank: { type: integer }
+        wallet: { $ref: "#/components/schemas/WalletRef" }
+        amount: { $ref: "#/components/schemas/Decimal" }
+        share_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        native_balance:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: 原生币余额（按需查 RPC，D79），未查到为 null
+        avg_buy_price_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        avg_sell_price_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        realized_pnl_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: M2 起提供，M1 为 null
+        unrealized_pnl_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+          description: M2 起提供，M1 为 null
+
+    HoldersResponse:
+      type: object
+      required: [coverage, total, items, next_cursor]
+      properties:
+        coverage: { $ref: "#/components/schemas/HolderCoverage" }
+        total: { type: integer, nullable: true }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Holder" }
+        next_cursor: { type: string, nullable: true }
+
+    Pool:
+      type: object
+      required:
+        - address
+        - dex
+        - protocol
+        - quote_symbol
+        - liquidity_usd
+        - reserve_token
+        - reserve_quote
+        - created_at
+        - status
+        - is_main
+      properties:
+        address: { $ref: "#/components/schemas/Address" }
+        dex: { type: string, example: Uniswap }
+        protocol: { type: string, example: uniswap_v4 }
+        quote_symbol: { type: string }
+        liquidity_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        reserve_token: { $ref: "#/components/schemas/NullableDecimal" }
+        reserve_quote: { $ref: "#/components/schemas/NullableDecimal" }
+        created_at: { type: string, format: date-time, nullable: true }
+        status:
+          type: string
+          enum: [active, graduated, closed]
+        is_main: { type: boolean }
+
+    PoolsResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Pool" }
+
+    LiquidityEvent:
+      type: object
+      required: [id, time, kind, token_amount, quote_amount, quote_symbol, value_usd, wallet, tx_hash, pool, dex]
+      properties:
+        id: { type: string }
+        time: { $ref: "#/components/schemas/Timestamp" }
+        kind:
+          type: string
+          enum: [add, remove]
+        token_amount: { $ref: "#/components/schemas/Decimal" }
+        quote_amount: { $ref: "#/components/schemas/Decimal" }
+        quote_symbol: { type: string }
+        value_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        wallet:
+          type: object
+          nullable: true
+          allOf: [{ $ref: "#/components/schemas/WalletRef" }]
+        tx_hash: { $ref: "#/components/schemas/TxHash" }
+        pool: { $ref: "#/components/schemas/Address" }
+        dex: { type: string }
+
+    LiquidityEventsResponse:
+      type: object
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/LiquidityEvent" }
+        next_cursor: { type: string, nullable: true }
+
+    TokenSmartMoneyEntry:
+      type: object
+      required: [wallet, balance, share_pct, buy_volume_usd, sell_volume_usd, last_trade_at]
+      properties:
+        wallet: { $ref: "#/components/schemas/WalletRef" }
+        balance: { $ref: "#/components/schemas/NullableDecimal" }
+        share_pct: { $ref: "#/components/schemas/NullableDecimal" }
+        buy_volume_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        sell_volume_usd: { $ref: "#/components/schemas/NullableDecimal" }
+        last_trade_at: { type: string, format: date-time, nullable: true }
+
+    TokenSmartMoneyResponse:
+      type: object
+      required: [list_version, holders, items]
+      properties:
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        holders: { type: integer, nullable: true }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/TokenSmartMoneyEntry" }
+
+    ImportRowStatus:
+      type: string
+      enum: [valid, invalid, duplicate, existing]
+      description: duplicate＝文件内重复；existing＝已在名单中，确认后合并来源与标签
+
+    ImportRow:
+      type: object
+      required: [line, chain, address, label, tags, twitter, source, status, error]
+      properties:
+        line: { type: integer }
+        chain: { type: string, nullable: true }
+        address: { type: string, nullable: true }
+        label: { type: string, nullable: true }
+        tags:
+          type: array
+          items: { type: string }
+        twitter: { type: string, nullable: true }
+        source: { type: string, nullable: true }
+        status: { $ref: "#/components/schemas/ImportRowStatus" }
+        error: { type: string, nullable: true }
+
+    ImportReport:
+      type: object
+      required: [id, file_name, created_at, expires_at, applied, totals, rows]
+      properties:
+        id: { type: string }
+        file_name: { type: string }
+        created_at: { $ref: "#/components/schemas/Timestamp" }
+        expires_at: { $ref: "#/components/schemas/Timestamp" }
+        applied: { type: boolean }
+        totals:
+          type: object
+          required: [rows, valid, invalid, duplicate, existing]
+          properties:
+            rows: { type: integer }
+            valid: { type: integer }
+            invalid: { type: integer }
+            duplicate: { type: integer }
+            existing: { type: integer }
+        rows:
+          type: array
+          description: 逐行结果（最多返回前 500 行；错误行全部返回）
+          items: { $ref: "#/components/schemas/ImportRow" }
+
+    ListVersionChange:
+      type: object
+      required: [list_version, previous_version, added, merged, removed, total_members]
+      properties:
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        previous_version: { $ref: "#/components/schemas/ListVersion" }
+        added: { type: integer }
+        merged: { type: integer }
+        removed: { type: integer }
+        total_members: { type: integer }
+
+    Member:
+      type: object
+      required: [chain, address, label, tags, twitter, sources, added_at, excluded]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+        label: { type: string, nullable: true }
+        tags:
+          type: array
+          items: { type: string }
+        twitter: { type: string, nullable: true }
+        sources:
+          type: array
+          items:
+            type: string
+            enum: [import, auto]
+        added_at: { $ref: "#/components/schemas/Timestamp" }
+        excluded: { type: boolean }
+
+    MembersResponse:
+      type: object
+      required: [list_version, total, items, next_cursor]
+      properties:
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        total: { type: integer }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Member" }
+        next_cursor: { type: string, nullable: true }
+
+    ExclusionRequest:
+      type: object
+      required: [chain, address, reason]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+        reason: { type: string, minLength: 1, maxLength: 200 }
+
+    Exclusion:
+      type: object
+      required: [chain, address, reason, created_at]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        address: { $ref: "#/components/schemas/Address" }
+        reason: { type: string }
+        created_at: { $ref: "#/components/schemas/Timestamp" }
+
+    ExclusionsResponse:
+      type: object
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Exclusion" }
+        next_cursor: { type: string, nullable: true }
+
+    ChainHealth:
+      type: object
+      required: [chain, head, anchor, lower_bound, forward_position, history_position, backlog_blocks, lag_seconds, gaps_open, gaps_by_reason, last_error, budget_paused]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        head: { type: integer, nullable: true, description: 最近观察到的链头 }
+        anchor: { type: integer, description: 启动锚点 A（D74） }
+        lower_bound: { type: integer, description: 历史下界 L（D73） }
+        forward_position: { type: integer, nullable: true, description: 前向连续完成位置 }
+        history_position: { type: integer, nullable: true, description: 历史回溯连续完成位置 }
+        backlog_blocks: { type: integer, nullable: true }
+        lag_seconds: { type: integer, nullable: true }
+        gaps_open: { type: integer }
+        gaps_by_reason:
+          type: object
+          additionalProperties: { type: integer }
+        last_error:
+          type: object
+          nullable: true
+          required: [kind, message, at]
+          properties:
+            kind:
+              type: string
+              enum: [retryable, config, not_found, history_unavailable, incomplete]
+            message: { type: string }
+            at: { $ref: "#/components/schemas/Timestamp" }
+        budget_paused: { type: boolean }
+
+    ParserHealth:
+      type: object
+      required: [chain, module, version, position, lag_blocks, quarantined, failures, unknown_discriminators]
+      properties:
+        chain: { $ref: "#/components/schemas/Chain" }
+        module: { type: string, example: pumpswap }
+        version: { type: string }
+        position: { type: integer, nullable: true }
+        lag_blocks: { type: integer, nullable: true }
+        quarantined: { type: integer }
+        failures: { type: integer }
+        unknown_discriminators: { type: integer }
+
+    ParseFailure:
+      type: object
+      required: [id, chain, module, position, error, attempts, status, last_attempt_at]
+      properties:
+        id: { type: string }
+        chain: { $ref: "#/components/schemas/Chain" }
+        module: { type: string }
+        position: { type: string, description: 链上位置 }
+        error: { type: string }
+        attempts: { type: integer }
+        status:
+          type: string
+          enum: [failed, queued]
+        last_attempt_at: { $ref: "#/components/schemas/Timestamp" }
+
+    Budget:
+      type: object
+      required: [month, spent_usd, limit_usd, state]
+      properties:
+        month: { type: string, example: "2026-10" }
+        spent_usd:
+          allOf: [{ $ref: "#/components/schemas/Decimal" }]
+          description: 按请求数估算（D104）
+        limit_usd: { $ref: "#/components/schemas/Decimal" }
+        state:
+          type: string
+          enum: [normal, warn, history_paused, paused]
+          description: 70% 提醒、80% 停历史回溯与补证、100% 停前向（D104）
+
+    AdminHealth:
+      type: object
+      required: [as_of, chains, parsers, failures, budget]
+      properties:
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        chains:
+          type: array
+          items: { $ref: "#/components/schemas/ChainHealth" }
+        parsers:
+          type: array
+          items: { $ref: "#/components/schemas/ParserHealth" }
+        failures:
+          type: array
+          items: { $ref: "#/components/schemas/ParseFailure" }
+        budget: { $ref: "#/components/schemas/Budget" }
