@@ -1,0 +1,21 @@
+# H6 3a-fetch-bounds red; base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary / independent expectation: Fetcher.Fetch; H6 §2-5 512KiB response and §2-6 64KiB raw limits; literal non-JSON/object expectations
+# command: go test -count=1 -run ^TestFetchPumpMetadata$ ./internal/metadata
+# sha256 internal/metadata/parse_test.go: 9a89cc05ebb1d7a93111d8b39af7364b87ad03c781f8518c6de464e16db2d300
+--- FAIL: TestFetchPumpMetadata (0.03s)
+    --- FAIL: TestFetchPumpMetadata/body_limits_and_json (0.01s)
+        --- FAIL: TestFetchPumpMetadata/body_limits_and_json/object (0.00s)
+            parse_test.go:50: raw present=false; want true
+        --- FAIL: TestFetchPumpMetadata/body_limits_and_json/body_over_512KiB (0.00s)
+            parse_test.go:47: Fetch error=<nil>; failed want true
+        --- FAIL: TestFetchPumpMetadata/body_limits_and_json/non_json (0.00s)
+            parse_test.go:47: Fetch error=<nil>; failed want true
+        --- FAIL: TestFetchPumpMetadata/body_limits_and_json/not_object (0.00s)
+            parse_test.go:47: Fetch error=<nil>; failed want true
+        --- FAIL: TestFetchPumpMetadata/body_limits_and_json/null (0.00s)
+            parse_test.go:47: Fetch error=<nil>; failed want true
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.599s
+FAIL
+
+# exit=1

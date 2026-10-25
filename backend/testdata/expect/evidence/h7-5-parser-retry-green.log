@@ -1,0 +1,12 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestParserReparsesRetriedBlocks ./internal/parser
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/parser/health_test.go=e60953d77da31340075f5960d5079f432111d8801b6ac0b8acf99c99e2ce341c
+test_diff=h7-5-parser-retry-green-health_test.diff sha256=bb46d4fca89c5ee665f80bd06a73e159b4767c0a694c6fd7e6a4ef92b123b1d2
+=== RUN   TestParserReparsesRetriedBlocks
+2026/10/24 22:56:32 INFO parse retry blocks reset role=parse chain=solana blocks=[7]
+--- PASS: TestParserReparsesRetriedBlocks (0.38s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.901s
+
+exit_code=0

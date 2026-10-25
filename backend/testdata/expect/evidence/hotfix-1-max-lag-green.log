@@ -1,0 +1,4 @@
+# hotfix-1 forward max lag green
+ok  	github.com/meme-radar/radar/internal/ingest	3.348s
+ok  	github.com/meme-radar/radar/internal/config	1.408s
+ok  	github.com/meme-radar/radar/cmd/radar	1.546s

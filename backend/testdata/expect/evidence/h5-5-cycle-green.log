@@ -1,0 +1,11 @@
+# h5-5-cycle green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestCycleAccumulatesBalancesAndReportsRows|TestBalancesSurvive -v ./internal/compute
+# sha256 internal/compute/balances_cycle_test.go 63f9faed4bece078c0cca99d971b4e8fc59051492cc1a5a88d9fdfb4bd466063
+=== RUN   TestCycleAccumulatesBalancesAndReportsRows
+--- PASS: TestCycleAccumulatesBalancesAndReportsRows (1.15s)
+=== RUN   TestBalancesSurviveRawAndLedgerRetention
+--- PASS: TestBalancesSurviveRawAndLedgerRetention (0.39s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	2.010s
+
+# exit=0

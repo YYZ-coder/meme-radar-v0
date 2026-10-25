@@ -1,0 +1,8 @@
+# h5-8-h4-identity-regression green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run TestPgTokenSmartMoney(VolumesMembershipAndScope|LastTradeAt)|TestPgInflowHoldingsFollowActiveMembership ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_members_test.go 6d8c7c0444b657ab65a74340314c149e9859f695b58ed8a664a2af2bbc4e683f
+# sha256 internal/pgapi/inflow_holdings_members_test.go c2b40dd2bf2dc642815e86239049eda2c3efc61c8c11b1037f0b4c13b91710e1
+# sha256 internal/pgapi/smart_money_last_trade_test.go 3a5f0ef2a9ae046e6426d3c3bb5d92c20730a631b0aae35cc5959d427f9575cb
+ok  	github.com/meme-radar/radar/internal/pgapi	1.436s
+
+# exit=0

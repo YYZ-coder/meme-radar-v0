@@ -1,0 +1,13 @@
+# h2-7-activities red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgActivities ./internal/pgapi
+# test_sha256 9de3f92ff43e41dcecaed7f6f8b048a52fb072db144bcfb34aceaee4b86eaae2 internal/pgapi/activities_test.go
+=== RUN   TestPgActivities
+    activities_test.go:45: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000041/activities?limit=2 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"b7c559e435cae54250d9963ffe84f349"}}
+--- FAIL: TestPgActivities (0.25s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.987s
+FAIL
+# exit_status=1
+# Fixture correction after the 503 Red: formal FillValues requires a native quote-price row even for stablecoin trades. Add BNB=200 at 09:57 through SaveQuotePrices. USD expectations (0.001 price, 1000000 market cap) are unchanged.
+# Fixture correction: parse.Trade.PriceNative is the decoder-provided quote price per whole token. Set the independently specified USDC price 0.001; no implementation-derived value or assertion changes.

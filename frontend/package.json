@@ -3,20 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "setup": "npm install && npx playwright install --with-deps chromium",
-    "dev": "next dev",
+    "setup": "npm ci && playwright install chromium",
+    "dev": "next dev --hostname 127.0.0.1",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,mjs,json}\" \"e2e/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"*.{ts,mjs,json}\" \"e2e/**/*.ts\"",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "build": "next build",
-    "start": "next start",
-    "test:smoke": "NO_PROXY='*' ALL_PROXY='' HTTPS_PROXY='' HTTP_PROXY='' playwright test e2e/smoke --project=chromium",
-    "test:e2e": "npm run build && NO_PROXY='*' ALL_PROXY='' HTTPS_PROXY='' HTTP_PROXY='' playwright test",
+    "start": "next start --hostname 127.0.0.1",
+    "test:smoke": "playwright test",
+    "test:e2e": "next build && playwright test",
     "check": "npm run format:check && npm run lint && npm run api:check && npm run typecheck && npm run test && npm run build && npm run test:smoke",
     "api:types": "openapi-typescript ../api/openapi.yaml -o src/lib/api/schema.gen.ts",
-    "api:check": "openapi-typescript ../api/openapi.yaml -o .next/schema.check.ts >/dev/null && cmp -s .next/schema.check.ts src/lib/api/schema.gen.ts || (echo \"src/lib/api/schema.gen.ts is stale: run npm run api:types\" && exit 1)"
+    "api:check": "mkdir -p .next && openapi-typescript ../api/openapi.yaml -o .next/schema.check.ts && cmp .next/schema.check.ts src/lib/api/schema.gen.ts",
+    "test:connected": "RADAR_E2E_MODE=connected playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.4",
@@ -52,5 +53,9 @@
     "openapi-typescript": {
       "typescript": "$typescript"
     }
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
   }
 }

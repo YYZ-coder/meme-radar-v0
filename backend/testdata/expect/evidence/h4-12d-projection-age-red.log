@@ -1,0 +1,13 @@
+# h4-12d-projection-age red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+48b7fd62113dfc1ce13d4b0c0518219ce495ee4f47fe846c780cebf40a3122bd  internal/compute/inflow_cycle_test.go
+# tracked diff sha256=7fc0f06e38c81c17e406edd8ceb9b1595b080bc3bbb7d4e4eb714ace06c5f849
+# command: go test -count=1 -v -run TestCycleReportsProjectionAgeFromPersistedHead ./internal/compute
+=== RUN   TestCycleReportsProjectionAgeFromPersistedHead
+    inflow_cycle_test.go:49: projection age=0; want 90 seconds from persisted cutoff
+--- FAIL: TestCycleReportsProjectionAgeFromPersistedHead (0.32s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.800s
+FAIL
+
+# exit=1

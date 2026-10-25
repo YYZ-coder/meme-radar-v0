@@ -1,0 +1,12 @@
+# h2-4-search red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgSearch$ ./internal/pgapi
+# test_sha256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 internal/pgapi/search_test.go
+# test_sha256 70b0d752beeea18e6cc0574332d61fa0162bc258a1260975708c2427709f0fe6 internal/pgapi/fixture_test.go
+=== RUN   TestPgSearch
+    search_test.go:59: GET /api/v1/search?q=pep = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"e559aaa0e8546c57f6adde5e9c58d8ec"}}
+--- FAIL: TestPgSearch (0.24s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.879s
+FAIL
+# exit_status=1

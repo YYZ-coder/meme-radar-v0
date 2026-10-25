@@ -1,0 +1,17 @@
+# h5-7-native-solana red base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersNativeBalanceSolana$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_solana_test.go ad594211e500f4692bf62abe11d0319bbab1d3abd0d19378732241d4852b2d07
+=== RUN   TestPgHoldersNativeBalanceSolana
+    holders_solana_test.go:94: native=<nil>; want 1.000000001
+    holders_solana_test.go:94: native=<nil>; want 0
+    holders_solana_test.go:102: batch/cache calls=0,want 1
+    holders_solana_test.go:94: native=<nil>; want 1.000000001
+    holders_solana_test.go:94: native=<nil>; want 0
+    holders_solana_test.go:102: batch/cache calls=0,want 1
+    holders_solana_test.go:102: batch/cache calls=0,want 2
+--- FAIL: TestPgHoldersNativeBalanceSolana (0.19s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.912s
+FAIL
+
+# exit=1

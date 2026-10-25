@@ -1,0 +1,25 @@
+# h4-5-buy-size green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+01d9a00793817eee526fc4189f616ad700e392a38d0ca71ca8f88b1cd8b543fe  internal/compute/inflow_overview_test.go
+# tracked diff sha256=4a7d2797b82c4bd2c3474629b0c3fbbfe8db0d7ea0a127ad0f42d769bd04a90d
+# command: go test -count=1 -v -run TestOverviewLargeSmallExample|TestOverviewActiveWalletsExample ./internal/compute
+=== RUN   TestOverviewActiveWalletsExample
+--- PASS: TestOverviewActiveWalletsExample (0.57s)
+=== RUN   TestOverviewLargeSmallExample
+=== RUN   TestOverviewLargeSmallExample/strict_boundary_same_wallet
+=== RUN   TestOverviewLargeSmallExample/amount_weighted_percentages
+=== RUN   TestOverviewLargeSmallExample/unknown_buy
+=== RUN   TestOverviewLargeSmallExample/unknown_sell
+=== RUN   TestOverviewLargeSmallExample/no_buys
+=== RUN   TestOverviewLargeSmallExample/partial
+--- PASS: TestOverviewLargeSmallExample (0.79s)
+    --- PASS: TestOverviewLargeSmallExample/strict_boundary_same_wallet (0.13s)
+    --- PASS: TestOverviewLargeSmallExample/amount_weighted_percentages (0.14s)
+    --- PASS: TestOverviewLargeSmallExample/unknown_buy (0.12s)
+    --- PASS: TestOverviewLargeSmallExample/unknown_sell (0.15s)
+    --- PASS: TestOverviewLargeSmallExample/no_buys (0.13s)
+    --- PASS: TestOverviewLargeSmallExample/partial (0.13s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.816s
+
+# exit=0

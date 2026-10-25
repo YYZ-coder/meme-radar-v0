@@ -1,0 +1,16 @@
+# h4-3c-failed-build green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+# test-strengthening before valid Red: advance the initial copy watermark before preparation and assert one retained failed copy before 30m; avoids a vacuous expiry check after the first parse sweep.
+077f8302a717b995b80e5ec7679862c244b85c057ca39186993e2cff28ccb096  internal/compute/smtrades_build_test.go
+# tracked diff sha256=b3d72b15bbc3da458e98bb9d977a6fa193c5f0284415b10f5cad10ae4db33053
+# command: go test -count=1 -v -run TestFailedPreparedBuildIsIsolatedAndExpires|TestListBuildBackfillFailureLeavesActiveAndHeads|TestListBuildBackfills48Hours ./internal/compute
+=== RUN   TestListBuildBackfills48Hours
+--- PASS: TestListBuildBackfills48Hours (0.38s)
+=== RUN   TestFailedPreparedBuildIsIsolatedAndExpires
+--- PASS: TestFailedPreparedBuildIsIsolatedAndExpires (0.25s)
+=== RUN   TestListBuildBackfillFailureLeavesActiveAndHeads
+--- PASS: TestListBuildBackfillFailureLeavesActiveAndHeads (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.299s
+
+# exit=0

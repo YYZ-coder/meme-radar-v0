@@ -1,0 +1,7 @@
+# H6 6-scheduler green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Worker.Step frozen token_metadata persistence; real PG; hand offsets 0/10/70/430/1870min; no source, platform routes and priority
+# command: go test -count=1 -run ^TestMetadataStep ./internal/metadata
+# sha256 internal/metadata/step_test.go: ebbf4b632c0e05abd2adcaf51ae2cfb25d0eb479aaf1b5186eed1846ff812096
+ok  	github.com/meme-radar/radar/internal/metadata	0.954s
+
+# exit=0

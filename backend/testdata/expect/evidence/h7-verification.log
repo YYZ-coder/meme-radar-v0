@@ -1,0 +1,27 @@
+branch=agent/h7
+HEAD=1ff1b076c024d1cd4bf5df094be181b248942740
+verification_snapshot=uncommitted at verification time; no staging, commit, merge, push or deployment had been performed
+subsequent_authorization=2026-10-25 user authorizes scripts/commit.sh on agent/h7 only; no merge, push or deployment
+precondition c0b4d20 ancestor: PASS
+precondition 11de22b ancestor: PASS
+database=local disposable PostgreSQL, never cloud for tests
+GOMAXPROCS=4; RADAR_E2E_PORT=31710; RADAR_E2E_API_PORT=31720
+go test -race -count=1 ./... with RADAR_TEST_DATABASE_URL: PASS (h7-race.log)
+make check with RADAR_TEST_DATABASE_URL: PASS (h7-make-check.log)
+frontend mock smoke: 27 passed, 1 mode-specific skip
+frontend connected smoke: 27 passed, 1 mode-specific skip
+RADAR_E2E_MODE=connected RADAR_H7_PG_UI_SMOKE=1 go test -count=1 -v -run ^TestPgAdminFrontendSmoke$ ./internal/pgapi: PASS (h7-pg-browser.log)
+python3 scripts/check-handoff.py: PASS, 0 problems
+git diff --check: PASS
+online verification=cloud read-only transaction and Prometheus GET only; no H7 migration or live retry performed
+red/green evidence includes full test hashes and saved diffs; 4b/7/8/9 checks explicitly regression supplements
+sha256 backend/internal/store/health.go 9868f38368ef1ef5cf587b1f0e6d8759bf5dff010f719b5aeabe0a56b7628ac7
+sha256 backend/internal/pgapi/health.go b6f4b0e12c8a158148294a729824a5f32dae6887bc15127bd7bf2b5222bbbc1b
+sha256 backend/internal/pgapi/backend.go 7476011d16a471c1caa2464e21313dd7ef59051cbdfcba3872ec9f9fc021e7ec
+sha256 backend/internal/parser/parser.go b93e12337d11c3a4a2e5bc88d85d10360b8c1b5b522b415b4e0ca32d496418fe
+sha256 backend/cmd/radar/parse.go 8bc72c8646a7dda0b30a3b39a318ae56999361ad7929b317bdbf299099a21bb8
+sha256 backend/internal/metrics/parse_retries.go 722029e0d9d95904e5f393be8a3b31d5bc526e8e5e6a4666f8fe5b3dc5582f6b
+sha256 backend/migrations/0017_admin_health.sql 8fdb10de047dd92c62dbd3a2fb50f99b872d73f8ecf9c60c158e324c327485c4
+sha256 backend/internal/pgapi/admin_health_test.go 79f8b8bbd2794389976244e7421f07b57351dffab8ae832e25e5d2166091b31d
+sha256 backend/internal/pgapi/admin_browser_test.go 85bd89f63d608531315c961eb4ea714d14bb8321401444139769448e54906286
+sha256 backend/internal/parser/health_test.go d9756d07e2f5a36513a2b41b679e04580520c713936cbb3f0984955285b98a6f

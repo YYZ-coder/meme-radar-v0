@@ -1,0 +1,10 @@
+# h2-12-logging green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestAPIErrorLogsRoleAndChain ./internal/httpapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 1c63368b02163887e1e0348187959f13a53c6a924891f8fa080e6fb1d633b5fd internal/httpapi/api_logging_test.go
+=== RUN   TestAPIErrorLogsRoleAndChain
+--- PASS: TestAPIErrorLogsRoleAndChain (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/httpapi	0.448s
+# exit_status=0

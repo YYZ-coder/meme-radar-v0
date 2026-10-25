@@ -1,0 +1,18 @@
+# h3-11-import-archive red base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 66b08993418edb0544c721bd4b26f3a9c809d4d701512d0c8b4a484a6115293f backend/internal/compute/lists_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 21ac496920f20b98d52c3770397f2e6528da4376d1e78e94f3d8a081f94eccbd backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 737bd6e80300a2e6e6304e13328c63b153e4bc89ce83787327119137623d64cf backend/internal/pgapi/placeholders_test.go
+# SHA256 21f35d644c6505ac66a29ee5490bd14fd9a5c17a5deec333d93983f35e6587cb backend/internal/store/lists_test.go
+# Tracked test diff SHA256 d5cf20a17eee9c7a94d8cf2c9838152b1a804f5fb2f0446c08d23053058be3c0
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^TestAppliedImportRowsArchiveAfterSevenDays$ ./internal/store
+--- FAIL: TestAppliedImportRowsArchiveAfterSevenDays (0.21s)
+    lists_test.go:324: archived report={ID:imp_327ad6cd91303d23cd3c0941ed65ab64 FileName:retention.csv CreatedAt:2026-10-24T04:00:00.000Z ExpiresAt:2026-10-24T04:30:00.000Z Applied:true AppliedListVersion:0x1a5e341951e0 RowsArchived:false Totals:{Rows:2 Valid:2 Invalid:0 Duplicate:0 Existing:0} Rows:[{Line:2 Chain:0x1a5e34195150 Address:0x1a5e34195160 Label:0x1a5e34195170 Tags:[kol] Twitter:0x1a5e34195190 Source:<nil> Status:valid Error:<nil>} {Line:3 Chain:0x1a5e341951a0 Address:0x1a5e341951b0 Label:0x1a5e341951c0 Tags:[] Twitter:<nil> Source:<nil> Status:valid Error:<nil>}]}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	0.696s
+FAIL
+
+exit=1

@@ -1,0 +1,18 @@
+# h4-37-workmem red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+05aaf95e097c18410a69f4c002cb910e4f2e9fd446414c2bcf8dcde401a2c0b3  internal/store/inflow_workmem_test.go
+# tracked diff sha256=670a5ac50e957f5f2d8ef8b202c7ac359bb652badf8a91600c6b41f1b94e927a
+# command: go test -count=1 -v -run ^TestInflowWorkMemIsTransactionLocal$ ./internal/store
+=== RUN   TestInflowWorkMemIsTransactionLocal
+=== RUN   TestInflowWorkMemIsTransactionLocal/commit
+    inflow_workmem_test.go:74: publication={Version:1 AsOf:2026-04-10 12:00:00 +0000 UTC Rows:0 Rebuilt:false SkipReason: QueryTime:15.098709ms FillTime:0s WriteTime:0s} error=store: insert inflow: ERROR: publication work_mem=6MB, want 64MB (SQLSTATE P0001); want successful publication with 64MB
+=== RUN   TestInflowWorkMemIsTransactionLocal/rollback
+    inflow_workmem_test.go:71: rollback publication error=store: insert inflow: ERROR: publication work_mem=6MB, want 64MB (SQLSTATE P0001); want forced rollback after 64MB check
+--- FAIL: TestInflowWorkMemIsTransactionLocal (0.93s)
+    --- FAIL: TestInflowWorkMemIsTransactionLocal/commit (0.69s)
+    --- FAIL: TestInflowWorkMemIsTransactionLocal/rollback (0.24s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	1.706s
+FAIL
+
+# exit=1

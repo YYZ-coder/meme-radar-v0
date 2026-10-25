@@ -1,0 +1,29 @@
+# h4-9-atomic green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+90e8c660c8a60b01e3c745cc483c6a2a1b7e38b22e09852662c4ebc476bbbc42  internal/compute/inflow_atomic_test.go
+# tracked diff sha256=d5ecad248c3602e16aa6b1b45fe45b187c34673ce15abd5ae891d742dd1b95d4
+# command: go test -count=1 -v -run TestProjectionHeadSwitchIsAtomic|TestListActivationSwitchesHeadsAndRollsBackOnFailure|TestInflow ./internal/compute
+=== RUN   TestProjectionHeadSwitchIsAtomic
+--- PASS: TestProjectionHeadSwitchIsAtomic (0.25s)
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+=== RUN   TestInflowRowsFromFacts/partial
+--- PASS: TestInflowRowsFromFacts (0.40s)
+    --- PASS: TestInflowRowsFromFacts/complete (0.21s)
+    --- PASS: TestInflowRowsFromFacts/partial (0.19s)
+=== RUN   TestInflowSparkline
+=== RUN   TestInflowSparkline/1h/seed=false
+=== RUN   TestInflowSparkline/1h/seed=true
+=== RUN   TestInflowSparkline/5m/seed=false
+=== RUN   TestInflowSparkline/5m/seed=true
+--- PASS: TestInflowSparkline (0.64s)
+    --- PASS: TestInflowSparkline/1h/seed=false (0.17s)
+    --- PASS: TestInflowSparkline/1h/seed=true (0.16s)
+    --- PASS: TestInflowSparkline/5m/seed=false (0.15s)
+    --- PASS: TestInflowSparkline/5m/seed=true (0.17s)
+=== RUN   TestListActivationSwitchesHeadsAndRollsBackOnFailure
+--- PASS: TestListActivationSwitchesHeadsAndRollsBackOnFailure (0.15s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.899s
+
+# exit=0

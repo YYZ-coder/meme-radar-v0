@@ -1,0 +1,24 @@
+Boundary: existing check-handoff.py public CLI, real throwaway Git repository.
+Expected: feat(h2) owns H2 migration 0012; source: module/branch naming in handoff prompts and actual feat(h7) incoming commit.
+Baseline HEAD=3193eda239f3252c944836e805220a7a64c8fe82; pending H7=dbadbb0624fbafbc0315f2f28900036267830981
+Test sha256=d8d56adca4b6d346de2fbe28609522316c0631d5192c5f7fa3a7cb79c58aa0ee
+Test diff sha256=9d08f0c0619a0dded751d2cc8350ef434ae6668a26ee631d9bc7dad15977989d
+Command=python3 -m unittest scripts.test_check_handoff.HandoffMigrationTests.test_lowercase_module_in_commit_subject_keeps_migration_ownership
+F
+======================================================================
+FAIL: test_lowercase_module_in_commit_subject_keeps_migration_ownership (scripts.test_check_handoff.HandoffMigrationTests.test_lowercase_module_in_commit_subject_keeps_migration_ownership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/yuezhang/yz/projects/meme-radar-v0/scripts/test_check_handoff.py", line 57, in test_lowercase_module_in_commit_subject_keeps_migration_ownership
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : PROBLEM: H2: migration 0012 is taken by another change (backend/migrations/0012_pending.sql)
+checked 2 prompts, 2 task books, 0 identifiers: 1 problem(s)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.115s
+
+FAILED (failures=1)
+
+exit=1

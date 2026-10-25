@@ -1,0 +1,105 @@
+--- HEAD/internal/pgapi/admin_health_test.go
++++ worktree/internal/pgapi/admin_health_test.go
+@@ -0,0 +1,102 @@
++package pgapi_test
++
++import (
++	"context"
++	"reflect"
++	"testing"
++	"time"
++
++	"github.com/meme-radar/radar/internal/api"
++	"github.com/meme-radar/radar/internal/config"
++	"github.com/meme-radar/radar/internal/parse"
++	"github.com/meme-radar/radar/internal/pgapi"
++	"github.com/meme-radar/radar/internal/store"
++)
++
++// healthFixture uses ingest/parse/compute writers; the expectations are the
++// hand-worked H7 task examples, independent of the health query.
++func healthFixture(t *testing.T) *fixture {
++	t.Helper()
++	f := newFixture(t)
++	f.cfg.Chains = []config.Chain{
++		{Name: "bsc", Backfill: config.Backfill{Hours: 1}, Ingest: config.Ingest{BlockInterval: config.Duration(36 * time.Second)}},
++		{Name: "base"}, {Name: "solana"},
++	}
++	ctx := context.Background()
++	put := func(chain string, n uint64, g *store.Gap, forward *store.Cursor, fill int64) {
++		t.Helper()
++		if err := f.st.Commit(ctx, store.Commit{Chain: chain, Block: store.Block{Num: n, Hash: raw(32, byte(n)), ParentHash: raw(32, byte(n-1)), Time: f.now.Add(-7 * time.Second), Status: store.StatusConfirmed, Payload: []byte(`{}`), Source: "test"}, NewGap: g, Forward: forward, FillGap: fill}); err != nil {
++			t.Fatal(err)
++		}
++	}
++	put("bsc", 990, &store.Gap{From: 900, To: 949, Reason: "startup"}, &store.Cursor{Anchor: 950, Position: 990, Head: 1000}, 0)
++	put("bsc", 989, &store.Gap{From: 980, To: 982, Reason: "rate_limited"}, nil, 0)
++	put("bsc", 988, &store.Gap{From: 970, To: 970, Reason: "startup"}, nil, 0)
++	gaps, err := f.st.OpenGaps(ctx, "bsc")
++	if err != nil {
++		t.Fatal(err)
++	}
++	for _, g := range gaps {
++		if g.From == 970 {
++			put("bsc", 970, nil, nil, g.ID)
++		}
++	}
++	for _, n := range []uint64{890, 910} {
++		f.apply(t, "bsc", n, f.now.Add(-time.Minute), parse.Facts{})
++	}
++	if err := f.st.RefreshCoverage(ctx, "bsc"); err != nil {
++		t.Fatal(err)
++	}
++	if err := f.st.SetForwardError(ctx, "bsc", "rate_limited", "429 Too Many Requests"); err != nil {
++		t.Fatal(err)
++	}
++	put("base", 29, nil, &store.Cursor{Anchor: 11, Position: 29, Head: 30}, 0)
++	return f
++}
++
++func TestHealthChains(t *testing.T) {
++	f := healthFixture(t)
++	ctx := context.Background()
++	rows, err := f.st.HealthChains(ctx, []store.HealthChainConfig{{Chain: "bsc", WindowBlocks: 100}, {Chain: "base"}, {Chain: "solana"}}, f.now)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(rows) != 3 {
++		t.Fatalf("store chain rows=%d; want 3 configured chains", len(rows))
++	}
++	if rows[0].Head == nil || *rows[0].Head != 1000 || rows[0].BacklogBlocks == nil || *rows[0].BacklogBlocks != 10 {
++		t.Fatalf("store bsc=%+v; want head=1000/backlog=10", rows[0])
++	}
++	h, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if h.AsOf != "2026-10-23T10:00:30.000Z" || len(h.Chains) != 3 {
++		t.Fatalf("health=%+v", h)
++	}
++	c := h.Chains[0]
++	if c.Chain != api.BSC || c.Head == nil || *c.Head != 1000 || c.Anchor != 950 || c.ForwardPosition == nil || *c.ForwardPosition != 990 || c.BacklogBlocks == nil || *c.BacklogBlocks != 10 || c.LagSeconds == nil || *c.LagSeconds != 7 || c.LowerBound != 900 || c.HistoryPosition == nil || *c.HistoryPosition != 910 || c.GapsOpen != 2 || !reflect.DeepEqual(c.GapsByReason, map[string]int64{"startup": 1, "rate_limited": 1}) || c.BudgetPaused {
++		t.Fatalf("bsc=%+v; want head=1000 anchor=950 forward=990 backlog=10 lag=7 lower=900 history=910 two gap rows", c)
++	}
++	if c.LastError == nil || c.LastError.Kind != "retryable" || c.LastError.Message != "429 Too Many Requests" {
++		t.Errorf("last_error=%+v", c.LastError)
++	}
++	if c := h.Chains[1]; c.LowerBound != 11 || c.HistoryPosition != nil || c.LastError != nil {
++		t.Errorf("no backfill/coverage: %+v", c)
++	}
++	if c := h.Chains[2]; c.Head != nil || c.ForwardPosition != nil || c.BacklogBlocks != nil || c.LagSeconds != nil || c.HistoryPosition != nil || c.LastError != nil || c.GapsOpen != 0 || c.GapsByReason == nil {
++		t.Errorf("missing cursor must stay unknown: %+v", c)
++	}
++	for _, tc := range []struct{ kind, message, want string }{{"error", "HTTP 401 Unauthorized", "config"}, {"rate_limited", "HTTP 403 Forbidden", "config"}, {"error", "connection reset", "retryable"}, {"not_found", "missing block", "not_found"}, {"history_unavailable", "pruned", "history_unavailable"}, {"incomplete", "partial receipt", "incomplete"}} {
++		if err := f.st.SetForwardError(ctx, "bsc", tc.kind, tc.message); err != nil {
++			t.Fatal(err)
++		}
++		got, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if got.Chains[0].LastError == nil || got.Chains[0].LastError.Kind != tc.want {
++			t.Errorf("kind %s message %s: %+v; want %s", tc.kind, tc.message, got.Chains[0].LastError, tc.want)
++		}
++	}
++}

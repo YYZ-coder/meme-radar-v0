@@ -1,0 +1,40 @@
+# full race integration, initial run; known legacy H1 fixture issue not bypassed
+# command: go test -race -count=1 ./...
+ok  	github.com/meme-radar/radar/cmd/radar	3.181s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	2.354s
+ok  	github.com/meme-radar/radar/internal/compute	17.662s
+ok  	github.com/meme-radar/radar/internal/config	1.564s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.121s
+ok  	github.com/meme-radar/radar/internal/evm	1.443s
+ok  	github.com/meme-radar/radar/internal/httpapi	4.463s
+ok  	github.com/meme-radar/radar/internal/ingest	5.942s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.187s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.887s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	1.829s
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+ok  	github.com/meme-radar/radar/internal/metadata	4.821s
+ok  	github.com/meme-radar/radar/internal/metrics	1.419s
+ok  	github.com/meme-radar/radar/internal/mockdata	1.860s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	1.353s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.426s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.679s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.455s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.511s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.418s
+ok  	github.com/meme-radar/radar/internal/parser	5.867s
+ok  	github.com/meme-radar/radar/internal/pgapi	17.659s
+ok  	github.com/meme-radar/radar/internal/prices	1.433s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.539s
+--- FAIL: TestMigrationFixesGraduationSwitchTimes (0.14s)
+    window_test.go:453: store: fill trade values: ERROR: relation "smtrades_dirty" does not exist (SQLSTATE 42P01)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	14.611s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+FAIL
+
+# exit=1

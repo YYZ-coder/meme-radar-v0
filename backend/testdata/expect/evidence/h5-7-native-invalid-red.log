@@ -1,0 +1,12 @@
+# h5-7-native-invalid red base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersMalformedNativeBalanceIsNull$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_rpc_invalid_test.go aa8ba28a2eb4319092ecde21832174d9dca415aa4d6857af3bd3c535b2e6b4e4
+=== RUN   TestPgHoldersMalformedNativeBalanceIsNull
+    holders_rpc_invalid_test.go:30: invalid RPC quantity became 0.000000000000000001, want NULL
+    holders_rpc_invalid_test.go:30: invalid RPC quantity became 0.000000000000000001, want NULL
+--- FAIL: TestPgHoldersMalformedNativeBalanceIsNull (0.31s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.797s
+FAIL
+
+# exit=1

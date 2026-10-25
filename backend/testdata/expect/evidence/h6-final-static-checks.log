@@ -1,0 +1,6 @@
+# H6 final static review; HEAD=3bc9ef82c5b03bb105c440514202cfd244ee3a10
+PASS changed documentation relative links
+PASS Grafana JSON, unique panel IDs and metadata queries
+PASS 23 red/green evidence pairs: target assertion failures, green exit0, identical paired test hashes
+PASS git diff --check and actual index empty
+PASS final H6 source/test hash manifests written

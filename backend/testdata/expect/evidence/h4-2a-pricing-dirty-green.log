@@ -1,0 +1,15 @@
+# h4-2a-pricing-dirty green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+5fcc61964aeb214d2cefe226fed1767f01f50dd6649f44435dcb47c98682da96  internal/compute/smtrades_test.go
+# tracked diff sha256=db3f46d490b444796c9069444592e3554e58630b49ada79a777599f25f394c2f
+# command: go test -count=1 -v -run TestFillValuesMarksSmTradesDirty|TestValues|TestStatsStepAggregates ./internal/compute
+=== RUN   TestFillValuesMarksSmTradesDirty
+--- PASS: TestFillValuesMarksSmTradesDirty (0.21s)
+=== RUN   TestStatsStepAggregatesPoolMinutesAndFollowsChanges
+--- PASS: TestStatsStepAggregatesPoolMinutesAndFollowsChanges (0.19s)
+=== RUN   TestValuesStepPricesTradesAndLiquidity
+--- PASS: TestValuesStepPricesTradesAndLiquidity (0.12s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.054s
+
+# exit=0

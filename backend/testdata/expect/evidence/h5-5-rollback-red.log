@@ -1,0 +1,13 @@
+# h5-5-rollback red base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancesRetractRollbackAndPendingRewrite -v ./internal/compute
+# sha256 internal/compute/balances_rollback_test.go 2b6561e49d571e3f7179f4b7c01830702133eaa557343c75fb95c8909afef95a
+=== RUN   TestBalancesRetractRollbackAndPendingRewrite
+    balances_rollback_test.go:42: balances=A:70,C:30;want A:100,C:0
+    balances_rollback_test.go:48: balances=A:90,C:10;want A:100,C:0
+    balances_rollback_test.go:52: balances=A:90,C:10;want A:100,C:0
+--- FAIL: TestBalancesRetractRollbackAndPendingRewrite (0.18s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.626s
+FAIL
+
+# exit=1

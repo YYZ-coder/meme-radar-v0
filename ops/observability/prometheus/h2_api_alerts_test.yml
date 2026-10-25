@@ -1,0 +1,42 @@
+rule_files:
+  - rules.yml
+evaluation_interval: 1m
+tests:
+  - name: API 6 percent errors fire only after five minutes
+    interval: 1m
+    input_series:
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="200"}'
+        values: '0+94x12'
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="500"}'
+        values: '0+6x12'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: APIErrors
+        exp_alerts: []
+      - eval_time: 7m
+        alertname: APIErrors
+        exp_alerts:
+          - exp_labels: {severity: warning}
+            exp_annotations: {summary: 'API 5xx responses exceed 5%'}
+  - name: API exactly five percent does not fire
+    interval: 1m
+    input_series:
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="200"}'
+        values: '0+95x12'
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="500"}'
+        values: '0+5x12'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: APIErrors
+        exp_alerts: []
+  - name: API 4xx responses are not server errors
+    interval: 1m
+    input_series:
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="200"}'
+        values: '0+94x12'
+      - series: 'radar_api_requests_total{route="GET /api/v1/search",status="404"}'
+        values: '0+6x12'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: APIErrors
+        exp_alerts: []

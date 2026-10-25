@@ -1,0 +1,7 @@
+# H6 1-uri green; base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary / independent expectation: NormalizeURI; literals from H6 §2-5
+# command: go test -count=1 -run ^TestNormalizeURI$ ./internal/metadata
+# sha256 internal/metadata/uri_test.go: dac6b404cb8f7265e466965c6211d7aca0440ed7aae0e402868897d8929f1478
+ok  	github.com/meme-radar/radar/internal/metadata	0.362s
+
+# exit=0

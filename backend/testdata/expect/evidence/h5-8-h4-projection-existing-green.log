@@ -1,0 +1,6 @@
+# h5-8-h4-projection-existing green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgInflowHoldingsFields$ ./internal/pgapi
+# sha256 internal/pgapi/inflow_holdings_test.go b706977032e034b55be7ffc36a5894be0d5bcb703425c66a6355e692c853c8b1
+ok  	github.com/meme-radar/radar/internal/pgapi	1.256s
+
+# exit=0

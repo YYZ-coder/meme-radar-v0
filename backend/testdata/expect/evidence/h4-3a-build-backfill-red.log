@@ -1,0 +1,13 @@
+# h4-3a-build-backfill red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+b2e32851f372065b28d981daece392394d43b9510e1bb86acd04ffe761048d8c  internal/compute/smtrades_build_test.go
+# tracked diff sha256=db3f46d490b444796c9069444592e3554e58630b49ada79a777599f25f394c2f
+# command: go test -count=1 -v -run TestListBuildBackfills48Hours ./internal/compute
+=== RUN   TestListBuildBackfills48Hours
+    smtrades_build_test.go:57: before activation: 47h member trades=0, want 1
+--- FAIL: TestListBuildBackfills48Hours (0.24s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.942s
+FAIL
+
+# exit=1

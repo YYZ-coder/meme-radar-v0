@@ -1,0 +1,102 @@
+# h4-3b-worker-prepare green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+5eebffc82f36d72a22b8ea94aee805a6d0c75ac62268c75a12ebdf1f2a980fd2  internal/compute/smtrades_build_test.go
+# tracked diff sha256=b3d72b15bbc3da458e98bb9d977a6fa193c5f0284415b10f5cad10ae4db33053
+# command: go test -count=1 -v -run TestListWorkerPreparesBeforeActivation|TestPreparedAndLegacyMemberSnapshotsMatch|TestListBuildBackfills48Hours|TestListLifecycleMatchesMock|TestBuild|TestFailedBuild|TestJobLease ./internal/...
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/chaininfo	0.491s [no tests to run]
+=== RUN   TestListBuildBackfills48Hours
+--- PASS: TestListBuildBackfills48Hours (0.23s)
+=== RUN   TestListWorkerPreparesBeforeActivation
+--- PASS: TestListWorkerPreparesBeforeActivation (0.13s)
+=== RUN   TestPreparedAndLegacyMemberSnapshotsMatch
+--- PASS: TestPreparedAndLegacyMemberSnapshotsMatch (0.85s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.694s
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/config	0.375s [no tests to run]
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/enrich	0.423s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/evm	0.319s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/httpapi	0.530s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest	0.513s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	0.999s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	0.988s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	0.478s [no tests to run]
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/metadata	1.005s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/metrics	0.921s [no tests to run]
+=== RUN   TestListLifecycleMatchesMock
+--- PASS: TestListLifecycleMatchesMock (0.47s)
+PASS
+ok  	github.com/meme-radar/radar/internal/mockdata	1.366s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/balances	0.811s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/clanker	0.864s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/doppler	0.860s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	0.399s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/pancake	0.402s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/pump	0.325s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.448s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.479s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/prices	0.431s [no tests to run]
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/solana	0.373s [no tests to run]
+=== RUN   TestBuildActivatesMembersSnapshot
+--- PASS: TestBuildActivatesMembersSnapshot (0.12s)
+=== RUN   TestBuildMergesExistingMembers
+=== RUN   TestBuildMergesExistingMembers/preserve_existing
+=== RUN   TestBuildMergesExistingMembers/fill_missing
+--- PASS: TestBuildMergesExistingMembers (0.25s)
+    --- PASS: TestBuildMergesExistingMembers/preserve_existing (0.12s)
+    --- PASS: TestBuildMergesExistingMembers/fill_missing (0.13s)
+=== RUN   TestFailedBuildCanBeRetried
+--- PASS: TestFailedBuildCanBeRetried (0.17s)
+=== RUN   TestJobLeaseRecoversCrashedWorker
+--- PASS: TestJobLeaseRecoversCrashedWorker (0.10s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	1.045s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+
+# exit=0

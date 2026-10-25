@@ -1,0 +1,16 @@
+# h4-3a-build-backfill green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+# harness correction after Red: stop reader with a channel, preserving its reusable PG connection; cancellation closed the fixture connection. Assertions unchanged.
+3b73b690ba2bcf91ab087b5be5d844fbf0407c7a672aac30d5e60d054a242121  internal/compute/smtrades_build_test.go
+# tracked diff sha256=ea6f4cb0e936fddc70254df506ca4740900e197cbfc1a2057202db598521ed96
+# command: go test -count=1 -v -run TestListBuildBackfills48Hours|TestSmTrades ./internal/compute
+=== RUN   TestListBuildBackfills48Hours
+--- PASS: TestListBuildBackfills48Hours (0.30s)
+=== RUN   TestSmTradesCopyMemberTrades
+--- PASS: TestSmTradesCopyMemberTrades (0.18s)
+=== RUN   TestSmTradesFollowReparseAndPricing
+--- PASS: TestSmTradesFollowReparseAndPricing (0.17s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.110s
+
+# exit=0

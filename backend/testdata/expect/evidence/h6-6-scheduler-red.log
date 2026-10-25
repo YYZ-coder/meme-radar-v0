@@ -1,0 +1,17 @@
+# H6 6-scheduler red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Worker.Step frozen token_metadata persistence; real PG; hand offsets 0/10/70/430/1870min. Setup correction: fixture field Platform -> existing LaunchPlatform; compilation failure retained in h6-6-scheduler-setup.log is not Red evidence.
+# command: go test -count=1 -run ^TestMetadataStep ./internal/metadata
+# sha256 internal/metadata/step_test.go: ebbf4b632c0e05abd2adcaf51ae2cfb25d0eb479aaf1b5186eed1846ff812096
+--- FAIL: TestMetadataStepSchedulesAndBacksOff (1.23s)
+    step_test.go:105: metadata rows=0; want 4 due-token outcomes
+--- FAIL: TestMetadataStepFourMemeAndMissingSources (0.22s)
+    step_test.go:207: no rows in result set
+--- FAIL: TestMetadataStepPrioritizesRecentAndLimitsBatch (0.21s)
+    step_test.go:252: processed=0 cold=0; want recent 100 first, cold 0
+--- FAIL: TestMetadataStepResolvesMetaplexURI (0.20s)
+    step_test.go:286: no rows in result set
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	2.316s
+FAIL
+
+# exit=1

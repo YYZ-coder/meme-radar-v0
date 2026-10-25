@@ -1,0 +1,9 @@
+# h5-5-reparse-stress green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -race -count=1 -run TestBalancesConcurrentReparseDoesNotDoubleCount -v ./internal/compute
+# sha256 internal/compute/balances_stress_test.go 55224501e98828652d053cd8d16f9ddf2bf52cde47dd5f26faf687f9df4bcb3a
+=== RUN   TestBalancesConcurrentReparseDoesNotDoubleCount
+--- PASS: TestBalancesConcurrentReparseDoesNotDoubleCount (0.31s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.795s
+
+# exit=0

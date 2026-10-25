@@ -1,0 +1,13 @@
+# h2-2-health green base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgHealthz$ ./internal/pgapi
+# test_sha256 c871de2d88bb6700251407cab8894e642bd4274c4d5bfc7c955afa0dffbdf565 internal/pgapi/health_test.go
+=== RUN   TestPgHealthz
+=== RUN   TestPgHealthz/connected
+=== RUN   TestPgHealthz/disconnected
+--- PASS: TestPgHealthz (0.23s)
+    --- PASS: TestPgHealthz/connected (0.02s)
+    --- PASS: TestPgHealthz/disconnected (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.660s
+# exit_status=0

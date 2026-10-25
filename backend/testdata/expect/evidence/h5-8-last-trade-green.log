@@ -1,0 +1,9 @@
+# h5-8-last-trade green base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyLastTradeAt$ -v ./internal/pgapi
+# sha256 internal/pgapi/smart_money_last_trade_test.go 9e1a95ef846399ffb9416d8fb65ef0d07ca8157e1d472a6be80b008cb26fff50
+=== RUN   TestPgTokenSmartMoneyLastTradeAt
+--- PASS: TestPgTokenSmartMoneyLastTradeAt (0.26s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.789s
+
+# exit=0

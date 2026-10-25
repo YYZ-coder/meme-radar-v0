@@ -1,0 +1,11 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestRetryFailureQueuesOnce ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=3d28897fca15197fbbe93605f9158b77e99d717e2d0ccd57cc5391ce74f74a9f
+test_diff=h7-4b-http-contract-green-admin_health_test.diff sha256=54394daf21d3b86403ec46230df82f9ecb973bb0f4c638d6894e3540b0443ddd
+=== RUN   TestRetryFailureQueuesOnce
+--- PASS: TestRetryFailureQueuesOnce (0.15s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.639s
+
+exit_code=0

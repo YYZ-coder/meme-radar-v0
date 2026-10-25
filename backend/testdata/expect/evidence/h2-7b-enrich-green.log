@@ -1,0 +1,9 @@
+# h2-7b-enrich green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestTokensToEnrichIncludesMissingDecimals ./internal/store
+# test_sha256 619bbfedff2ba53252839c048e16688c55440e40646aa653cb775f615b7a5d4a internal/store/api_enrich_test.go
+=== RUN   TestTokensToEnrichIncludesMissingDecimals
+--- PASS: TestTokensToEnrichIncludesMissingDecimals (0.17s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.605s
+# exit_status=0

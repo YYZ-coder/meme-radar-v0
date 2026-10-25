@@ -1,0 +1,30 @@
+# H2-9 H1 fix prerequisite verification
+# checked_at_utc=2026-10-24T12:28:54.888650+00:00
+$ git rev-parse --abbrev-ref HEAD
+agent/h2
+
+# exit_status=0
+$ git rev-parse HEAD
+c0b4d2006854daacafad2421f7eeb73b624cb4fe
+
+# exit_status=0
+$ git rev-parse MERGE_HEAD
+5e1f0c86445a831bb1226179065b15fdb5db9df9
+
+# exit_status=0
+$ git log -1 --format=%H %s 8f02339
+8f023398ed66ea67b8b7b4eba478a5dbcafe8157 Fix H1 coarse candle volume for minutes without bars
+
+# exit_status=0
+$ git log -1 --format=%H %s d70b4e4
+d70b4e4fad9226ea46ab8f3a8c47d458c3b14f16 Merge branch 'agent/h1' into handoff/data-layer-revision
+
+# exit_status=0
+$ git merge-base --is-ancestor 8ac9aa7 MERGE_HEAD
+
+
+# exit_status=0
+$ git merge-base --is-ancestor 8f02339 MERGE_HEAD
+
+
+# exit_status=0

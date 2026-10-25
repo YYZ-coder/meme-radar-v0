@@ -1,0 +1,16 @@
+# h5-4c-stale red base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestApplyBalancesRejectsRewrittenRaw -v ./internal/store
+# sha256 internal/store/balances_stale_test.go 807e1e4dc0ed20a46e414cff0f4688bb7999cc0f822135dd5cac1cdce05e00b5
+=== RUN   TestApplyBalancesRejectsRewrittenRaw
+    balances_stale_test.go:35: stale write after main=false: <nil>;want ErrNotFound
+    balances_stale_test.go:38: stale deltas persisted=1
+    balances_stale_test.go:41: stale progress=1
+    balances_stale_test.go:35: stale write after main=true: <nil>;want ErrNotFound
+    balances_stale_test.go:38: stale deltas persisted=1
+    balances_stale_test.go:41: stale progress=1
+--- FAIL: TestApplyBalancesRejectsRewrittenRaw (0.53s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	1.033s
+FAIL
+
+# exit=1

@@ -1,0 +1,20 @@
+# H6 6a-config red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: config.Load; D155/D156 ordered defaults and validated positive finite rates, http(s) endpoints, empty Four.meme URL disables
+# command: go test -count=1 -run ^TestMetadataConfiguration$ ./internal/config
+# sha256 internal/config/metadata_test.go: 09e750dd882f694a565e545b181ef97e2c1273a474842efdde26a4e7c26f4d3c
+--- FAIL: TestMetadataConfiguration (0.01s)
+    metadata_test.go:17: metadata defaults={IPFSGateways:[] RPS:0 PerHostRPS:0 FourMemeAPIURL: FourMemeRPS:0}; want D155/D156 endpoints and 10/2/2 RPS
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {ipfs_gateways: []}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {ipfs_gateways: [file:///tmp/a]}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {ipfs_gateways: [https:///nohost]}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {ipfs_gateways: ['https://example.org/ipfs/?x=1']}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {rps: 0}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {per_host_rps: -1}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {fourmeme_rps: .nan}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {rps: .inf}
+    metadata_test.go:27: accepted invalid metadata configuration: metadata: {fourmeme_api_url: 'javascript:alert(1)'}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/config	0.631s
+FAIL
+
+# exit=1

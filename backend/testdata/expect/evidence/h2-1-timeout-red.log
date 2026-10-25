@@ -1,0 +1,18 @@
+# h2-1-timeout red base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestBackendQueryTimeout$ ./internal/httpapi
+# test_sha256 b111359f1b9ff514146515dc193eb2adb2cf8ccfa68798d03b263d3cb982df43 internal/httpapi/backend_timeout_test.go
+=== RUN   TestBackendQueryTimeout
+=== RUN   TestBackendQueryTimeout/configured
+    backend_timeout_test.go:40: request took 1.000907084s, want [5ms, 500ms)
+=== RUN   TestBackendQueryTimeout/default_two_seconds
+    backend_timeout_test.go:40: request took 4.001134167s, want [1.5s, 3s)
+=== RUN   TestBackendQueryTimeout/earlier_parent
+--- FAIL: TestBackendQueryTimeout (5.03s)
+    --- FAIL: TestBackendQueryTimeout/configured (1.02s)
+    --- FAIL: TestBackendQueryTimeout/default_two_seconds (4.00s)
+    --- PASS: TestBackendQueryTimeout/earlier_parent (0.01s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/httpapi	5.457s
+FAIL
+# exit_status=1

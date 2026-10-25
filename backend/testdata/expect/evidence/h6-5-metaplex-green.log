@@ -1,0 +1,7 @@
+# H6 5-metaplex green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: DecodeMetaplexMetadata + MetaplexPDA; independent Python Borsh and soltx.find_pda literals (USDC and JUP real base64 accounts)
+# command: go test -count=1 -run ^TestDecodeMetaplexMetadata$ ./internal/metadata
+# sha256 internal/metadata/metaplex_test.go: 3ef958ba99d3a0c53719ec5b230f0a0d16129c9c91bac4896303d0dfc5bddd42
+ok  	github.com/meme-radar/radar/internal/metadata	0.832s
+
+# exit=0

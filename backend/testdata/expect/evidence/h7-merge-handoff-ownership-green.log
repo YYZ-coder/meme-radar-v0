@@ -1,0 +1,9 @@
+Same public CLI regression as Red. Test sha256=d8d56adca4b6d346de2fbe28609522316c0631d5192c5f7fa3a7cb79c58aa0ee
+Command=python3 -m unittest scripts.test_check_handoff.HandoffMigrationTests.test_lowercase_module_in_commit_subject_keeps_migration_ownership
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.110s
+
+OK
+
+exit=0

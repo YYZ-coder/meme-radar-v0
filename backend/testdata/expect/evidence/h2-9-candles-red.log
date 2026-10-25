@@ -1,0 +1,84 @@
+# h2-9-candles red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgCandles ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 5b93baa5152d2e9f3acbf8575b55dda03c2b798e11d8f87c189be06eb2050726 internal/pgapi/candles_test.go
+# test_sha256 1e7486d679e19dd5d5121f8395de2a6de3a1b398522f48b1580b9e4e698938ed internal/pgapi/detail_test.go
+=== RUN   TestPgCandles
+=== RUN   TestPgCandles/1s/price/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&metric=price&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"bd5847534db8f132f18d03fb1ea700a2"}}
+=== RUN   TestPgCandles/30s/price/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&metric=price&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"2f92f3d755b8cd33d2d1d521575f1c63"}}
+=== RUN   TestPgCandles/1m/price/usd
+=== RUN   TestPgCandles/5m/price/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&metric=price&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"d5c58689cd80b8d2a07f55d08c535a6c"}}
+=== RUN   TestPgCandles/1h/price/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&metric=price&currency=usd&from=1792746000&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"16dbe7f6cd83c459271eb205585297ad"}}
+=== RUN   TestPgCandles/1d/price/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&metric=price&currency=usd&from=1792713600&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"4c89d8c32a8ff8797db5d055bbdd6036"}}
+=== RUN   TestPgCandles/1s/price/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&metric=price&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"67bd1d4e57d22cd4030528d4204ed5c3"}}
+=== RUN   TestPgCandles/30s/price/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&metric=price&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"fa10bbda29f8c086e6ec8f4ced94f201"}}
+=== RUN   TestPgCandles/1m/price/native
+=== RUN   TestPgCandles/5m/price/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&metric=price&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"3301195191a8de174ca2367f212fd2e3"}}
+=== RUN   TestPgCandles/1h/price/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&metric=price&currency=native&from=1792746000&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"bb4a4b1d21d5c779286e346443617f43"}}
+=== RUN   TestPgCandles/1d/price/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&metric=price&currency=native&from=1792713600&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"569d753a8b22e4ba5730904cad29f39b"}}
+=== RUN   TestPgCandles/1s/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&metric=market_cap&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"72d55fb6747544b225fd72a0799544b4"}}
+=== RUN   TestPgCandles/30s/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&metric=market_cap&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"38fe10c04ddea53626c29019f9946414"}}
+=== RUN   TestPgCandles/1m/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&metric=market_cap&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"5a071ff5485e3a749fccb6fbc7c3b43d"}}
+=== RUN   TestPgCandles/5m/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&metric=market_cap&currency=usd&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"c33ee0294d3091dff8628ee67e44e72b"}}
+=== RUN   TestPgCandles/1h/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&metric=market_cap&currency=usd&from=1792746000&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"0ed119b6a2167843ea5de7c99919b954"}}
+=== RUN   TestPgCandles/1d/market_cap/usd
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&metric=market_cap&currency=usd&from=1792713600&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"5dca7297bbea570e2ab59bfb6c855e90"}}
+=== RUN   TestPgCandles/1s/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&metric=market_cap&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"44842b6ea647a29794a802566bb490c7"}}
+=== RUN   TestPgCandles/30s/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&metric=market_cap&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"4bf07b9ba4774c56cfb011f1d9787f16"}}
+=== RUN   TestPgCandles/1m/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&metric=market_cap&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"a279a0350be5a367d4a4f3ca14855bae"}}
+=== RUN   TestPgCandles/5m/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&metric=market_cap&currency=native&from=1792749300&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"e9baadb83c491b9676ea26da3554ec7a"}}
+=== RUN   TestPgCandles/1h/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&metric=market_cap&currency=native&from=1792746000&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"3cd56a5cb45a3b8d1d042933fab89f00"}}
+=== RUN   TestPgCandles/1d/market_cap/native
+    candles_test.go:38: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&metric=market_cap&currency=native&from=1792713600&to=1792749600&limit=1 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"a5e0739a411ee49d3928fd2b46565122"}}
+=== NAME  TestPgCandles
+    candles_test.go:79: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&from=1792663229&to=1792749600 = 503, want 400: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"8c7f727961127aae535d0e7f3d9cab6e"}}
+--- FAIL: TestPgCandles (0.28s)
+    --- FAIL: TestPgCandles/1s/price/usd (0.00s)
+    --- FAIL: TestPgCandles/30s/price/usd (0.00s)
+    --- PASS: TestPgCandles/1m/price/usd (0.02s)
+    --- FAIL: TestPgCandles/5m/price/usd (0.00s)
+    --- FAIL: TestPgCandles/1h/price/usd (0.00s)
+    --- FAIL: TestPgCandles/1d/price/usd (0.00s)
+    --- FAIL: TestPgCandles/1s/price/native (0.00s)
+    --- FAIL: TestPgCandles/30s/price/native (0.00s)
+    --- PASS: TestPgCandles/1m/price/native (0.00s)
+    --- FAIL: TestPgCandles/5m/price/native (0.00s)
+    --- FAIL: TestPgCandles/1h/price/native (0.00s)
+    --- FAIL: TestPgCandles/1d/price/native (0.00s)
+    --- FAIL: TestPgCandles/1s/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/30s/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/1m/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/5m/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/1h/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/1d/market_cap/usd (0.00s)
+    --- FAIL: TestPgCandles/1s/market_cap/native (0.00s)
+    --- FAIL: TestPgCandles/30s/market_cap/native (0.00s)
+    --- FAIL: TestPgCandles/1m/market_cap/native (0.00s)
+    --- FAIL: TestPgCandles/5m/market_cap/native (0.00s)
+    --- FAIL: TestPgCandles/1h/market_cap/native (0.00s)
+    --- FAIL: TestPgCandles/1d/market_cap/native (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.716s
+FAIL
+# exit_status=1

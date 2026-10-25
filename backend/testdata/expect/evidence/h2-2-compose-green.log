@@ -1,0 +1,7 @@
+# h2-2-compose green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: H2 §2-2, public docker compose config and make -n commands
+# test_sha256 275811a274a408b4465739bf0ae8d2e36d6eb25af689633e626c76494eb83def backend/testdata/expect/h2_compose.py
+# command: python3 backend/testdata/expect/h2_compose.py
+PASS: H2-2 compose profile, PG entrypoint, loopback port, env file, readiness and Makefile lifecycle
+
+# exit_status=0

@@ -1,0 +1,18 @@
+# h4-6-overview red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+e5508ad0600623a1c442e911824044f9f0b9bc15d16e459139428230c772f3e7  internal/compute/inflow_overview_test.go
+# tracked diff sha256=4a7d2797b82c4bd2c3474629b0c3fbbfe8db0d7ea0a127ad0f42d769bd04a90d
+# command: go test -count=1 -v -run TestOverviewNetInflowBarsAndChange ./internal/compute
+=== RUN   TestOverviewNetInflowBarsAndChange
+    inflow_overview_test.go:232: net=NULL, want 200
+    inflow_overview_test.go:232: buy=NULL, want 300
+    inflow_overview_test.go:232: sell=NULL, want 100
+    inflow_overview_test.go:232: change=NULL, want 100
+    inflow_overview_test.go:232: buy share=NULL, want 75
+    inflow_overview_test.go:235: tracked/new=<nil>/<nil>, want 1/1
+--- FAIL: TestOverviewNetInflowBarsAndChange (0.21s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.851s
+FAIL
+
+# exit=1

@@ -1,0 +1,39 @@
+# h5-8-h4-race green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -race -count=1 ./...
+# sha256 internal/store/api_smart_money.go 76d4a9d5f00a90b0d09b7f104d7945cac406ff062b7657943bacfe1ac539c180
+# sha256 internal/store/inflow.go c83f0e810df25b1a51c44628d653bdea179f18d8582fb2eb21f204a4bd52bed4
+# sha256 internal/pgapi/smart_money.go c4be8dea98b0aff01326fa349e9033d017ee1054b234ac99f47ed5c278d36645
+ok  	github.com/meme-radar/radar/cmd/radar	7.904s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	3.656s
+ok  	github.com/meme-radar/radar/internal/compute	28.759s
+ok  	github.com/meme-radar/radar/internal/config	1.957s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	3.733s
+ok  	github.com/meme-radar/radar/internal/evm	1.916s
+ok  	github.com/meme-radar/radar/internal/httpapi	5.233s
+ok  	github.com/meme-radar/radar/internal/ingest	10.871s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	3.381s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.700s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	2.060s
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+ok  	github.com/meme-radar/radar/internal/metadata	9.335s
+ok  	github.com/meme-radar/radar/internal/metrics	1.706s
+ok  	github.com/meme-radar/radar/internal/mockdata	2.703s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	1.448s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.460s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	2.037s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.648s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.777s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.570s
+ok  	github.com/meme-radar/radar/internal/parser	9.224s
+ok  	github.com/meme-radar/radar/internal/pgapi	31.030s
+ok  	github.com/meme-radar/radar/internal/prices	1.477s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.559s
+ok  	github.com/meme-radar/radar/internal/store	25.582s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit=0

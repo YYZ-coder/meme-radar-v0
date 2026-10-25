@@ -1,0 +1,11 @@
+# H6 6-scheduler red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Worker.Step + frozen token_metadata persistence; real PG parse transactions; hand-calculated retry offsets 0/10/70/430/1870min and terminal fifth failure; D155/D156 routes and 100-token priority
+# command: go test -count=1 -run ^TestMetadataStep ./internal/metadata
+# sha256 internal/metadata/step_test.go: e6ab08176558810cae3decdd6582629e62b44bae2ffb0e687f99e47d80caff4d
+# github.com/meme-radar/radar/internal/metadata [github.com/meme-radar/radar/internal/metadata.test]
+internal/metadata/step_test.go:159:105: unknown field Platform in struct literal of type parse.Token
+internal/metadata/step_test.go:189:104: unknown field Platform in struct literal of type parse.Token
+FAIL	github.com/meme-radar/radar/internal/metadata [build failed]
+FAIL
+
+# exit=1

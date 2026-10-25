@@ -1,0 +1,14 @@
+# h2-2-compose red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: H2 §2-2, public docker compose config and make -n commands
+# test_sha256 275811a274a408b4465739bf0ae8d2e36d6eb25af689633e626c76494eb83def backend/testdata/expect/h2_compose.py
+# command: python3 backend/testdata/expect/h2_compose.py
+
+Traceback (most recent call last):
+  File "/Users/yuezhang/yz/projects/meme-radar-h2/backend/testdata/expect/h2_compose.py", line 44, in <module>
+    main()
+    ~~~~^^
+  File "/Users/yuezhang/yz/projects/meme-radar-h2/backend/testdata/expect/h2_compose.py", line 25, in main
+    assert "api" in services, "ingest profile must include the PostgreSQL api service"
+           ^^^^^^^^^^^^^^^^^
+AssertionError: ingest profile must include the PostgreSQL api service
+# exit_status=1

@@ -1,0 +1,21 @@
+{
+  "mode": "read-only Fetcher/ChainSource; no Store or enrich role",
+  "pump": [
+    {
+      "error": "Get \"https://gateway.pinata.cloud/ipfs/bafkreih4eo3gyvds4fzuwi62bx6vx7gjke6ve443uqmtn47vt4xbfsfrcy\": metadata: blocked address",
+      "mint": "EaQmGzp3DcVhzApmxEx4YXn1wziGBzVCPGjTBVCapump",
+      "source_uri": "ipfs://bafkreih4eo3gyvds4fzuwi62bx6vx7gjke6ve443uqmtn47vt4xbfsfrcy"
+    },
+    {
+      "error": "Get \"https://gateway.pinata.cloud/ipfs/bafkreifl6cglg6sk4a7gmchpyakkk6vw7bgtzvggihemj662ucwxlylpkm\": metadata: blocked address",
+      "mint": "DnNnnVinn4QfiGgMoHE1riKFuBWdT4zY5nRwztxTpump",
+      "source_uri": "ipfs://bafkreifl6cglg6sk4a7gmchpyakkk6vw7bgtzvggihemj662ucwxlylpkm"
+    },
+    {
+      "error": "Get \"https://gateway.pinata.cloud/ipfs/bafkreiepwba35vkrvm3oih5chdlub4od3tukh3xti2bjs5jlttylgn245y\": metadata: blocked address",
+      "mint": "TbU8rWELwCNuFu5wuW2uxgRfzYNfhe1CwgUBGA1tcUh",
+      "source_uri": "ipfs://bafkreiepwba35vkrvm3oih5chdlub4od3tukh3xti2bjs5jlttylgn245y"
+    }
+  ],
+  "recorded_at": "2026-10-24T11:53:56Z"
+}

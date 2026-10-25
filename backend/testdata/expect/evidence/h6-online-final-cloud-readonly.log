@@ -1,0 +1,10 @@
+# H6 read-only cloud SQL 2026-10-24T11:59:05.837172+00:00
+# PGOPTIONS default_transaction_read_only=on statement_timeout=15000; no migration/store/enrich
+token_metadata=NULL
+base|clanker|1419|703
+base|doppler|1920|0
+bsc|four_meme|3552|0
+solana|pump_fun|39004|5870
+solana|unknown|9101|0
+
+# exit=0

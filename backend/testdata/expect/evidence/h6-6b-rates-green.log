@@ -1,0 +1,7 @@
+# H6 6b-rates green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Fetcher HTTP boundary; 1 RPS permits no second request within a 50ms deadline; independent host/gateway budgets and dedicated Four.meme budget
+# command: go test -count=1 -run ^TestMetadataHTTPBudgets$ ./internal/metadata
+# sha256 internal/metadata/rate_test.go: 56b13257fda7d815a98889813475533795c5b48cac86b18bd9b591fc3372d2d1
+ok  	github.com/meme-radar/radar/internal/metadata	0.449s
+
+# exit=0

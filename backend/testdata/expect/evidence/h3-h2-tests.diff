@@ -1,0 +1,85 @@
+diff --git a/backend/internal/pgapi/placeholders_test.go b/backend/internal/pgapi/placeholders_test.go
+index 607efec..171766a 100644
+--- a/backend/internal/pgapi/placeholders_test.go
++++ b/backend/internal/pgapi/placeholders_test.go
+@@ -2,7 +2,9 @@ package pgapi_test
+ 
+ import (
+ 	"bytes"
++	"crypto/sha256"
+ 	"encoding/json"
++	"fmt"
+ 	"io"
+ 	"mime/multipart"
+ 	"net/http"
+@@ -42,13 +44,21 @@ func requestPG(t *testing.T, h http.Handler, c routeRequest) *httptest.ResponseR
+ 	req := httptest.NewRequest(c.method, c.target, body)
+ 	req.Header.Set("Content-Type", contentType)
+ 	req.Header.Set("Authorization", "Bearer test-admin")
+-	req.Header.Set("Idempotency-Key", "11111111-1111-4111-8111-111111111111")
++	key := "11111111-1111-4111-8111-111111111111"
++	if strings.Contains(c.route, "/admin/smart-money/") {
++		sum := sha256.Sum256([]byte(c.method + " " + c.target))
++		sum[6] = (sum[6] & 15) | 64
++		sum[8] = (sum[8] & 63) | 128
++		key = fmt.Sprintf("%x-%x-%x-%x-%x", sum[:4], sum[4:6], sum[6:8], sum[8:10], sum[10:16])
++	}
++	req.Header.Set("Idempotency-Key", key)
+ 	rec := httptest.NewRecorder()
+ 	h.ServeHTTP(rec, req)
+ 	if rec.Code != c.status {
+ 		t.Fatalf("%s %s=%d, want %d: %s", c.method, c.target, rec.Code, c.status, rec.Body.String())
+ 	}
+ 	contracttest.Check(t, c.method, c.route, rec)
++	assertH3ContractResult(t, c, rec)
+ 	return rec
+ }
+ 
+@@ -64,23 +74,23 @@ func placeholderRoutes() []routeRequest {
+ 		{"GET", "/api/v1/tokens/{chain}/{address}/smart-money", token + "/smart-money", "", 200},
+ 		{"GET", p + "health", p + "health", "", 503},
+ 		{"POST", p + "parse-failures/{id}/retry", p + "parse-failures/1/retry", "", 503},
+-		{"POST", p + "smart-money/imports", p + "smart-money/imports", "", 503},
+-		{"GET", p + "smart-money/imports/{id}", p + "smart-money/imports/im_test", "", 503},
+-		{"POST", p + "smart-money/imports/{id}/apply", p + "smart-money/imports/im_test/apply", "", 503},
+-		{"GET", p + "smart-money/list-builds/{version}", p + "smart-money/list-builds/1", "", 503},
+-		{"POST", p + "smart-money/list-builds/{version}/retry", p + "smart-money/list-builds/1/retry", "", 503},
+-		{"GET", p + "smart-money/members", p + "smart-money/members", "", 503},
+-		{"GET", p + "smart-money/exclusions", p + "smart-money/exclusions", "", 503},
+-		{"POST", p + "smart-money/exclusions", p + "smart-money/exclusions", `{"chain":"bsc","address":"0x0000000000000000000000000000000000000061","reason":"test"}`, 503},
+-		{"DELETE", p + "smart-money/exclusions/{chain}/{address}", p + "smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061", "", 503},
+-		{"DELETE", p + "smart-money/members/{chain}/{address}", p + "smart-money/members/bsc/0x0000000000000000000000000000000000000061", "", 503},
++		{"POST", p + "smart-money/imports", p + "smart-money/imports", "", 201},
++		{"GET", p + "smart-money/imports/{id}", p + "smart-money/imports/im_test", "", 404},
++		{"POST", p + "smart-money/imports/{id}/apply", p + "smart-money/imports/im_test/apply", "", 404},
++		{"GET", p + "smart-money/list-builds/{version}", p + "smart-money/list-builds/1", "", 200},
++		{"POST", p + "smart-money/list-builds/{version}/retry", p + "smart-money/list-builds/1/retry", "", 200},
++		{"GET", p + "smart-money/members", p + "smart-money/members", "", 200},
++		{"GET", p + "smart-money/exclusions", p + "smart-money/exclusions", "", 200},
++		{"POST", p + "smart-money/exclusions", p + "smart-money/exclusions", `{"chain":"bsc","address":"0x0000000000000000000000000000000000000061","reason":"test"}`, 202},
++		{"DELETE", p + "smart-money/exclusions/{chain}/{address}", p + "smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061", "", 202},
++		{"DELETE", p + "smart-money/members/{chain}/{address}", p + "smart-money/members/bsc/0x0000000000000000000000000000000000000061", "", 404},
+ 	}
+ }
+ 
+ func TestPgPlaceholdersMatchContract(t *testing.T) {
+ 	f := detailFixture(t, false)
+ 	h := f.handler()
+-	for _, c := range placeholderRoutes() {
++	for _, c := range h3ContractRoutes(t, f, placeholderRoutes()) {
+ 		t.Run(c.method+" "+c.route, func(t *testing.T) {
+ 			rec := requestPG(t, h, c)
+ 			if c.status == 503 {
+diff --git a/backend/internal/pgapi/routes_test.go b/backend/internal/pgapi/routes_test.go
+index 5ed4a99..1092526 100644
+--- a/backend/internal/pgapi/routes_test.go
++++ b/backend/internal/pgapi/routes_test.go
+@@ -103,7 +103,7 @@ func widestFixture(t *testing.T, fullHistory ...bool) *fixture {
+ func TestPgEveryRouteMatchesContract(t *testing.T) {
+ 	f := widestFixture(t)
+ 	h := f.handler()
+-	requests := append(placeholderRoutes(), []routeRequest{
++	requests := append(h3ContractRoutes(t, f, placeholderRoutes()), []routeRequest{
+ 		{"GET", "/healthz", "/healthz", "", 200},
+ 		{"GET", "/api/v1/market/natives", "/api/v1/market/natives", "", 200},
+ 		{"GET", "/api/v1/search", "/api/v1/search?q=DEMO", "", 200},

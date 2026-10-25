@@ -1,0 +1,50 @@
+# h5-6-cloud-audit green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -timeout=4m -run TestBalanceBackfillBenchmarkReadOnly -v ./internal/parser
+# sha256 internal/parser/balances_benchmark_test.go e52793798b25ea7c59bd145072409f4e087314f800d46c25ab0c624cde3007c7
+# sha256 testdata/expect/check_h5_deltas.py 04dad069212c2e87ab00154404577520d6227188c325303748c8f9d3aba8fa3b
+=== RUN   TestBalanceBackfillBenchmarkReadOnly
+    balances_benchmark_test.go:51: H5 measured_utc=2026-10-24T11:59:58Z
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/solana
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460272778 rows=347 sha256=96bfebdfbd9ae05e999f9aa863f458182c3267451db4ef11d4c3b0699dc6f16f independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460336054 rows=368 sha256=e0ec57f810ae3e217b824634a36139f551c00295a5d0bcde341831ee3dbc1616 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460399331 rows=580 sha256=c8fb39b175b74808f8976043b7a0096d07bb38d1e3097d1ea4438137e1113a1e independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460462599 rows=576 sha256=e8ce8b6a18e95326cc5a8559c4b0c6dd00c5d13695d4dd9c97018df214f47d9b independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460525878 rows=385 sha256=e54f8f8808dcff9a0b3555dcd38d8cf86feffc5a85ce6a7ae9241f29518776e0 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460589148 rows=848 sha256=662b5a9343ebea6bf9813aa9c2913826ef0de06e911722932d84545c793b9831 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460652420 rows=424 sha256=899af37507c475e7a3db12a9e4337aab081371d6995d91615981d4d596717ed0 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460715696 rows=247 sha256=36420bbb3d7928f80fe077626d17f9fd4d9570f74bb458f47c8371dbc0902dcf independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460803529 rows=268 sha256=d0261d96829c6d010764e0334fe857f99389c9e622d5aad84ebe9d13b732bc53 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=solana block=460842242 rows=286 sha256=f35efc122814a21f8d924112844a272fc396cf27ef8ed36da6f01bf4cce4eb9a independent_python_match=true
+    balances_benchmark_test.go:199: H5_MEASURE chain=solana blocks=52654 eligible=52651 samples=10 compressed_bytes=4101040 tracked=48128 cloud_read=2.989052167s local_balance_pass=492.417417ms local_compute=235.783666ms cloud_rtt=14.538917ms default_batch=50 projected=5h29m1.242293444s
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/base
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52867855 rows=3336 sha256=0860372d273dfd77813e913ebc7fdcc9db1484d60fc8e249637d3040c63c5d5f independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52885529 rows=6 sha256=32e379477f29c7f301bd05dda9af8b236189266ad91b952c16dd5f262fdbc0bd independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52903204 rows=118 sha256=c7045d7c3fc41f6368fce0eb72bb29ecb3ee86cf2da1a4ada63733f3dda61a0e independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52920878 rows=16 sha256=194233d769d0c93924bfb2215d07fbff9857c155d529d03e456ad8f495c4bc44 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52938553 rows=12 sha256=aec320d660a3f978f3a4cf8bdb0ba010a48f430612f9506178469b76cf1b352b independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52956227 rows=14 sha256=9c88d9e0314611a905bbdbd32bdc7db87748d3206f3ba7e83b59baaa8df081f3 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52973902 rows=10 sha256=388c3393068ff56e662797047bfad8b91b09707c14395d970252c1221dcee08f independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=52991576 rows=18 sha256=9f856749ce20cad20ade2ab36aff1e3894238a392d96604ec7dc9f180adbbdc5 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=53009251 rows=20 sha256=a757752318fd8991063db5e7f8b06ed0bbd9724db710c10f74de67b37da1b5f7 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=base block=53026926 rows=18 sha256=07d42b98d2dc63bbded74127cf74cae2924d0d2d42f2622342f29dc1e9b6891f independent_python_match=true
+    balances_benchmark_test.go:199: H5_MEASURE chain=base blocks=159078 eligible=159072 samples=10 compressed_bytes=1029706 tracked=3341 cloud_read=672.531584ms local_balance_pass=86.351959ms local_compute=31.793625ms cloud_rtt=14.538917ms default_batch=50 projected=3h38m6.754812606s
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/bsc
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129194718 rows=0 sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129210511 rows=0 sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129226304 rows=24 sha256=a959f3f7cbabddfffd62de9daf757621bce00b6ddfd8264edd2cf1c3381ae00c independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129242098 rows=0 sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129257891 rows=2 sha256=88da989b150e8a5dc5fab7aeca713bf16a008b134a7aca71d4a042a6a30e97a6 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129273685 rows=2 sha256=46f8c4c1e05d59275deb65e46a74a6269ac6110976abfddbbf61e6e6de1b06b3 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129289478 rows=0 sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129305272 rows=2 sha256=1d05e1aa35e38cc5e88c8b91620a3a4c172705a8abb077467fc1b3e5e30f33bb independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129321065 rows=8 sha256=d3f66e091637268816f88d4fec72aa1552474a42e537c582a2ca5c77b63882e5 independent_python_match=true
+    balances_benchmark_test.go:191: H5_AUDIT chain=bsc block=129336859 rows=2 sha256=3125b724322b8a387b0327b834afa5b2aa1d8eac0b1b9e6a3fb773ce9ca0fb7a independent_python_match=true
+    balances_benchmark_test.go:199: H5_MEASURE chain=bsc blocks=142142 eligible=142142 samples=10 compressed_bytes=531453 tracked=3552 cloud_read=4.254483791s local_balance_pass=37.641292ms local_compute=22.054791ms cloud_rtt=14.538917ms default_batch=50 projected=17h9m37.265365816s
+--- PASS: TestBalanceBackfillBenchmarkReadOnly (14.78s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/solana (7.92s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/base (1.26s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/bsc (4.67s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	15.242s
+
+# exit=0

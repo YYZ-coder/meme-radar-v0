@@ -1,0 +1,40 @@
+# H6 qa-final-race regression; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Final all-package race acceptance with actual local PostgreSQL, including IPv6 benchmark guard and Unicode fuzz seeds.
+# command: go test -race -count=1 ./...
+# sha256 internal/metadata/transport_test.go: 91fa2627ba87b8805362c5acd9669224ddc7d1758f33de4db95c776f163ed627
+# sha256 internal/metadata/cooldown_test.go: e40d3b1fde8a5414b212a84a803cbc99c97997cb1d3a1490bcdcc2f5aeeb8bf0
+# sha256 internal/metadata/raw_test.go: 2c7a0652a2f14b02d387674a9306681122baa00404be8927792408fb77d4665b
+# sha256 internal/metadata/persistence_test.go: e1da0df11a206eb789ab476b7814a97d1238473376a73f7ce72b3247d9206a53
+# sha256 internal/metadata/security_regression_test.go: a424acf5f0b970b52b40a729fd0d224da86c4390de8dbb0e6a8c13fb5cdd4364
+# sha256 internal/metadata/fuzz_test.go: e8d7679285cfa57b3b362b1757073a6f25fb60ee52913928bf77c1b2bc2fa0a8
+ok  	github.com/meme-radar/radar/cmd/radar	2.456s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	2.317s
+ok  	github.com/meme-radar/radar/internal/compute	11.175s
+ok  	github.com/meme-radar/radar/internal/config	1.638s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.294s
+ok  	github.com/meme-radar/radar/internal/evm	1.518s
+ok  	github.com/meme-radar/radar/internal/httpapi	2.629s
+ok  	github.com/meme-radar/radar/internal/ingest	9.958s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.401s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.464s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	2.339s
+ok  	github.com/meme-radar/radar/internal/metadata	9.028s
+ok  	github.com/meme-radar/radar/internal/metrics	1.502s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.548s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.921s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.584s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.784s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.393s
+ok  	github.com/meme-radar/radar/internal/parser	6.492s
+ok  	github.com/meme-radar/radar/internal/prices	1.450s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.460s
+ok  	github.com/meme-radar/radar/internal/store	18.283s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit=0

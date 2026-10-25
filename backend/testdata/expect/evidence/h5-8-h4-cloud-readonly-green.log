@@ -1,0 +1,17 @@
+# H5 H4 cloud preflight; read-only observation, not TDD or deployment evidence.
+# base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# Command: docker run --rm -i --env-file .env (PGOPTIONS enforces read-only, 15s statement timeout; PGCONNECT_TIMEOUT=10) postgres:17 psql via environment URL, -X -v ON_ERROR_STOP=1 -At
+# SQL:
+# SELECT 'readonly='||current_setting('transaction_read_only');
+# SELECT 'observed_at='||to_char(now() AT TIME ZONE 'Asia/Shanghai','YYYY-MM-DD HH24:MI:SS');
+# SELECT 'schema_max='||coalesce(max(name),'none') FROM schema_migrations;
+# SELECT name||'='||coalesce(to_regclass('public.'||name)::text,'absent') FROM (VALUES ('sm_lists'),('sm_trades'),('token_balances'),('token_holder_state'),('inflow_rows')) t(name);
+readonly=on
+observed_at=2026-10-25 15:14:33
+schema_max=0011_window.sql
+sm_lists=absent
+sm_trades=absent
+token_balances=absent
+token_holder_state=absent
+inflow_rows=absent
+# exit=0; no DDL/DML or deployment.

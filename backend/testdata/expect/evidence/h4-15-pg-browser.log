@@ -1,0 +1,223 @@
+=== RUN   TestPgInflowFrontendSmoke
+=== RUN   TestPgInflowFrontendSmoke/stock
+    inflow_browser_test.go:110: [WebServer] (node:88317) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 12 tests using 1 worker
+        
+        (node:88319) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✘   1 [chromium] › e2e/smoke/facets.spec.ts:3:5 › partial facets keep unknown totals and label parsed token counts in both languages (684ms)
+        (node:88328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓   2 [chromium] › e2e/smoke/facets.spec.ts:107:5 › partial overview shows unknown complete totals with bilingual coverage status (672ms)
+          ✘   3 [chromium] › e2e/smoke/inflow.spec.ts:9:5 › chain, window, sort and filters live in the URL (6.1s)
+        (node:88357) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✘   4 [chromium] › e2e/smoke/inflow.spec.ts:50:5 › infinite scroll pages with query_id and recovers from 410 (5.5s)
+        (node:88391) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓   5 [chromium] › e2e/smoke/inflow.spec.ts:89:5 › keeps loaded rows and offers retry on 503 (614ms)
+          ✘   6 [chromium] › e2e/smoke/inflow.spec.ts:113:5 › watchlist persists in the browser and shows unknown values as -- (5.2s)
+        (node:88420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓   7 [chromium] › e2e/smoke/inflow.spec.ts:129:5 › language switch is remembered by cookie (455ms)
+          ✘   8 [chromium] › e2e/smoke/inflow.spec.ts:144:5 › global search opens a token (30.2s)
+        (node:88513) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓   9 [chromium] › e2e/smoke/inflow.spec.ts:156:5 › mobile layout stays within the viewport (657ms)
+          ✓  10 [chromium] › e2e/smoke/inflow.spec.ts:168:5 › a stale list pauses refresh while keeping its rows until explicit requery (1.4s)
+          ✓  11 [chromium] › e2e/smoke/overview-buy-size.spec.ts:23:5 › market pulse displays published buy-size amounts and shares in both languages (704ms)
+          ✓  12 [chromium] › e2e/smoke/overview-buy-size.spec.ts:63:5 › market pulse distinguishes incomplete buys from a known empty buy window (790ms)
+        
+        
+          1) [chromium] › e2e/smoke/facets.spec.ts:3:5 › partial facets keep unknown totals and label parsed token counts in both languages 
+        
+            Error: expect(locator).toHaveText(expected) failed
+        
+            Locator: getByRole('note')
+            Expected: "筛选计数·覆盖不完整"
+            Error: strict mode violation: getByRole('note') resolved to 2 elements:
+                1) <p role="note" class="panel-note" title="所选时段的数据尚未齐全，完整统计暂以 -- 显示。">概览·覆盖不完整</p> aka getByRole('note', { name: '所选时段的数据尚未齐全，完整统计暂以 -- 显示。' })
+                2) <span role="note" class="muted" title="筛选项列出已解析成交的代币；完整窗口的代币数量和交易额仍未知。">筛选计数·覆盖不完整</span> aka getByRole('note', { name: '筛选项列出已解析成交的代币；完整窗口的代币数量和交易额仍未知。' })
+        
+            Call log:
+              - Expect "toHaveText" getByRole('note') with timeout 5000ms
+              - waiting for getByRole('note')
+        
+        
+              36 |   });
+              37 |   await page.goto("/smart-money/inflow?chain=base&window=1m");
+            > 38 |   await expect(page.getByRole("note")).toHaveText("筛选计数·覆盖不完整");
+                 |                                        ^
+              39 |   await page.getByRole("button", { name: "全部 DEX", exact: true }).click();
+              40 |   const dex = page.getByRole("group", { name: "DEX", exact: true });
+              41 |   await expect(dex.getByText("-- · 已解析 2", { exact: true })).toBeVisible();
+                at /Users/yuezhang/yz/projects/meme-radar-h4/frontend/e2e/smoke/facets.spec.ts:38:40
+        
+            Error Context: ../.local/h4-pg-ui/stock-results/smoke-facets-partial-facet-c2daf-en-counts-in-both-languages-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h4-pg-ui/stock-results/smoke-facets-partial-facet-c2daf-en-counts-in-both-languages-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h4-pg-ui/stock-results/smoke-facets-partial-facet-c2daf-en-counts-in-both-languages-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          2) [chromium] › e2e/smoke/inflow.spec.ts:9:5 › chain, window, sort and filters live in the URL ───
+        
+            Error: expect(locator).toBeVisible() failed
+        
+            Locator: locator('.token-table tbody tr[data-index]').first()
+            Expected: visible
+            Timeout: 5000ms
+            Error: element(s) not found
+        
+            Call log:
+              - Expect "toBeVisible" locator('.token-table tbody tr[data-index]').first() with timeout 5000ms
+              - waiting for locator('.token-table tbody tr[data-index]').first()
+        
+        
+              44 |     "true"
+              45 |   );
+            > 46 |   await expect(rows(page).first()).toBeVisible();
+                 |                                    ^
+              47 |   expect(errors).toEqual([]);
+              48 | });
+              49 |
+                at /Users/yuezhang/yz/projects/meme-radar-h4/frontend/e2e/smoke/inflow.spec.ts:46:36
+        
+            Error Context: ../.local/h4-pg-ui/stock-results/smoke-inflow-chain-window-sort-and-filters-live-in-the-URL-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h4-pg-ui/stock-results/smoke-inflow-chain-window-sort-and-filters-live-in-the-URL-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h4-pg-ui/stock-results/smoke-inflow-chain-window-sort-and-filters-live-in-the-URL-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          3) [chromium] › e2e/smoke/inflow.spec.ts:50:5 › infinite scroll pages with query_id and recovers from 410 
+        
+            Error: expect(locator).toBeVisible() failed
+        
+            Locator: getByText('列表已过期，已重新查询')
+            Expected: visible
+            Timeout: 5000ms
+            Error: element(s) not found
+        
+            Call log:
+              - Expect "toBeVisible" getByText('列表已过期，已重新查询') with timeout 5000ms
+              - waiting for getByText('列表已过期，已重新查询')
+        
+        
+              73 |   await expect(rows(page).first()).toBeVisible();
+              74 |   await page.mouse.wheel(0, 6000);
+            > 75 |   await expect(page.getByText("列表已过期，已重新查询")).toBeVisible();
+                 |                                               ^
+              76 |   await expect(rows(page).first()).toBeVisible();
+              77 |   // After the re-query, paging continues with the new query_id.
+              78 |   await expect
+                at /Users/yuezhang/yz/projects/meme-radar-h4/frontend/e2e/smoke/inflow.spec.ts:75:47
+        
+            Error Context: ../.local/h4-pg-ui/stock-results/smoke-inflow-infinite-scro-dbafa-ry-id-and-recovers-from-410-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h4-pg-ui/stock-results/smoke-inflow-infinite-scro-dbafa-ry-id-and-recovers-from-410-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h4-pg-ui/stock-results/smoke-inflow-infinite-scro-dbafa-ry-id-and-recovers-from-410-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          4) [chromium] › e2e/smoke/inflow.spec.ts:113:5 › watchlist persists in the browser and shows unknown values as -- 
+        
+            Error: expect(locator).toBeVisible() failed
+        
+            Locator: locator('.token-table tbody tr[data-index]').first()
+            Expected: visible
+            Timeout: 5000ms
+            Error: element(s) not found
+        
+            Call log:
+              - Expect "toBeVisible" locator('.token-table tbody tr[data-index]').first() with timeout 5000ms
+              - waiting for locator('.token-table tbody tr[data-index]').first()
+        
+        
+              113 | test("watchlist persists in the browser and shows unknown values as --", async ({ page }) => {
+              114 |   await page.goto("/smart-money/inflow?chain=solana&window=24h&sort=liquidity&order=asc");
+            > 115 |   await expect(rows(page).first()).toBeVisible();
+                  |                                    ^
+              116 |   await page
+              117 |     .getByRole("button", { name: /^关注 / })
+              118 |     .first()
+                at /Users/yuezhang/yz/projects/meme-radar-h4/frontend/e2e/smoke/inflow.spec.ts:115:36
+        
+            Error Context: ../.local/h4-pg-ui/stock-results/smoke-inflow-watchlist-per-8df40--shows-unknown-values-as----chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h4-pg-ui/stock-results/smoke-inflow-watchlist-per-8df40--shows-unknown-values-as----chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h4-pg-ui/stock-results/smoke-inflow-watchlist-per-8df40--shows-unknown-values-as----chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          5) [chromium] › e2e/smoke/inflow.spec.ts:144:5 › global search opens a token ─────────────────────
+        
+            Test timeout of 30000ms exceeded.
+        
+            Error: locator.click: Test timeout of 30000ms exceeded.
+            Call log:
+              - waiting for getByRole('option', { name: /GX1J/ }).first()
+        
+        
+              150 |   ).toBeFocused();
+              151 |   await page.keyboard.type("GX1J");
+            > 152 |   await page.getByRole("option", { name: /GX1J/ }).first().click();
+                  |                                                            ^
+              153 |   await expect(page).toHaveURL(/\/token\/solana\/GX1J/);
+              154 | });
+              155 |
+                at /Users/yuezhang/yz/projects/meme-radar-h4/frontend/e2e/smoke/inflow.spec.ts:152:60
+        
+            Error Context: ../.local/h4-pg-ui/stock-results/smoke-inflow-global-search-opens-a-token-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h4-pg-ui/stock-results/smoke-inflow-global-search-opens-a-token-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h4-pg-ui/stock-results/smoke-inflow-global-search-opens-a-token-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          5 failed
+            [chromium] › e2e/smoke/facets.spec.ts:3:5 › partial facets keep unknown totals and label parsed token counts in both languages 
+            [chromium] › e2e/smoke/inflow.spec.ts:9:5 › chain, window, sort and filters live in the URL ────
+            [chromium] › e2e/smoke/inflow.spec.ts:50:5 › infinite scroll pages with query_id and recovers from 410 
+            [chromium] › e2e/smoke/inflow.spec.ts:113:5 › watchlist persists in the browser and shows unknown values as -- 
+            [chromium] › e2e/smoke/inflow.spec.ts:144:5 › global search opens a token ──────────────────────
+          7 passed (56.1s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h4/.local/h4-pg-ui
+    inflow_browser_test.go:112: Playwright stock failed: exit status 1; original assertions retained
+=== RUN   TestPgInflowFrontendSmoke/pg-only
+    inflow_browser_test.go:110: [WebServer] (node:88594) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 1 test using 1 worker
+        
+        (node:88597) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h4-pg-playwright-2630348131/pg-inflow.spec.ts:2:5 › real PG inflow and facets use published facts on desktop and phone (1.7s)
+        
+          1 passed (2.6s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h4/.local/h4-pg-ui
+--- FAIL: TestPgInflowFrontendSmoke (61.07s)
+    --- FAIL: TestPgInflowFrontendSmoke/stock (57.11s)
+    --- PASS: TestPgInflowFrontendSmoke/pg-only (3.30s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	61.668s
+FAIL

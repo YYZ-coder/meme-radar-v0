@@ -1,0 +1,22 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestParserRetryAtomicAndRestart|TestParserReparsesRetriedBlocks|TestParserRegistersStatusAtStartup|TestParserRetryMetrics ./internal/parser
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/parser/health_test.go=8d1eab30b5ceaf82b732e86130641e2fc354ed0256550ca5def094c60af88808
+test_diff=h7-8-parser-regression-green-health_test.diff sha256=800a9c235c270343bd81e5e348a76760a2ff644756f728b56bc55a6e8b83165d
+=== RUN   TestParserRegistersStatusAtStartup
+2026/10/24 23:01:33 INFO parse started chain=solana version=8 reset_blocks=0
+2026/10/24 23:01:33 INFO parse started chain=solana version=9 reset_blocks=0
+--- PASS: TestParserRegistersStatusAtStartup (0.20s)
+=== RUN   TestParserReparsesRetriedBlocks
+2026/10/24 23:01:33 INFO parse retry blocks reset role=parse chain=solana blocks=[7]
+--- PASS: TestParserReparsesRetriedBlocks (0.14s)
+=== RUN   TestParserRetryMetrics
+2026/10/24 23:01:33 INFO parse retry blocks reset role=parse chain=solana blocks=[7]
+--- PASS: TestParserRetryMetrics (0.11s)
+=== RUN   TestParserRetryAtomicAndRestart
+2026/10/24 23:01:33 INFO parse retry blocks reset role=parse chain=solana blocks=[7]
+--- PASS: TestParserRetryAtomicAndRestart (0.11s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	1.368s
+
+exit_code=0

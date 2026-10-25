@@ -1,5 +1,5 @@
 "use client";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Address } from "@/components/ui/address";
@@ -7,19 +7,20 @@ import { ChainMark } from "@/components/ui/chain-mark";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/state";
 import { useToast } from "@/components/ui/toast";
-import { exclusionsSchema, listVersionChangeSchema, membersSchema } from "@/lib/api/schemas";
+import { exclusionsSchema, membersSchema } from "@/lib/api/schemas";
 import type { Chain, ListVersionChange, Member } from "@/lib/api/types";
 import { chainMeta, chains } from "@/lib/chains";
 import { shortAddress } from "@/lib/format/address";
 import { formatClock } from "@/lib/format/time";
 import { useDebounced } from "@/lib/use-debounced";
 import { useAdmin } from "./admin-context";
+import { ListBuildNotice } from "./list-build-notice";
+import { listMutation, pendingBuild } from "./list-build-state";
 
 export function MembersView() {
   const t = useTranslations("admin");
   const tc = useTranslations("common");
   const { call } = useAdmin();
-  const client = useQueryClient();
   const toast = useToast();
   const [chain, setChain] = useState<Chain | "">("");
   const [source, setSource] = useState<"all" | "import" | "auto">("all");
@@ -46,15 +47,15 @@ export function MembersView() {
   });
 
   const done = (r: ListVersionChange) => {
-    toast(t("versionChanged", { version: r.list_version }));
-    void client.invalidateQueries({ queryKey: ["admin"] });
+    pendingBuild.set(r.list_version);
+    toast(t("versionPreparing", { version: r.list_version }));
   };
   const exclude = useMutation({
     mutationFn: (v: { m: Member; reason: string }) =>
-      call("/admin/smart-money/exclusions", listVersionChangeSchema, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ chain: v.m.chain, address: v.m.address, reason: v.reason }),
+      listMutation(call, "POST", "/admin/smart-money/exclusions", {
+        chain: v.m.chain,
+        address: v.m.address,
+        reason: v.reason,
       }),
     onSuccess: (r) => {
       setExcluding(null);
@@ -64,16 +65,12 @@ export function MembersView() {
   });
   const restore = useMutation({
     mutationFn: (v: { chain: Chain; address: string }) =>
-      call(`/admin/smart-money/exclusions/${v.chain}/${v.address}`, listVersionChangeSchema, {
-        method: "DELETE",
-      }),
+      listMutation(call, "DELETE", `/admin/smart-money/exclusions/${v.chain}/${v.address}`),
     onSuccess: done,
   });
   const remove = useMutation({
     mutationFn: (m: Member) =>
-      call(`/admin/smart-money/members/${m.chain}/${m.address}`, listVersionChangeSchema, {
-        method: "DELETE",
-      }),
+      listMutation(call, "DELETE", `/admin/smart-money/members/${m.chain}/${m.address}`),
     onSuccess: (r) => {
       setRemoving(null);
       done(r);
@@ -84,6 +81,7 @@ export function MembersView() {
   const rows = members.data?.pages.flatMap((p) => p.items) ?? [];
   return (
     <div className="admin-members">
+      <ListBuildNotice />
       <div className="admin-toolbar">
         <h3 className="admin-heading">
           {t("membersTitle")}

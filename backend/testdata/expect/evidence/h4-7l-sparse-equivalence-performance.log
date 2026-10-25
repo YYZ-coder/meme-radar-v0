@@ -1,0 +1,11 @@
+mode=REPEATABLE_READ_READ_ONLY full_row_equivalence old_per_token_vs_sparse_go; H3/H4/H5 not deployed: empty smart copies and unknown holder/metadata fields in BOTH previews; no cloud writes
+sparse chain=solana window=1h as_of=2026-10-24T19:46:00Z rows=3801 query_decode=3.458284037s fill=1.589546ms total=3.459873583s heap_alloc_bytes=12415648 peak_rss_bytes_darwin=25788416 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=solana window=1h old_rows=3801 new_rows=3801 diffs=0 old_elapsed=2.041503875s sha256=2a4ff3b7e0825625469637ba6a284d3b4d1e141f66e91cd53e093777b3119763
+sparse chain=solana window=4h as_of=2026-10-24T19:46:00Z rows=7022 query_decode=14.259561317s fill=8.185475ms total=14.267746792s heap_alloc_bytes=20395600 peak_rss_bytes_darwin=42139648 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=solana window=4h old_rows=7022 new_rows=7022 diffs=0 old_elapsed=1.973476792s sha256=7e9412a27f3722a0dcb8d26c3f898e41c6558c50ad8ec5eb37012d70c5d24db7
+panic: ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+
+goroutine 1 [running]:
+main.main()
+	/tmp/h4-sparse-check.go:61 +0x119c
+exit status 2

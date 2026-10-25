@@ -1,0 +1,68 @@
+{
+  "2": [
+    {
+      "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      "owner": "AWRMhrckk4xEa26C4RKtC43G3LNit9Mys1B1q8xwkKzv",
+      "amount": "65280300583",
+      "account_index": 3
+    },
+    {
+      "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      "owner": "A77HErqtfN1hLLpvZ9pCtu66FEtM8BveoaKbbMoZ4RiR",
+      "amount": "12142423467600",
+      "account_index": 4
+    }
+  ],
+  "7": [
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "owner": "36Q2NicqLeS2a6vPc3G2g9nS7inrTQQL8azsY3suQwJ8",
+      "amount": "42267865",
+      "account_index": 4
+    },
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "owner": "36Q2NicqLeS2a6vPc3G2g9nS7inrTQQL8azsY3suQwJ8",
+      "amount": "803923",
+      "account_index": 5
+    },
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "owner": "GdegE4nrvYZFqdm63wWTQaZwVsfuDkEUPgtMKYdnVpFw",
+      "amount": "255698288",
+      "account_index": 7
+    }
+  ],
+  "9": [
+    {
+      "mint": "PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB",
+      "owner": "HaQkVYVjMgEjr17BZHZz12qw1QvKHFchGaqfoYmwWtSz",
+      "amount": "187103577009",
+      "account_index": 1
+    },
+    {
+      "mint": "GTZPzH1b6TGm62WbGYcCT4BhvVBhBRtYQqx7rSzwpump",
+      "owner": "4UcXw7wcK7HjnFYYnmjzLiizUj2MGJXGJaA9KzVa7m3E",
+      "amount": "0",
+      "account_index": 2
+    },
+    {
+      "mint": "PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB",
+      "owner": "4UcXw7wcK7HjnFYYnmjzLiizUj2MGJXGJaA9KzVa7m3E",
+      "amount": "4641918728",
+      "account_index": 3
+    },
+    {
+      "mint": "GTZPzH1b6TGm62WbGYcCT4BhvVBhBRtYQqx7rSzwpump",
+      "owner": "HaQkVYVjMgEjr17BZHZz12qw1QvKHFchGaqfoYmwWtSz",
+      "amount": "74077425920566",
+      "account_index": 4
+    },
+    {
+      "mint": "PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB",
+      "owner": "5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD",
+      "amount": "203646092",
+      "account_index": 6
+    }
+  ]
+}

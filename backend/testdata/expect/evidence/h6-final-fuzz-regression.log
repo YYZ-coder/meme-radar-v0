@@ -1,0 +1,14 @@
+# H6 final-fuzz regression; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Post-change robustness: real Pump seeds plus Unicode NUL/surrogate/pair/literal-backslash seeds; no panic, no control chars in display fields, raw omission invariant, frozen size and URL bounds.
+# command: go test -run ^$ -fuzz ^FuzzParseMetadata$ -fuzztime=10s -parallel=2 ./internal/metadata
+# sha256 internal/metadata/fuzz_test.go: e8d7679285cfa57b3b362b1757073a6f25fb60ee52913928bf77c1b2bc2fa0a8
+fuzz: elapsed: 0s, gathering baseline coverage: 0/76 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 76/76 completed, now fuzzing with 2 workers
+fuzz: elapsed: 3s, execs: 46476 (15490/sec), new interesting: 27 (total: 103)
+fuzz: elapsed: 6s, execs: 105967 (19826/sec), new interesting: 68 (total: 144)
+fuzz: elapsed: 9s, execs: 177115 (23716/sec), new interesting: 76 (total: 152)
+fuzz: elapsed: 10s, execs: 195037 (17284/sec), new interesting: 79 (total: 155)
+PASS
+ok  	github.com/meme-radar/radar/internal/metadata	10.576s
+
+# exit=0

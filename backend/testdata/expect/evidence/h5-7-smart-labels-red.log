@@ -1,0 +1,13 @@
+# h5-7-smart-labels red base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -count=1 -run ^TestPgHoldersTab$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_test.go 820af7e7a8683bb51a81a8d62e77fee684c805b69db93182c5234487ef90536c
+# sha256 internal/pgapi/holdings_members_test.go 609d90d5227bc26933f8a4e3c7e402295be6e390a77673505fa98682404ca17f
+=== RUN   TestPgHoldersTab
+    holders_test.go:96: labels=[dev], want [dev smart_money]
+    holders_test.go:96: labels=[], want [smart_money]
+--- FAIL: TestPgHoldersTab (0.36s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.088s
+FAIL
+
+# exit=1

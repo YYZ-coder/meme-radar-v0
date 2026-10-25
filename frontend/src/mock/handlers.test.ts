@@ -1,5 +1,14 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { resetAdmin, adminState } from "./admin";
+import { activateListBuild, failListBuild, resetListBuilds } from "./list-builds";
+import { resetSnapshots, inputVersionRef } from "./inflow";
+beforeEach(() => {
+  resetAdmin();
+  resetListBuilds();
+  resetSnapshots();
+});
+afterEach(() => vi.restoreAllMocks());
 import type { z } from "zod";
 import * as S from "@/lib/api/schemas";
 import { handleMock } from "./handlers";
@@ -55,6 +64,29 @@ describe("mock API conforms to the OpenAPI contract", () => {
     expect((await call(`tokens/${GX1J}/candles?interval=15m`)).status).toBe(400);
     expect((await call("tokens/solana/11111111111111111111111111111111")).status).toBe(404);
     expect((await call("tokens/eth/0x0000000000000000000000000000000000000000")).status).toBe(400);
+  });
+
+  it("publishes only closed complete mock candles at its stated cutoff", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-10-21T12:01:30Z"));
+    const response = await ok(
+      `tokens/${GX1J}/candles?interval=1m&from=1792584000&to=1792584090`,
+      S.candlesSchema
+    );
+    expect(response.as_of).toBe("2026-10-21T12:01:00.000Z");
+    expect(response.coverage).toBe("complete");
+    expect(response.observed_items).toEqual([]);
+    expect(response.gaps).toEqual([]);
+    expect(response.items.map((item) => item.t)).toEqual([1792584000]);
+  });
+
+  it("does not classify token-level demo totals as individual buy sizes", async () => {
+    const response = await ok("smart-money/overview?chain=base&window=1h", S.overviewSchema);
+    expect(response).toMatchObject({
+      large_buy_volume_usd: null,
+      small_buy_volume_usd: null,
+      large_buy_share_pct: null,
+      small_buy_share_pct: null,
+    });
   });
 });
 
@@ -168,12 +200,18 @@ describe("admin (D106)", () => {
         })
       ).status
     ).toBe(409);
+    expect(activateListBuild(applied.list_version)).toBe(true);
     const again = await upload();
     expect(again.totals.existing).toBe(2);
-    await ok(`admin/smart-money/imports/${again.id}/apply`, S.listVersionChangeSchema, {
-      method: "POST",
-      headers: admin,
-    });
+    const againApplied = await ok(
+      `admin/smart-money/imports/${again.id}/apply`,
+      S.listVersionChangeSchema,
+      {
+        method: "POST",
+        headers: admin,
+      }
+    );
+    expect(activateListBuild(againApplied.list_version)).toBe(true);
     const after = await ok("admin/smart-money/members?limit=1", S.membersSchema, {
       headers: admin,
     });
@@ -203,15 +241,164 @@ describe("admin (D106)", () => {
     const m = members.items[0];
     const excluded = await ok("admin/smart-money/exclusions", S.listVersionChangeSchema, {
       method: "POST",
-      headers: { ...admin, "content-type": "application/json" },
+      headers: {
+        ...admin,
+        "content-type": "application/json",
+        "Idempotency-Key": crypto.randomUUID(),
+      },
       body: JSON.stringify({ chain: m.chain, address: m.address, reason: "bot" }),
     });
-    expect(excluded.removed).toBe(1);
+    expect(excluded.removed).toBe(0);
+    expect(excluded.merged).toBe(1);
+    expect(activateListBuild(excluded.list_version)).toBe(true);
     const list = await ok("admin/smart-money/exclusions", S.exclusionsSchema, { headers: admin });
     expect(list.items[0].address).toBe(m.address);
-    await ok(`admin/smart-money/exclusions/${m.chain}/${m.address}`, S.listVersionChangeSchema, {
-      method: "DELETE",
+    const restored = await ok(
+      `admin/smart-money/exclusions/${m.chain}/${m.address}`,
+      S.listVersionChangeSchema,
+      {
+        method: "DELETE",
+        headers: { ...admin, "Idempotency-Key": crypto.randomUUID() },
+      }
+    );
+    expect(activateListBuild(restored.list_version)).toBe(true);
+  });
+});
+
+describe("asynchronous list contract", () => {
+  it("returns 202 and keeps the active members while a version prepares", async () => {
+    const before = await ok("admin/smart-money/members?limit=1", S.membersSchema, {
       headers: admin,
     });
+    const member = before.items[0];
+    const pending = await call("admin/smart-money/exclusions", {
+      method: "POST",
+      headers: {
+        ...admin,
+        "content-type": "application/json",
+        "Idempotency-Key": crypto.randomUUID(),
+      },
+      body: JSON.stringify({
+        chain: member.chain,
+        address: member.address,
+        reason: "preparing test",
+      }),
+    });
+    expect(pending.status).toBe(202);
+    expect(pending.headers.get("retry-after")).toBe("2");
+    expect(pending.body).toMatchObject({
+      active_version: before.list_version,
+      status: "building",
+      build_status: "queued",
+      removed: 0,
+    });
+    const during = await ok("admin/smart-money/members?limit=1", S.membersSchema, {
+      headers: admin,
+    });
+    expect(during.list_version).toBe(before.list_version);
+    expect(during.items).toEqual(before.items);
+  });
+});
+
+describe("preparation, retry and frozen query invariants", () => {
+  async function exclude(key: string, reason: string) {
+    const members = await ok("admin/smart-money/members?limit=1", S.membersSchema, {
+      headers: admin,
+    });
+    const m = members.items[0];
+    return call("admin/smart-money/exclusions", {
+      method: "POST",
+      headers: { ...admin, "content-type": "application/json", "Idempotency-Key": key },
+      body: JSON.stringify({ chain: m.chain, address: m.address, reason }),
+    });
+  }
+  it("keeps one version for replayed keys, and rejects changed content", async () => {
+    const key = crypto.randomUUID();
+    const first = await exclude(key, "same");
+    const again = await exclude(key, "same");
+    expect(first.status).toBe(202);
+    expect(again.body.list_version).toBe(first.body.list_version);
+    expect((await exclude(key, "different")).status).toBe(400);
+  });
+  it("uses the accepted tail, blocks failed parents and retries the same version", async () => {
+    const first = await exclude(crypto.randomUUID(), "first");
+    const second = await exclude(crypto.randomUUID(), "second");
+    expect(second.body.previous_version).toBe(first.body.list_version);
+    failListBuild(first.body.list_version);
+    expect(activateListBuild(second.body.list_version)).toBe(false);
+    const blocked = await ok(
+      `admin/smart-money/list-builds/${second.body.list_version}`,
+      S.listBuildStatusSchema,
+      { headers: admin }
+    );
+    expect(blocked.blocking_version).toBe(first.body.list_version);
+    const retry = await call(`admin/smart-money/list-builds/${first.body.list_version}/retry`, {
+      method: "POST",
+      headers: admin,
+    });
+    expect(retry.status).toBe(202);
+    expect(retry.body.list_version).toBe(first.body.list_version);
+    expect(activateListBuild(first.body.list_version)).toBe(true);
+    expect(activateListBuild(second.body.list_version)).toBe(true);
+  });
+  it("freezes complete page values and as_of, pauses cross-version batch and expires on input revision", async () => {
+    const time = Date.parse("2026-10-20T10:00:00Z");
+    const clock = vi.spyOn(Date, "now").mockReturnValue(time);
+    const first = await ok("smart-money/inflow?window=5m&limit=20", S.inflowPageSchema);
+    clock.mockReturnValue(time + 10_000);
+    const again = await ok(
+      `smart-money/inflow?query_id=${first.query_id}&limit=20`,
+      S.inflowPageSchema
+    );
+    expect(again).toEqual(first);
+    const pending = await exclude(crypto.randomUUID(), "switch");
+    activateListBuild(pending.body.list_version);
+    const oldPage = await ok(
+      `smart-money/inflow?query_id=${first.query_id}&limit=20`,
+      S.inflowPageSchema
+    );
+    expect(oldPage).toEqual(first);
+    const batch = await call("tokens/batch", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        window: "5m",
+        currency: "usd",
+        query_id: first.query_id,
+        list_version: first.list_version,
+        tokens: [first.items[0].token],
+      }),
+    });
+    expect(batch.status).toBe(410);
+    inputVersionRef.current++;
+    expect((await call(`smart-money/inflow?query_id=${first.query_id}&limit=20`)).status).toBe(410);
+  });
+  it("recovers an applied report and authenticates before unavailable budget", async () => {
+    const form = new FormData();
+    form.set(
+      "file",
+      new File(["chain,address\nbase,0x2046d4ee2268e5583be790fde46095bdaf4eaec6\n"], "one.csv")
+    );
+    const report = await ok("admin/smart-money/imports", S.importReportSchema, {
+      method: "POST",
+      headers: admin,
+      body: form,
+    });
+    const change = await ok(
+      `admin/smart-money/imports/${report.id}/apply`,
+      S.listVersionChangeSchema,
+      { method: "POST", headers: admin }
+    );
+    const restored = await ok(`admin/smart-money/imports/${report.id}`, S.importReportSchema, {
+      headers: admin,
+    });
+    expect(restored.applied_list_version).toBe(change.list_version);
+    expect(restored.rows_archived).toBe(false);
+    adminState.budgetReady = false;
+    expect((await call("admin/health")).status).toBe(403);
+    const unavailable = await call("admin/health", { headers: admin });
+    expect(unavailable.status).toBe(503);
+    expect(unavailable.body.error.code).toBe("api_unavailable");
+    expect(unavailable.headers.get("retry-after")).toBe("2");
   });
 });

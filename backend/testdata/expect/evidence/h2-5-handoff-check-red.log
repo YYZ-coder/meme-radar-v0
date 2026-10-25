@@ -1,0 +1,36 @@
+# h2-5 handoff checker red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary: checker CLI; expectations: 00-common deployed 0010 vs local reserved 0012
+# test_sha256 980e5189f4f2622fbb973ba4a83a597e1d038564a06181b6389f2dcffedf3ab6 scripts/test_check_handoff.py
+# command: python3 -m unittest discover -s scripts -p test_check_handoff.py -v
+test_deployed_numbers_remain_unavailable (test_check_handoff.HandoffMigrationTests.test_deployed_numbers_remain_unavailable) ... ok
+test_duplicate_reservations_are_still_rejected (test_check_handoff.HandoffMigrationTests.test_duplicate_reservations_are_still_rejected) ... ok
+test_missing_deployed_watermark_is_an_error (test_check_handoff.HandoffMigrationTests.test_missing_deployed_watermark_is_an_error) ... FAIL
+test_pending_local_migrations_do_not_advance_deployed_watermark (test_check_handoff.HandoffMigrationTests.test_pending_local_migrations_do_not_advance_deployed_watermark) ... FAIL
+test_prompt_and_book_must_still_agree (test_check_handoff.HandoffMigrationTests.test_prompt_and_book_must_still_agree) ... ok
+
+======================================================================
+FAIL: test_missing_deployed_watermark_is_an_error (test_check_handoff.HandoffMigrationTests.test_missing_deployed_watermark_is_an_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/yuezhang/yz/projects/meme-radar-h2/scripts/test_check_handoff.py", line 63, in test_missing_deployed_watermark_is_an_error
+    self.assertIn("deployed migration watermark", result.stdout)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'deployed migration watermark' not found in 'PROBLEM: H1: migration 0011 not above applied 0012\nPROBLEM: H2: migration 0012 not above applied 0012\nchecked 2 prompts, 2 task books, 0 identifiers: 2 problem(s)\n'
+
+======================================================================
+FAIL: test_pending_local_migrations_do_not_advance_deployed_watermark (test_check_handoff.HandoffMigrationTests.test_pending_local_migrations_do_not_advance_deployed_watermark)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/yuezhang/yz/projects/meme-radar-h2/scripts/test_check_handoff.py", line 49, in test_pending_local_migrations_do_not_advance_deployed_watermark
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : PROBLEM: H1: migration 0011 not above applied 0012
+PROBLEM: H2: migration 0012 not above applied 0012
+checked 2 prompts, 2 task books, 0 identifiers: 2 problem(s)
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.244s
+
+FAILED (failures=2)
+# exit_status=1

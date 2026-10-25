@@ -1,0 +1,13 @@
+# h4-4-active-wallets red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+0671a3425c7b5082e195951216bf32479cbc4d477a169d1da5d56c3b9fd27933  internal/compute/inflow_overview_test.go
+# tracked diff sha256=6c6331d9d538faf980170cd7ddffa14ba4ef5f4346f792f30238ecd1f6b0004c
+# command: go test -count=1 -v -run TestOverviewActiveWalletsExample ./internal/compute
+=== RUN   TestOverviewActiveWalletsExample
+    inflow_overview_test.go:98: overview base: api_unavailable: data source is not ready
+--- FAIL: TestOverviewActiveWalletsExample (0.59s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.255s
+FAIL
+
+# exit=1

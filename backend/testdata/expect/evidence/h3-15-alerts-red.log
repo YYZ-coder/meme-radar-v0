@@ -1,0 +1,26 @@
+# H3 alerts red base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Independent examples: one failure increments counter at 2m; queue age 300s is not >300; 360s is.
+# Test SHA256 0f371cac91ba179c53d949623296e36017575b928ed199c5918db69d025bdad6
+# Command: docker run --rm --network none -v /Users/yuezhang/yz/projects/meme-radar-h3/ops/observability/prometheus:/etc/prometheus:ro --workdir /etc/prometheus --entrypoint /bin/promtool prom/prometheus:v2.55.1 test rules h3_list_alerts_test.yml
+  FAILED:
+    name: one failed list build fires and later leaves the five minute window,
+    alertname: ListBuildFailed, time: 3m, 
+        exp:[
+            0:
+              Labels:{alertname="ListBuildFailed", severity="warning"}
+              Annotations:{summary="a list build failed in the last 5 minutes"}
+            ], 
+        got:[]
+    name: queued list job fires strictly after five minutes,
+    alertname: ListBuildStuck, time: 6m, 
+        exp:[
+            0:
+              Labels:{alertname="ListBuildStuck", kind="list_build", severity="warning"}
+              Annotations:{summary="a list build has been queued for more than 5 minutes"}
+            ], 
+        got:[]
+
+
+
+
+exit=1

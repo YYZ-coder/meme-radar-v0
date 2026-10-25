@@ -13,7 +13,7 @@ import type {
   Window,
   WindowSummary,
 } from "@/lib/api/types";
-import { adminState, bumpVersion, health, isMember, memberId } from "./admin";
+import { adminState, health, isMember, memberId } from "./admin";
 import { ImportFileError, MAX_BYTES, readRecords, validateRecords } from "./csv";
 import {
   conv,
@@ -30,7 +30,14 @@ import {
   windowSeconds,
   type MockToken,
 } from "./data";
-import { HttpError, listVersionRef, newSnapshot, page } from "./inflow";
+import { HttpError, listVersionRef, newSnapshot, page, validateBatchSnapshot } from "./inflow";
+import {
+  buildStatus,
+  idempotentListChange,
+  queueListChange,
+  retryListBuild,
+  tickListBuilds,
+} from "./list-builds";
 import { dec, evmAddress, hash, rng, solanaAddress, txHash, unit } from "./random";
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
@@ -165,10 +172,12 @@ function coverage(token: MockToken, now: number) {
   };
 }
 
-function poolsOf(token: MockToken, now: number): Pool[] {
+type KnownQuotePool = Pool & { quote_symbol: string };
+
+function poolsOf(token: MockToken, now: number): KnownQuotePool[] {
   const m = metrics(token, "24h", now);
   const main = token.dexes[0];
-  const list: Pool[] = token.dexes.map((id, i) => {
+  const list: KnownQuotePool[] = token.dexes.map((id, i) => {
     const dex = dexes.find((d) => d.id === id)!;
     const share = token.dexes.length > 1 ? (i === 0 ? 0.72 : 0.28) : 1;
     const liq = m.liquidity === null ? null : m.liquidity * share;
@@ -298,7 +307,7 @@ function candles(token: MockToken, params: URLSearchParams, now: number) {
     return native ? v / nativeUsd[token.chain] : v;
   };
   const items = [];
-  for (let t = Math.max(start, end - (limit - 1) * step); t <= end; t += step) {
+  for (let t = Math.max(start, end - limit * step); t < end; t += step) {
     const samples = [0, 0.25, 0.5, 0.75, 1].map((f) => priceAt(token, (t + f * step) * 1000));
     if (samples.some((p) => p === null)) continue;
     const ps = samples as number[];
@@ -332,8 +341,13 @@ function candles(token: MockToken, params: URLSearchParams, now: number) {
     interval,
     metric,
     currency: native ? nativeSymbol[token.chain] : "USD",
+    as_of: new Date(end * 1000).toISOString(),
+    coverage: "complete",
+    empty_reason: items.length ? null : "no_trades",
     items,
-    pool_switches: switches.filter((s) => s.t >= start && s.t <= end + step),
+    observed_items: [],
+    gaps: [],
+    pool_switches: switches.filter((s) => s.t >= start && s.t < end),
   };
 }
 
@@ -416,6 +430,8 @@ function activities(token: MockToken, params: URLSearchParams, now: number) {
   return {
     items,
     next_cursor: exhausted && items.length < limit ? null : cursorEncode(anchor, k),
+    coverage: "complete",
+    label_counts_coverage: "complete",
     label_counts: { all: total24h, smart_money: Math.round(total24h * token.smShare) },
   };
 }
@@ -452,6 +468,7 @@ function liquidityEvents(token: MockToken, params: URLSearchParams, now: number)
       })
     ),
     next_cursor: res.next_cursor,
+    coverage: res.coverage,
   };
 }
 
@@ -569,6 +586,7 @@ function overview(params: URLSearchParams, now: number) {
     as_of: new Date(now).toISOString(),
     list_version: String(listVersionRef.current),
     window,
+    coverage: "complete",
     net_inflow_usd: dec(net, 10),
     net_inflow_change_pct: prev === 0 ? null : dec(((net - prev) / Math.abs(prev)) * 100, 6),
     active_wallets: Math.round(members.length * 9 * Math.min(1, 0.25 + seconds / 14400)),
@@ -577,6 +595,12 @@ function overview(params: URLSearchParams, now: number) {
     buy_volume_usd: dec(buy, 10),
     sell_volume_usd: dec(sell, 10),
     buy_share_pct: buy + sell === 0 ? null : dec((buy / (buy + sell)) * 100, 6),
+    // This demo stores per-token totals, not per-action buy sizes. Keep the
+    // split unknown rather than classifying an aggregate as one large trade.
+    large_buy_volume_usd: null,
+    small_buy_volume_usd: null,
+    large_buy_share_pct: null,
+    small_buy_share_pct: null,
     inflow_bars: bars.map((b) => dec(b, 8)),
   };
 }
@@ -606,10 +630,12 @@ function facets(params: URLSearchParams, now: number) {
           chain: x.chain,
           volume_usd: dec(volume, 10),
           token_count: count,
+          observed_token_count: count,
         };
       })
       .sort((a, b) => Number(b.volume_usd) - Number(a.volume_usd));
   return {
+    coverage: "complete",
     dexes: agg((t) => t.dexes, dexes),
     platforms: agg((t) => (t.platform ? [t.platform] : []), platforms),
   };
@@ -690,6 +716,8 @@ async function createImport(request: Request, now: number) {
       created_at: new Date(now).toISOString(),
       expires_at: new Date(now + 30 * 60_000).toISOString(),
       applied: false,
+      applied_list_version: null,
+      rows_archived: false,
       totals,
       rows: [
         ...rows.filter((r) => r.status === "invalid"),
@@ -708,38 +736,46 @@ function applyImport(id: string, now: number) {
   const stored = adminState.imports.get(id);
   if (!stored) throw new HttpError(404, "not_found", "import not found");
   const { report, all } = stored;
-  if (report.applied || Date.parse(report.expires_at) < now) {
+  if (report.applied || Date.parse(report.expires_at) <= now)
     throw new HttpError(409, "import_closed", "already applied or expired");
-  }
-  let added = 0;
-  let merged = 0;
-  for (const row of all) {
-    if ((row.status !== "valid" && row.status !== "existing") || !row.chain || !row.address)
-      continue;
-    const id2 = memberId(row.chain, row.address);
-    const existing = adminState.members.find((m) => memberId(m.chain, m.address) === id2);
-    if (existing) {
-      existing.sources = Array.from(new Set([...existing.sources, "import" as const]));
-      existing.tags = Array.from(new Set([...existing.tags, ...row.tags]));
-      existing.label = existing.label ?? row.label;
-      existing.twitter = existing.twitter ?? row.twitter;
-      merged += 1;
-    } else {
-      adminState.members.unshift({
-        chain: row.chain as Chain,
-        address: row.address,
-        label: row.label,
-        tags: row.tags,
-        twitter: row.twitter,
-        sources: ["import"],
-        added_at: new Date(now).toISOString(),
-        excluded: false,
-      });
-      added += 1;
+  const change = queueListChange(now, (draft) => {
+    let added = 0;
+    let merged = 0;
+    for (const row of all) {
+      if ((row.status !== "valid" && row.status !== "existing") || !row.chain || !row.address)
+        continue;
+      const existing = draft.members.find(
+        (m) => memberId(m.chain, m.address) === memberId(row.chain!, row.address!)
+      );
+      if (existing) {
+        existing.sources = Array.from(new Set([...existing.sources, "import" as const]));
+        existing.tags = Array.from(new Set([...existing.tags, ...row.tags])).sort((a, b) =>
+          Buffer.compare(Buffer.from(a), Buffer.from(b))
+        );
+        existing.label ??= row.label;
+        existing.twitter ??= row.twitter;
+        merged++;
+      } else {
+        draft.members.unshift({
+          chain: row.chain as Chain,
+          address: row.address,
+          label: row.label,
+          tags: [...row.tags].sort((a, b) => Buffer.compare(Buffer.from(a), Buffer.from(b))),
+          twitter: row.twitter,
+          sources: ["import"],
+          added_at: new Date(now).toISOString(),
+          excluded: draft.exclusions.some(
+            (e) => memberId(e.chain, e.address) === memberId(row.chain!, row.address!)
+          ),
+        });
+        added++;
+      }
     }
-  }
+    return { added, merged, removed: 0, total_members: draft.members.length };
+  });
   report.applied = true;
-  return bumpVersion({ added, merged, removed: 0, total_members: adminState.members.length });
+  report.applied_list_version = change.list_version;
+  return change;
 }
 
 function listMembers(params: URLSearchParams) {
@@ -773,7 +809,15 @@ async function admin(
 ) {
   if (!isAdmin(request)) return error(403, "forbidden", "admin token required");
   const path = rest.join("/");
-  if (method === "GET" && path === "health") return json(health(now));
+  if (method === "GET" && path === "health") {
+    if (!adminState.budgetReady)
+      return json(
+        { error: { code: "api_unavailable", message: "budget inputs not ready", field: null } },
+        503,
+        { "Retry-After": "2" }
+      );
+    return json(health(now));
+  }
   if (method === "POST" && path === "smart-money/imports") return createImport(request, now);
   if (
     method === "POST" &&
@@ -781,9 +825,33 @@ async function admin(
     rest[1] === "imports" &&
     rest[3] === "apply"
   ) {
-    return json(applyImport(rest[2], now));
+    return json(applyImport(rest[2], now), 202, { "Retry-After": "2" });
+  }
+  if (method === "GET" && rest[0] === "smart-money" && rest[1] === "imports" && rest.length === 3) {
+    const stored = adminState.imports.get(rest[2]);
+    if (!stored || (!stored.report.applied && Date.parse(stored.report.expires_at) <= now))
+      throw new HttpError(404, "not_found", "import not found");
+    return json(stored.report);
+  }
+  if (rest[0] === "smart-money" && rest[1] === "list-builds") {
+    if (method === "GET" && rest.length === 3) return json(buildStatus(rest[2]));
+    if (method === "POST" && rest[3] === "retry" && rest.length === 4) {
+      const state = retryListBuild(rest[2], now);
+      return json(
+        state,
+        state.build_status === "activated" ? 200 : 202,
+        state.build_status === "activated" ? {} : { "Retry-After": "2" }
+      );
+    }
   }
   if (method === "GET" && path === "smart-money/members") return json(listMembers(params));
+  const accepted = (
+    fingerprint: string,
+    action: () => import("@/lib/api/types").ListVersionChange
+  ) =>
+    json(idempotentListChange(request.headers.get("Idempotency-Key"), fingerprint, action), 202, {
+      "Retry-After": "2",
+    });
   if (
     method === "DELETE" &&
     rest[0] === "smart-money" &&
@@ -791,18 +859,22 @@ async function admin(
     rest.length === 4
   ) {
     const id = memberId(rest[2], rest[3]);
-    const m = adminState.members.find((x) => memberId(x.chain, x.address) === id);
-    if (!m || !m.sources.includes("import"))
-      throw new HttpError(404, "not_found", "imported member not found");
-    m.sources = m.sources.filter((s) => s !== "import");
-    if (!m.sources.length) adminState.members = adminState.members.filter((x) => x !== m);
-    return json(
-      bumpVersion({ added: 0, merged: 0, removed: 1, total_members: adminState.members.length })
+    return accepted(`DELETE members ${id}`, () =>
+      queueListChange(now, (draft) => {
+        const m = draft.members.find((x) => memberId(x.chain, x.address) === id);
+        if (!m || !m.sources.includes("import"))
+          throw new HttpError(404, "not_found", "imported member not found");
+        m.sources = m.sources.filter((s) => s !== "import");
+        const removed = m.sources.length ? 0 : 1;
+        if (removed) draft.members = draft.members.filter((x) => x !== m);
+        return { added: 0, merged: removed ? 0 : 1, removed, total_members: draft.members.length };
+      })
     );
   }
   if (path === "smart-money/exclusions" && method === "GET") {
     const chain = params.get("chain");
     return json({
+      list_version: String(listVersionRef.current),
       items: adminState.exclusions.filter((e) => !chain || e.chain === chain),
       next_cursor: null,
     });
@@ -815,25 +887,32 @@ async function admin(
     } | null;
     if (!body?.chain || !chainList.includes(body.chain as Chain))
       throw new HttpError(400, "invalid_param", "chain", "chain");
-    if (!body.address) throw new HttpError(400, "invalid_param", "address", "address");
-    if (!body.reason?.trim()) throw new HttpError(400, "invalid_param", "reason", "reason");
-    const id = memberId(body.chain, body.address);
-    if (!adminState.exclusions.some((e) => memberId(e.chain, e.address) === id)) {
-      adminState.exclusions.unshift({
-        chain: body.chain as Chain,
-        address: body.address,
-        reason: body.reason.trim().slice(0, 200),
-        created_at: new Date(now).toISOString(),
-      });
-    }
-    const m = adminState.members.find((x) => memberId(x.chain, x.address) === id);
-    if (m) m.excluded = true;
-    return json(
-      bumpVersion({
-        added: 0,
-        merged: 0,
-        removed: m ? 1 : 0,
-        total_members: adminState.members.length,
+    if (
+      !body.address ||
+      validateRecords([{ chain: body.chain, address: body.address }], () => false)[0]?.status ===
+        "invalid"
+    )
+      throw new HttpError(400, "invalid_param", "address", "address");
+    if (!body.reason?.trim() || body.reason.trim().length > 200)
+      throw new HttpError(400, "invalid_param", "reason", "reason");
+    const chain = body.chain as Chain;
+    const address = body.address;
+    const reason = body.reason.trim();
+    const id = memberId(chain, address);
+    return accepted(`POST exclusions ${id} ${reason}`, () =>
+      queueListChange(now, (draft) => {
+        const existing = draft.exclusions.find((e) => memberId(e.chain, e.address) === id);
+        if (existing) existing.reason = reason;
+        else
+          draft.exclusions.unshift({
+            chain,
+            address,
+            reason,
+            created_at: new Date(now).toISOString(),
+          });
+        const m = draft.members.find((x) => memberId(x.chain, x.address) === id);
+        if (m) m.excluded = true;
+        return { added: 0, merged: m ? 1 : 0, removed: 0, total_members: draft.members.length };
       })
     );
   }
@@ -844,20 +923,15 @@ async function admin(
     rest.length === 4
   ) {
     const id = memberId(rest[2], rest[3]);
-    const before = adminState.exclusions.length;
-    adminState.exclusions = adminState.exclusions.filter(
-      (e) => memberId(e.chain, e.address) !== id
-    );
-    if (before === adminState.exclusions.length)
-      throw new HttpError(404, "not_found", "not excluded");
-    const m = adminState.members.find((x) => memberId(x.chain, x.address) === id);
-    if (m) m.excluded = false;
-    return json(
-      bumpVersion({
-        added: m ? 1 : 0,
-        merged: 0,
-        removed: 0,
-        total_members: adminState.members.length,
+    return accepted(`DELETE exclusions ${id}`, () =>
+      queueListChange(now, (draft) => {
+        const before = draft.exclusions.length;
+        draft.exclusions = draft.exclusions.filter((e) => memberId(e.chain, e.address) !== id);
+        if (before === draft.exclusions.length)
+          throw new HttpError(404, "not_found", "not excluded");
+        const m = draft.members.find((x) => memberId(x.chain, x.address) === id);
+        if (m) m.excluded = false;
+        return { added: 0, merged: m ? 1 : 0, removed: 0, total_members: draft.members.length };
       })
     );
   }
@@ -897,6 +971,7 @@ export async function handleMock(request: Request, segments: string[]): Promise<
 
 async function dispatch(request: Request, segments: string[]): Promise<Response> {
   const now = Date.now();
+  tickListBuilds(now);
   const url = new URL(request.url);
   const params = url.searchParams;
   const method = request.method.toUpperCase();
@@ -925,6 +1000,8 @@ async function dispatch(request: Request, segments: string[]): Promise<Response>
       const body = (await request.json().catch(() => null)) as {
         window?: string;
         currency?: string;
+        query_id?: string;
+        list_version?: string;
         tokens?: { chain: string; address: string }[];
       } | null;
       if (!body?.tokens?.length || body.tokens.length > 100) {
@@ -932,11 +1009,32 @@ async function dispatch(request: Request, segments: string[]): Promise<Response>
       }
       const window = (body.window ?? "1h") as Window;
       if (!(window in windowSeconds)) throw new HttpError(400, "invalid_param", "window", "window");
+      if (body.currency && body.currency !== "usd" && body.currency !== "native")
+        throw new HttpError(400, "invalid_param", "currency", "currency");
+      if (body.query_id || body.list_version) {
+        if (!body.query_id || !body.list_version)
+          throw new HttpError(
+            400,
+            "invalid_param",
+            "query_id and list_version must be supplied together"
+          );
+        validateBatchSnapshot(
+          body.query_id,
+          body.list_version,
+          window,
+          body.currency === "native",
+          now
+        );
+      }
       const items = body.tokens.flatMap((k) => {
         const t = findToken(k.chain, k.address);
         return t ? [inflowRow(t, window, body.currency === "native", now)] : [];
       });
-      return json({ as_of: new Date(now).toISOString(), items });
+      return json({
+        as_of: new Date(now).toISOString(),
+        list_version: String(listVersionRef.current),
+        items,
+      });
     }
     if (method === "GET" && head === "tokens" && rest.length >= 2) {
       const token = requireToken(rest[0], rest[1]);

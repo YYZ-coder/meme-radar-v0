@@ -1,0 +1,38 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # PostgreSQL integration tests (store, ingest) skip without this URL.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: radar
+          POSTGRES_PASSWORD: radar
+          POSTGRES_DB: radar
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U radar" --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      RADAR_TEST_DATABASE_URL: postgres://radar:radar@127.0.0.1:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd backend && go mod download
+      - run: cd frontend && npm ci && npx playwright install --with-deps chromium
+      - run: make check
+      - run: make check-race

@@ -1,0 +1,11 @@
+# h5-6-conservation green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -run TestBalanceInvariant|TestHolderCoverage -v ./internal/compute
+# sha256 internal/compute/balance_invariant_test.go f4f6c0276974fa5c528ceff0ef6bde9739a5f62385c7d988711cf1ea4db2814a
+=== RUN   TestBalanceInvariantChecksOnlyFullTokens
+--- PASS: TestBalanceInvariantChecksOnlyFullTokens (0.33s)
+=== RUN   TestHolderCoverageState
+--- PASS: TestHolderCoverageState (0.27s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.065s
+
+# exit=0

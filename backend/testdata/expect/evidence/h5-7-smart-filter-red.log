@@ -1,0 +1,12 @@
+# h5-7-smart-filter red base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -count=1 -run ^TestPgHoldersSmartMoneyFilter$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_smart_filter_test.go 68a0d2ecf866830ae1926231bb35f5d486bfd665eba25df74e6fa2fdf546d816
+=== RUN   TestPgHoldersSmartMoneyFilter
+    holders_smart_filter_test.go:22: filtered total=<nil>; want 2
+    holders_smart_filter_test.go:25: page 0={Coverage:{Status:full Since:0x702d454ef290 AsOf:2026-10-24T18:11:46.752Z} Total:<nil> Items:[] NextCursor:<nil>}; want one member
+--- FAIL: TestPgHoldersSmartMoneyFilter (0.32s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.876s
+FAIL
+
+# exit=1

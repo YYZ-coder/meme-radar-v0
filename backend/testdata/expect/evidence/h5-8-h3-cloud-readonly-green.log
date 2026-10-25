@@ -1,0 +1,13 @@
+# H5 after-H3 cloud read-only preflight; not a TDD claim.
+# base=e401ba4487d4b35079272f343e351b017182df03+worktree; main H3 merge=804c1ad
+# Command: docker run --rm -i --env-file .env -e PGOPTIONS='-c default_transaction_read_only=on -c statement_timeout=30000' -e PGCONNECT_TIMEOUT=10 postgres:17 sh -c 'exec psql "$RADAR_DATABASE_URL" -X -v ON_ERROR_STOP=1 -At'
+# Queries: current_setting(default_transaction_read_only), now() in Asia/Shanghai,
+# max(schema_migrations.name), to_regclass(public.sm_lists/token_balances/token_holder_state/sm_trades).
+readonly=on
+observed_at=2026-10-25 02:18:48
+schema_max=0011_window.sql
+sm_lists=absent
+token_balances=absent
+token_holder_state=absent
+sm_trades=absent
+# exit=0; no DDL/DML, migration or deployment executed.

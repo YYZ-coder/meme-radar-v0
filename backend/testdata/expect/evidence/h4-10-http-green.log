@@ -1,0 +1,11 @@
+# h4-10-http green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+b774d7d3cec777a06734749a439963c336bcceda778ca89fbf43461ca282cac3  internal/pgapi/inflow_test.go
+# tracked diff sha256=ba052e410dd8630f6655f3d6d7d9e15745cce24e2cb8c2d9f800fe539dcbc300
+# command: go test -count=1 -v -run TestPgInflowEndToEnd ./internal/pgapi
+=== RUN   TestPgInflowEndToEnd
+--- PASS: TestPgInflowEndToEnd (0.42s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.958s
+
+# exit=0

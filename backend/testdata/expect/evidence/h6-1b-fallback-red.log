@@ -1,0 +1,26 @@
+# H6 1b-fallback red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: D156 Fetcher.Fetch; 403/429/5xx ordered fallback and 404 stop, explicit request sequence; scheduling backoff covered by H6-6
+# command: go test -count=1 -run ^TestFetchFallsBackAcrossGateways$ ./internal/metadata
+# sha256 internal/metadata/fallback_test.go: 8fb94118934b395917a9907cdfcdf4205b3fe2b2c9ba94ffeed8d9b58a299d49
+--- FAIL: TestFetchFallsBackAcrossGateways (0.01s)
+    --- FAIL: TestFetchFallsBackAcrossGateways/403_then_429_then_ok (0.00s)
+        fallback_test.go:62: Fetch error=metadata: HTTP 403; failed want false
+        fallback_test.go:65: request order=[original.example]; want [original.example first.example second.example]
+    --- FAIL: TestFetchFallsBackAcrossGateways/all_403 (0.00s)
+        fallback_test.go:65: request order=[original.example]; want [original.example first.example second.example]
+    --- FAIL: TestFetchFallsBackAcrossGateways/5xx_fallback (0.00s)
+        fallback_test.go:62: Fetch error=metadata: HTTP 503; failed want false
+        fallback_test.go:65: request order=[original.example]; want [original.example first.example]
+    --- FAIL: TestFetchFallsBackAcrossGateways/bare_cid (0.00s)
+        fallback_test.go:62: Fetch error=metadata: HTTP 429; failed want false
+        fallback_test.go:65: request order=[first.example]; want [first.example second.example]
+    --- FAIL: TestFetchFallsBackAcrossGateways/original_is_first (0.00s)
+        fallback_test.go:62: Fetch error=metadata: HTTP 403; failed want false
+        fallback_test.go:65: request order=[first.example]; want [first.example second.example]
+    --- FAIL: TestFetchFallsBackAcrossGateways/fallback_private_gateway_blocked (0.00s)
+        fallback_test.go:75: private fallback=metadata: HTTP 403; want ErrBlocked
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.438s
+FAIL
+
+# exit=1

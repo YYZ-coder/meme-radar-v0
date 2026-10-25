@@ -1,0 +1,18 @@
+# Regression first attempt; not TDD Red or Green. Test compared pointer identity in Coverage.Since instead of its value; corrected with DeepEqual.
+# h5-8-edge-regression green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run TestPg(HoldingsCoverageAndUnknowns|HolderCursorBoundaries|NativeLookupHonorsRateAndDeadline|MissingHolderSupply)$ -v ./internal/pgapi
+# sha256 internal/pgapi/holdings_edges_test.go b30a68307d7aacd839c9ed9e75910a070e581a5231fcb3105bf5fbb1335cc4fb
+=== RUN   TestPgHoldingsCoverageAndUnknowns
+    holdings_edges_test.go:38: detail/tab states={Status:partial Since:0x3d8e877710f0 AsOf:2026-10-24T14:56:52.224Z} / {Status:partial Since:0x3d8e877706f0 AsOf:2026-10-24T14:56:52.224Z}
+--- FAIL: TestPgHoldingsCoverageAndUnknowns (0.43s)
+=== RUN   TestPgHolderCursorBoundaries
+--- PASS: TestPgHolderCursorBoundaries (0.26s)
+=== RUN   TestPgNativeLookupHonorsRateAndDeadline
+--- PASS: TestPgNativeLookupHonorsRateAndDeadline (0.23s)
+=== RUN   TestPgMissingHolderSupply
+--- PASS: TestPgMissingHolderSupply (0.11s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.558s
+FAIL
+
+# exit=1

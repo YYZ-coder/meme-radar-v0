@@ -1,0 +1,18 @@
+# H6 2b-security red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Fetcher + JSON logs; non-public shared/reserved ranges rejected and blocked host means actual fallback gateway, not original token URI
+# command: go test -count=1 -run TestFetchRejectsSharedAndReservedAddresses|TestMetadataReportsBlockedGatewayHost ./internal/metadata
+# sha256 internal/metadata/security_regression_test.go: fd4787b2a4e8501512f906632280f345fef072590d04f69cf9b40aeb52cbebb2
+--- FAIL: TestFetchRejectsSharedAndReservedAddresses (0.09s)
+    --- FAIL: TestFetchRejectsSharedAndReservedAddresses/100.64.0.1 (0.03s)
+        security_regression_test.go:24: non-public 100.64.0.1 error=Get "http://special.test:9/a": context deadline exceeded; want ErrBlocked before dialing
+    --- FAIL: TestFetchRejectsSharedAndReservedAddresses/198.18.0.1 (0.03s)
+        security_regression_test.go:24: non-public 198.18.0.1 error=Get "http://special.test:9/a": context deadline exceeded; want ErrBlocked before dialing
+    --- FAIL: TestFetchRejectsSharedAndReservedAddresses/240.0.0.1 (0.03s)
+        security_regression_test.go:24: non-public 240.0.0.1 error=Get "http://special.test:9/a": context deadline exceeded; want ErrBlocked before dialing
+--- FAIL: TestMetadataReportsBlockedGatewayHost (0.18s)
+    security_regression_test.go:42: SSRF log must identify blocked gateway, got {"time":"2026-10-24T18:19:41.918519+08:00","level":"WARN","msg":"metadata address blocked","role":"enrich","chain":"solana","host":"original.example"}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.436s
+FAIL
+
+# exit=1

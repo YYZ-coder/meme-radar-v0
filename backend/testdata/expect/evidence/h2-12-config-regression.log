@@ -1,0 +1,11 @@
+# Read-only promtool configuration validation; no deployment
+# command: docker run --rm --entrypoint /bin/promtool -v /Users/yuezhang/yz/projects/meme-radar-h2/ops/observability/prometheus:/etc/prometheus:ro prom/prometheus:v2.55.1 check config /etc/prometheus/prometheus.yml
+Checking /etc/prometheus/prometheus.yml
+  SUCCESS: 1 rule files found
+ SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
+
+Checking /etc/prometheus/rules.yml
+  SUCCESS: 8 rules found
+
+
+# exit_status=0

@@ -1,0 +1,19 @@
+# H1 6-trade-candles red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:17:21.099724+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTradeCandlesFromTrades$ ./internal/store
+# sha256 internal/store/window_test.go 4387f7f19ab037c27f2f7315f12fdea8544d56b5920a6ced2196e9a500b5e4a9
+# test diff sha256 10929ae6d7c2b760acccaddb89ce6e288f99995749d2c9736d1d5616b390d88c
+# sha256 internal/store/window.go 9cc861ea1cc3c40499bbbbea1f3ccaf4033f751c681f2e1cf82b6ece2dba538b
+# test diff sha256 751136eb27ce94e6b9aadc688de756f2437ccd6b7baff201cc57978564016e8a
+=== RUN   TestTradeCandlesFromTrades
+    window_test.go:581: 30s set={Bars:[] Complete:false Switches:[] Gaps:[] EmptyReason:}; want complete, 2 bars
+    window_test.go:581: 30s set={Bars:[] Complete:false Switches:[] Gaps:[] EmptyReason:}; want complete, 2 bars
+    window_test.go:600: 1s bars=0; want 4 main-pool buckets
+    window_test.go:613: limited bars=[]; want latest +20,+31 ascending
+    window_test.go:617: old range err=<nil>; want ErrRangeTooLong
+--- FAIL: TestTradeCandlesFromTrades (0.20s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	0.626s
+FAIL
+
+# exit_code=1

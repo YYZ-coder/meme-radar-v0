@@ -1,0 +1,25 @@
+# H1 4-price-change green base=b846349b78e2aab6bcd32513d17c65d07c63a76e+worktree
+# UTC 2026-10-23T15:06:24.777193+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenWindowsPriceChange$ ./internal/store
+# sha256 internal/store/window_test.go 3223ed131802d7eb5b538b0681d7c27b2f7cc631ba2603f563735e09b300f67c
+# test diff sha256 6302723d4aac77c5b5ca08b0f6edd62a1e8d25709c85f6c4091f38a22ae32082
+# sha256 testdata/expect/window_cases.json 3e928ba1f8657d5a24c3236685b9319e3e250d2add68d21a121b5f7e5b9383bb
+# test diff sha256 2741b768f36eccd832ccc02c31d4ee110eaf986881bda20847e26f9755f6b878
+# sha256 testdata/expect/expect_window.py f3bbfe13963d20c7993d21c6c5f03229f2b4078ba7aac0d73d46bad24ee160cd
+# test diff sha256 2c75e05f4445f878ba83fc5e53396b601eb22c53c83891502ada8f658702b7b5
+=== RUN   TestTokenWindowsPriceChange
+=== RUN   TestTokenWindowsPriceChange/historical
+=== RUN   TestTokenWindowsPriceChange/first_inside
+=== RUN   TestTokenWindowsPriceChange/historical_pool_switch
+=== RUN   TestTokenWindowsPriceChange/zero_base
+=== RUN   TestTokenWindowsPriceChange/no_current_or_base
+--- PASS: TestTokenWindowsPriceChange (0.98s)
+    --- PASS: TestTokenWindowsPriceChange/historical (0.22s)
+    --- PASS: TestTokenWindowsPriceChange/first_inside (0.19s)
+    --- PASS: TestTokenWindowsPriceChange/historical_pool_switch (0.20s)
+    --- PASS: TestTokenWindowsPriceChange/zero_base (0.17s)
+    --- PASS: TestTokenWindowsPriceChange/no_current_or_base (0.16s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	4.148s
+
+# exit_code=0

@@ -1,0 +1,59 @@
+# h2-11-browser regression base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgFrontendSmoke$ ./internal/pgapi
+# dependency_merge_pending=5e1f0c86445a831bb1226179065b15fdb5db9df9; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 bdb25c8c970a9bef6ee9de2a2d03c70e66b9628e4649c9f0f34928b26207cc43 internal/pgapi/browser_test.go
+=== RUN   TestPgFrontendSmoke
+=== RUN   TestPgFrontendSmoke/stock
+    browser_test.go:122: Error: Stripping types is currently unsupported for files under node_modules, for "/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/.h2-pg-playwright-1920252994/playwright.config.ts"
+            at stripTypeScriptModuleTypes (node:internal/modules/typescript:189:11)
+            at Module._compile (node:internal/modules/cjs/loader:1826:15)
+            at Object.<anonymous> (node:internal/modules/cjs/loader:2003:10)
+            at Module.load (node:internal/modules/cjs/loader:1594:32)
+            at Module._load (node:internal/modules/cjs/loader:1396:12)
+            at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+            at Module.require (node:internal/modules/cjs/loader:1617:12)
+            at require (node:internal/modules/helpers:153:16)
+            at requireOrImport (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1098:18)
+            at loadUserConfig (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1283:52)
+            at loadConfig (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1290:28)
+            at processTicksAndRejections (node:internal/process/task_queues:104:5)
+            at Object.loadConfigFromFile (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1508:10)
+            at runTests (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/cli/testActions.js:44:18)
+            at _Command.<anonymous> (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/program.js:55:7) {
+          code: 'ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING'
+        }
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h2/.local/h2-pg-ui
+    browser_test.go:124: Playwright stock failed: exit status 1 (preserved without weakening assertions)
+=== RUN   TestPgFrontendSmoke/pg-only
+    browser_test.go:122: Error: Stripping types is currently unsupported for files under node_modules, for "/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/.h2-pg-playwright-1920252994/playwright.config.ts"
+            at stripTypeScriptModuleTypes (node:internal/modules/typescript:189:11)
+            at Module._compile (node:internal/modules/cjs/loader:1826:15)
+            at Object.<anonymous> (node:internal/modules/cjs/loader:2003:10)
+            at Module.load (node:internal/modules/cjs/loader:1594:32)
+            at Module._load (node:internal/modules/cjs/loader:1396:12)
+            at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+            at Module.require (node:internal/modules/cjs/loader:1617:12)
+            at require (node:internal/modules/helpers:153:16)
+            at requireOrImport (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1098:18)
+            at loadUserConfig (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1283:52)
+            at loadConfig (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1290:28)
+            at processTicksAndRejections (node:internal/process/task_queues:104:5)
+            at Object.loadConfigFromFile (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/common/index.js:1508:10)
+            at runTests (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/cli/testActions.js:44:18)
+            at _Command.<anonymous> (/Users/yuezhang/yz/projects/meme-radar-h2/frontend/node_modules/playwright/lib/program.js:55:7) {
+          code: 'ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING'
+        }
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h2/.local/h2-pg-ui
+    browser_test.go:124: Playwright pg-only failed: exit status 1 (preserved without weakening assertions)
+--- FAIL: TestPgFrontendSmoke (1.46s)
+    --- FAIL: TestPgFrontendSmoke/stock (0.64s)
+    --- FAIL: TestPgFrontendSmoke/pg-only (0.37s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.814s
+FAIL
+# exit_status=1
+
+# Runner correction: Node 24 refuses TypeScript config inside node_modules; moved temporary config/tests to frontend/.local, no product assertion changed. Not a TDD Red.

@@ -1,0 +1,13 @@
+# H1 8-cycle green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:26:29.900878+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestATHRunsAfterStatsOnFullCycles$ ./internal/compute
+# sha256 internal/compute/ath_test.go f0ec9d766e6ef58fcec1ea63be04cab26f0f4f6fa16fb52a4dd5660aa2d50b54
+# test diff sha256 1e9796ac1e759f3e5728c9ea4c7237bad50f037e2763ba13f3bcf83cbc8d52f3
+# sha256 internal/compute/cycle.go 2437e1394aa035106f2459cc71aac6ef74440913e8924e6ae0663bfe935961b7
+# test diff sha256 dea6f5119eb869d4e6afc3b0aa3244c62830c90d7bcd4920ce0de7436f89f731
+=== RUN   TestATHRunsAfterStatsOnFullCycles
+--- PASS: TestATHRunsAfterStatsOnFullCycles (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.070s
+
+# exit_code=0

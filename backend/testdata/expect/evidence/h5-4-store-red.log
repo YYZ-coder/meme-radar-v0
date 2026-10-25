@@ -1,0 +1,16 @@
+# h5-4-store red base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestApplyBalancesWritesDeltasAndVersion -v ./internal/store
+# sha256 internal/store/balances_test.go d0f5f237810fd5def1db50144115523b1ed55ae1af60b82c8fe282324f397e3b
+=== RUN   TestApplyBalancesWritesDeltasAndVersion
+    balances_test.go:34: SELECT balance_version::text FROM chain_blocks = NULL;want 1
+    balances_test.go:34: SELECT (balance_parsed_at IS NOT NULL)::text FROM chain_blocks = false;want true
+    balances_test.go:34: SELECT count(*)::text FROM balance_deltas = 0;want 2
+    balances_test.go:42: replacement=NULL;want 1|9
+    balances_test.go:52: main reparse changed balance version: NULL
+    balances_test.go:55: main reparse changed balances: NULL
+--- FAIL: TestApplyBalancesWritesDeltasAndVersion (0.67s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	1.163s
+FAIL
+
+# exit=1

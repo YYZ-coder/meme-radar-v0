@@ -506,6 +506,8 @@ export function inflowRow(
     trades: m.trades,
     buys: m.buys,
     sells: m.sells,
+    observed: { trades: m.trades, buys: m.buys, sells: m.sells },
+    coverage: "complete",
     volume: c(m.volume),
     net_inflow: c(m.netInflow),
     sm_holders: token.smHolders,

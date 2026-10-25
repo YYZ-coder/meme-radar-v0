@@ -1,5 +1,5 @@
 // Display-only formatting of API decimal strings. No arithmetic on amounts beyond
-// what is needed to render them (docs/engineering/14-frontend.md §4).
+// what is needed to render them (docs/engineering/03-frontend.md §4).
 import type { Currency } from "@/lib/api/types";
 
 export type Locale = "zh-CN" | "en";

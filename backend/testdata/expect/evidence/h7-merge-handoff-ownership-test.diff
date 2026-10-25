@@ -1,0 +1,19 @@
+diff --git a/scripts/test_check_handoff.py b/scripts/test_check_handoff.py
+index e0e6db0..6dc7696 100644
+--- a/scripts/test_check_handoff.py
++++ b/scripts/test_check_handoff.py
+@@ -49,6 +49,14 @@ class HandoffMigrationTests(unittest.TestCase):
+         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+         self.assertIn("0 problem(s)", result.stdout)
+ 
++    def test_lowercase_module_in_commit_subject_keeps_migration_ownership(self):
++        # These commits belong only to this test's throwaway repository.
++        subprocess.run(["git", "add", "backend/migrations/0012_pending.sql"], cwd=self.root, check=True, capture_output=True)
++        subprocess.run(["git", "-c", "user.name=Handoff Test", "-c", "user.email=handoff@example.invalid", "commit", "-q", "-m", "feat(h2): add PostgreSQL API"], cwd=self.root, check=True, capture_output=True)
++        result = self.check()
++        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++        self.assertIn("H2: merged (migration 0012_pending.sql)", result.stdout)
++
+     def test_deployed_numbers_remain_unavailable(self):
+         self.documents(deployed="0012")
+         result = self.check()

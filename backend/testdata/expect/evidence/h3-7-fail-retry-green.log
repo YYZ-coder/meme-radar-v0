@@ -1,0 +1,15 @@
+# h3-7-fail-retry green base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 66b08993418edb0544c721bd4b26f3a9c809d4d701512d0c8b4a484a6115293f backend/internal/compute/lists_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 18098348119c75ad075f1510416b640d6efde83825ca249b4d3a40e951d007a9 backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 28a41a3275dfb75edbbac4c64b79db80ab9bf3495507c363a270a6e8f19b3934 backend/internal/pgapi/placeholders_test.go
+# SHA256 f3e919ebf876384ce7986bbe0c0db2d18d21a9ab71f713679801be93051bedd5 backend/internal/store/lists_test.go
+# Tracked test diff SHA256 7136e829a9fddf7775060ff707d77e4387f635f2eca2e8f4302ec032d8dc90d3
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestFailedBuildCanBeRetried|TestPgEveryRouteMatchesContract|TestPgPlaceholdersMatchContract|TestRemoveExcludeRestore|TestBuildMergesExistingMembers|TestBuildActivatesMembersSnapshot)$ ./internal/store ./internal/pgapi
+ok  	github.com/meme-radar/radar/internal/store	2.019s
+ok  	github.com/meme-radar/radar/internal/pgapi	2.102s
+
+exit=0

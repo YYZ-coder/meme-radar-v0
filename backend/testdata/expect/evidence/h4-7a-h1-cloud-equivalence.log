@@ -1,0 +1,4 @@
+REPEATABLE READ READ ONLY; tokens=9 windows=5 currencies=2 rows_per_side=90 old_elapsed=1.004909375s new_elapsed=1.089581665s byte_identical=true sha256=4080c442ad438672e6f92a37e311b2010171cfc95e9241e300aec2bca20daa5b
+chain=solana tokens=3
+chain=base tokens=3
+chain=bsc tokens=3

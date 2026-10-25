@@ -1,0 +1,4 @@
+# Regression supplement for H2-1..8; excludes the known H1 coarse-volume blocker
+# command: go test -race -count=1 -run TestPg(NativePrices.*|Search|Pools|Healthz|LiquidityEventsPaginate|Activities|MissingDecimalsReturns503|TokenDetail.*)$ ./internal/pgapi
+ok  	github.com/meme-radar/radar/internal/pgapi	4.058s
+# exit_status=0

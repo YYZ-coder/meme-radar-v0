@@ -1,32 +1,27 @@
 #!/usr/bin/env bash
-# Pre-commit hook: runs checks for whichever parts of the repo have staged changes.
-# Automatically installed by `make setup` via: git config core.hooksPath .githooks
+# Validate exactly the staged inputs; never enlarge the user's staging selection.
 set -euo pipefail
-
 ROOT="$(git rev-parse --show-toplevel)"
-STAGED=$(git diff --cached --name-only)
-
-run_backend=0
-run_frontend=0
-
-for f in $STAGED; do
-  case "$f" in
-    backend/*) run_backend=1 ;;
-    frontend/*) run_frontend=1 ;;
-    api/*)      run_frontend=1 ;;  # openapi.yaml change needs typecheck
+cd "$ROOT"
+if ! git diff --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+  echo 'Commit checks need the staged inputs to match the working tree. Review and stage your intended files; nothing was added automatically.' >&2
+  exit 1
+fi
+front=()
+while IFS= read -r -d '' file; do
+  [ -f "$file" ] || continue
+  case "$file" in
+    backend/*.go) gofmt -w "$file" ;;
+    frontend/*.ts|frontend/*.tsx|frontend/*.css|frontend/*.mjs|frontend/*.json)
+      case "$file" in frontend/src/lib/api/schema.gen.ts) ;; *) front+=("./${file#frontend/}") ;; esac ;;
   esac
-done
-
-if [ "$run_backend" -eq 1 ]; then
-  echo "==> pre-commit: backend checks"
-  make -C "$ROOT/backend" fmt-check vet lint-go build test
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+if [ "${#front[@]}" -gt 0 ]; then
+  (cd frontend && npx prettier --write -- "${front[@]}")
 fi
-
-if [ "$run_frontend" -eq 1 ]; then
-  echo "==> pre-commit: frontend checks"
-  npm --prefix "$ROOT/frontend" run format:check
-  npm --prefix "$ROOT/frontend" run lint
-  npm --prefix "$ROOT/frontend" run api:check
-  npm --prefix "$ROOT/frontend" run typecheck
-  npm --prefix "$ROOT/frontend" run test
+if ! git diff --quiet; then
+  echo 'Formatting changed staged source files. Review and stage those changes before committing.' >&2
+  exit 1
 fi
+scripts/check-secrets.sh
+make check

@@ -1,0 +1,37 @@
+--- a/backend/internal/store/inflow.go
++++ b/backend/internal/store/inflow.go
+@@ -474,7 +474,10 @@
+ 	extra := `,NULL::int[],NULL::numeric,NULL::numeric`
+ 	if long {
+ 		sparkCTEs = longSparklineCTEs()
+-		sparkJoin = ` LEFT JOIN long_series spark ON spark.token_address=t.address LEFT JOIN long_seeds seed ON seed.token_address=t.address`
++		sparkJoin = ` LEFT JOIN long_series spark ON spark.token_address=t.address LEFT JOIN LATERAL (
++   SELECT c.c AS usd,c.c_native AS native FROM candles c WHERE c.chain=$1 AND c.token_address=t.address AND c.interval='1m'
++    AND c.t<$2 AND (c.c IS NOT NULL OR c.c_native IS NOT NULL) ORDER BY c.t DESC LIMIT 1
++  )seed ON true`
+ 		extra = `,spark.buckets,seed.usd,seed.native`
+ 	}
+ 	return chainWindowsCTEs(false) + sparkCTEs + `, usd AS (` + chainWindowsSelect(false, false) + `), native AS (` + chainWindowsSelect(true, false) + `),
+@@ -558,8 +561,8 @@
+ 	return "", nil
+ }
+ 
+-// longSparklineCTEs returns at most twenty sparse closes and one seed per
+-// token. Go only carries these exact paired observations into empty buckets.
++// longSparklineCTEs returns at most twenty sparse closes per token. The final
++// indexed LATERAL join supplies the seed; Go only carries exact observations.
+ func longSparklineCTEs() string {
+ 	return `, long_closes AS MATERIALIZED (
+   SELECT DISTINCT ON(token_address,bucket) token_address,bucket,usd,native FROM (
+@@ -568,11 +571,6 @@
+    FROM candles c JOIN tokens tok ON tok.token_address=c.token_address
+    WHERE c.chain=$1 AND c.interval='1m' AND c.t>=$2 AND c.t<$3 AND (c.c IS NOT NULL OR c.c_native IS NOT NULL)
+   )p ORDER BY token_address,bucket,t DESC
+- ), long_seeds AS MATERIALIZED (
+-  SELECT tok.token_address,c.c AS usd,c.c_native AS native FROM tokens tok LEFT JOIN LATERAL (
+-   SELECT c.c,c.c_native FROM candles c WHERE c.chain=$1 AND c.token_address=tok.token_address AND c.interval='1m'
+-    AND c.t<$2 AND (c.c IS NOT NULL OR c.c_native IS NOT NULL) ORDER BY c.t DESC LIMIT 1
+-  )c ON true
+  ), long_series AS MATERIALIZED (
+   SELECT token_address,array_agg(bucket ORDER BY bucket) AS buckets,
+    array_agg(usd ORDER BY bucket) AS usd,array_agg(native ORDER BY bucket) AS native

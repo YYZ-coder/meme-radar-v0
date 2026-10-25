@@ -1,0 +1,18 @@
+# Keep H1 Red/Green evidence visible despite the repository-wide *.log rule.
+!h1-*.log
+
+# Keep H5 evidence reviewable.
+!h5-*.log
+!hotfix-*.log
+
+# Keep H2 TDD, regression and read-only verification evidence.
+!h2-*.log
+
+# H6 metadata behavior and verification evidence.
+!h6-*.log
+
+# H3 red/green evidence and gate logs.
+!h3-*.log
+
+# H7 TDD and verification evidence.
+!h7-*.log

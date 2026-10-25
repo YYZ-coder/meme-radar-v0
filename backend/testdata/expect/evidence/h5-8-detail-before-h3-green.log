@@ -1,0 +1,9 @@
+# h5-8-detail-before-h3 green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyAndCreatorBeforeH3$ -v ./internal/pgapi
+# sha256 internal/pgapi/holdings_detail_test.go ba8d6e976868a5d2c2e32e2182557a8e2bfb23af184c15d543d7cde50b09ceb4
+=== RUN   TestPgTokenSmartMoneyAndCreatorBeforeH3
+--- PASS: TestPgTokenSmartMoneyAndCreatorBeforeH3 (0.24s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.784s
+
+# exit=0

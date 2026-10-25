@@ -1,0 +1,7 @@
+# H6 1b-transport green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: D156 transport failures fall back; terminal failures and upstream cancellation stop. Same test as red.
+# command: go test -count=1 -run ^TestFetchFallsBackAcrossGateways ./internal/metadata
+# sha256 internal/metadata/transport_test.go: 40a1e98c57167c4599f7fc4009e465f6099fe499b2cf8f7bc71c7f75a2f76bff
+ok  	github.com/meme-radar/radar/internal/metadata	0.579s
+
+# exit=0

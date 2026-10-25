@@ -1,0 +1,3 @@
+e0d344f633ae2ac55da072f8ecb9a8848febfebef401bc397a22398d9b3328be  internal/parse/fourmeme/testdata/expect.txt
+af7bf75e3b599bf817236c5ec465440e41f2f90dd0e196d8839cbd98bb980831  internal/parse/fourmeme/fourmeme_test.go
+8afcca77a454236efc94c99466360007ee8df399ea5eae23187f6aa30f79d7ff  internal/evm/testdata/four_meme.json.zst

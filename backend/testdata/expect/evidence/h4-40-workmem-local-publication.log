@@ -1,0 +1,4 @@
+local_same_actual_rows=31685 as_of=2026-10-25T04:25:00Z exact_live_readonly_cloud_input=true shared_production_array_expression=true staging_load_excluded=true publication_work_mem=64MB_transaction_local
+round=1 rows=31685 insert_select_fill_write=996.806417ms fence_retire_head_commit=34.35325ms full_transaction=1.032500167s cloud_write=NOT_RUN
+round=2 rows=31685 insert_select_fill_write=1.06972125s fence_retire_head_commit=1.554217125s full_transaction=2.624643167s cloud_write=NOT_RUN
+round=3 rows=31685 insert_select_fill_write=764.354667ms fence_retire_head_commit=1.266049208s full_transaction=2.030928375s cloud_write=NOT_RUN

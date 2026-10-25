@@ -1,0 +1,12 @@
+=== RUN   TestInflowSQLBuckets
+=== RUN   TestInflowSQLBuckets/all_empty
+=== RUN   TestInflowSQLBuckets/seed_only
+=== RUN   TestInflowSQLBuckets/first_and_last
+=== RUN   TestInflowSQLBuckets/all_twenty
+--- PASS: TestInflowSQLBuckets (0.13s)
+    --- PASS: TestInflowSQLBuckets/all_empty (0.00s)
+    --- PASS: TestInflowSQLBuckets/seed_only (0.00s)
+    --- PASS: TestInflowSQLBuckets/first_and_last (0.00s)
+    --- PASS: TestInflowSQLBuckets/all_twenty (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.882s

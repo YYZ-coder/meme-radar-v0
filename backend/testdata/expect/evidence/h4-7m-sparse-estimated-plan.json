@@ -1,0 +1,1729 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Nested Loop",
+      "Parallel Aware": false,
+      "Async Capable": false,
+      "Join Type": "Left",
+      "Startup Cost": 74643.28,
+      "Total Cost": 181007.78,
+      "Plan Rows": 173,
+      "Plan Width": 816,
+      "Disabled": false,
+      "Inner Unique": false,
+      "Join Filter": "(seed.token_address = t.address)",
+      "Plans": [
+        {
+          "Node Type": "Function Scan",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE windows",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Function Name": "unnest",
+          "Alias": "w_2",
+          "Startup Cost": 0.00,
+          "Total Cost": 1152.02,
+          "Plan Rows": 1,
+          "Plan Width": 25,
+          "Disabled": false,
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Parent Relationship": "SubPlan",
+              "Subplan Name": "SubPlan 1",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "coverage_ranges",
+              "Alias": "cr",
+              "Startup Cost": 0.00,
+              "Total Cost": 2304.00,
+              "Plan Rows": 2,
+              "Plan Width": 0,
+              "Disabled": false,
+              "Filter": "((to_time >= '2026-10-25 03:49:00+08'::timestamp with time zone) AND (chain = 'solana'::chain_id) AND (from_time <= ('2026-10-25 03:49:00+08'::timestamp with time zone - ((w_2.seconds)::double precision * '00:00:01'::interval))))"
+            }
+          ]
+        },
+        {
+          "Node Type": "Aggregate",
+          "Strategy": "Sorted",
+          "Partial Mode": "Simple",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE stats",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 52336.37,
+          "Total Cost": 60312.75,
+          "Plan Rows": 200,
+          "Plan Width": 286,
+          "Disabled": false,
+          "Group Key": ["ps.token_address", "w_3.seconds"],
+          "Plans": [
+            {
+              "Node Type": "Sort",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Startup Cost": 52336.37,
+              "Total Cost": 52755.78,
+              "Plan Rows": 167766,
+              "Plan Width": 114,
+              "Disabled": false,
+              "Sort Key": ["ps.token_address", "w_3.seconds", "ps.dex"],
+              "Plans": [
+                {
+                  "Node Type": "Nested Loop",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Join Type": "Inner",
+                  "Startup Cost": 0.42,
+                  "Total Cost": 27452.56,
+                  "Plan Rows": 167766,
+                  "Plan Width": 114,
+                  "Disabled": false,
+                  "Inner Unique": false,
+                  "Plans": [
+                    {
+                      "Node Type": "CTE Scan",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "CTE Name": "windows",
+                      "Alias": "w_3",
+                      "Startup Cost": 0.00,
+                      "Total Cost": 0.02,
+                      "Plan Rows": 1,
+                      "Plan Width": 16,
+                      "Disabled": false
+                    },
+                    {
+                      "Node Type": "Append",
+                      "Parent Relationship": "Inner",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Startup Cost": 0.42,
+                      "Total Cost": 25774.87,
+                      "Plan Rows": 167767,
+                      "Plan Width": 114,
+                      "Disabled": false,
+                      "Subplans Removed": 0,
+                      "Plans": [
+                        {
+                          "Node Type": "Index Scan",
+                          "Parent Relationship": "Member",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Scan Direction": "Forward",
+                          "Index Name": "pool_minute_stats_20261021_chain_dex_minute_idx",
+                          "Relation Name": "pool_minute_stats_20261021",
+                          "Alias": "ps_1",
+                          "Startup Cost": 0.42,
+                          "Total Cost": 10.62,
+                          "Plan Rows": 1,
+                          "Plan Width": 111,
+                          "Disabled": false,
+                          "Index Cond": "((chain = 'solana'::chain_id) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                          "Filter": "(minute >= w_3.from_time)"
+                        },
+                        {
+                          "Node Type": "Index Scan",
+                          "Parent Relationship": "Member",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Scan Direction": "Forward",
+                          "Index Name": "pool_minute_stats_20261022_chain_token_address_minute_idx",
+                          "Relation Name": "pool_minute_stats_20261022",
+                          "Alias": "ps_2",
+                          "Startup Cost": 0.42,
+                          "Total Cost": 8.44,
+                          "Plan Rows": 1,
+                          "Plan Width": 110,
+                          "Disabled": false,
+                          "Index Cond": "((chain = 'solana'::chain_id) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                          "Filter": "(minute >= w_3.from_time)"
+                        },
+                        {
+                          "Node Type": "Bitmap Heap Scan",
+                          "Parent Relationship": "Member",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Relation Name": "pool_minute_stats_20261023",
+                          "Alias": "ps_3",
+                          "Startup Cost": 2618.52,
+                          "Total Cost": 15486.31,
+                          "Plan Rows": 101645,
+                          "Plan Width": 114,
+                          "Disabled": false,
+                          "Recheck Cond": "((chain = 'solana'::chain_id) AND (minute >= w_3.from_time) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                          "Plans": [
+                            {
+                              "Node Type": "Bitmap Index Scan",
+                              "Parent Relationship": "Outer",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Index Name": "pool_minute_stats_20261023_chain_dex_minute_idx",
+                              "Startup Cost": 0.00,
+                              "Total Cost": 2593.11,
+                              "Plan Rows": 101645,
+                              "Plan Width": 0,
+                              "Disabled": false,
+                              "Index Cond": "((chain = 'solana'::chain_id) AND (minute >= w_3.from_time) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))"
+                            }
+                          ]
+                        },
+                        {
+                          "Node Type": "Bitmap Heap Scan",
+                          "Parent Relationship": "Member",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Relation Name": "pool_minute_stats_20261024",
+                          "Alias": "ps_4",
+                          "Startup Cost": 1493.57,
+                          "Total Cost": 9430.67,
+                          "Plan Rows": 66120,
+                          "Plan Width": 113,
+                          "Disabled": false,
+                          "Recheck Cond": "((chain = 'solana'::chain_id) AND (minute >= w_3.from_time) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                          "Plans": [
+                            {
+                              "Node Type": "Bitmap Index Scan",
+                              "Parent Relationship": "Outer",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Index Name": "pool_minute_stats_20261024_chain_dex_minute_idx",
+                              "Startup Cost": 0.00,
+                              "Total Cost": 1477.04,
+                              "Plan Rows": 66120,
+                              "Plan Width": 0,
+                              "Disabled": false,
+                              "Index Cond": "((chain = 'solana'::chain_id) AND (minute >= w_3.from_time) AND (minute < '2026-10-25 03:49:00+08'::timestamp with time zone))"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Node Type": "Unique",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE tokens",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 0.00,
+          "Total Cost": 4.50,
+          "Plan Rows": 200,
+          "Plan Width": 32,
+          "Disabled": false,
+          "Plans": [
+            {
+              "Node Type": "CTE Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "CTE Name": "stats",
+              "Alias": "stats_1",
+              "Startup Cost": 0.00,
+              "Total Cost": 4.00,
+              "Plan Rows": 200,
+              "Plan Width": 32,
+              "Disabled": false
+            }
+          ]
+        },
+        {
+          "Node Type": "Unique",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE long_closes",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 59.65,
+          "Total Cost": 11903.54,
+          "Plan Rows": 3079,
+          "Plan Width": 65,
+          "Disabled": false,
+          "Plans": [
+            {
+              "Node Type": "Incremental Sort",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Startup Cost": 59.65,
+              "Total Cost": 11888.14,
+              "Plan Rows": 3079,
+              "Plan Width": 65,
+              "Disabled": false,
+              "Sort Key": ["c.token_address", "((floor(((EXTRACT(epoch FROM (c.t - '2026-10-24 03:49:00+08'::timestamp with time zone)) * '20'::numeric) / 86400.000000)))::integer)", "c.t DESC"],
+              "Presorted Key": ["c.token_address"],
+              "Plans": [
+                {
+                  "Node Type": "Nested Loop",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Join Type": "Inner",
+                  "Startup Cost": 0.43,
+                  "Total Cost": 11784.93,
+                  "Plan Rows": 3079,
+                  "Plan Width": 65,
+                  "Disabled": false,
+                  "Inner Unique": false,
+                  "Plans": [
+                    {
+                      "Node Type": "CTE Scan",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "CTE Name": "tokens",
+                      "Alias": "tok",
+                      "Startup Cost": 0.00,
+                      "Total Cost": 4.00,
+                      "Plan Rows": 200,
+                      "Plan Width": 32,
+                      "Disabled": false
+                    },
+                    {
+                      "Node Type": "Index Scan",
+                      "Parent Relationship": "Inner",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Scan Direction": "Forward",
+                      "Index Name": "candles_pkey",
+                      "Relation Name": "candles",
+                      "Alias": "c",
+                      "Startup Cost": 0.43,
+                      "Total Cost": 58.52,
+                      "Plan Rows": 15,
+                      "Plan Width": 61,
+                      "Disabled": false,
+                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tok.token_address) AND (\"interval\" = '1m'::text) AND (t >= '2026-10-24 03:49:00+08'::timestamp with time zone) AND (t < '2026-10-25 03:49:00+08'::timestamp with time zone))"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Node Type": "Nested Loop",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE long_seeds",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Join Type": "Left",
+          "Startup Cost": 0.43,
+          "Total Cost": 888.49,
+          "Plan Rows": 200,
+          "Plan Width": 56,
+          "Disabled": false,
+          "Inner Unique": false,
+          "Plans": [
+            {
+              "Node Type": "CTE Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "CTE Name": "tokens",
+              "Alias": "tok_1",
+              "Startup Cost": 0.00,
+              "Total Cost": 4.00,
+              "Plan Rows": 200,
+              "Plan Width": 32,
+              "Disabled": false
+            },
+            {
+              "Node Type": "Limit",
+              "Parent Relationship": "Inner",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Startup Cost": 0.43,
+              "Total Cost": 4.40,
+              "Plan Rows": 1,
+              "Plan Width": 32,
+              "Disabled": false,
+              "Plans": [
+                {
+                  "Node Type": "Index Scan",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Scan Direction": "Backward",
+                  "Index Name": "candles_pkey",
+                  "Relation Name": "candles",
+                  "Alias": "c_1",
+                  "Startup Cost": 0.43,
+                  "Total Cost": 68.00,
+                  "Plan Rows": 17,
+                  "Plan Width": 32,
+                  "Disabled": false,
+                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tok_1.token_address) AND (\"interval\" = '1m'::text) AND (t < '2026-10-24 03:49:00+08'::timestamp with time zone))"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Node Type": "Aggregate",
+          "Strategy": "Sorted",
+          "Partial Mode": "Simple",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "CTE long_series",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 0.00,
+          "Total Cost": 95.87,
+          "Plan Rows": 200,
+          "Plan Width": 128,
+          "Disabled": false,
+          "Group Key": ["long_closes.token_address"],
+          "Plans": [
+            {
+              "Node Type": "CTE Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "CTE Name": "long_closes",
+              "Alias": "long_closes",
+              "Startup Cost": 0.00,
+              "Total Cost": 61.58,
+              "Plan Rows": 3079,
+              "Plan Width": 100,
+              "Disabled": false
+            }
+          ]
+        },
+        {
+          "Node Type": "Merge Join",
+          "Parent Relationship": "Outer",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Join Type": "Left",
+          "Startup Cost": 286.12,
+          "Total Cost": 105846.76,
+          "Plan Rows": 173,
+          "Plan Width": 667,
+          "Disabled": false,
+          "Inner Unique": false,
+          "Merge Cond": "(t.address = spark.token_address)",
+          "Plans": [
+            {
+              "Node Type": "Merge Join",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Join Type": "Left",
+              "Startup Cost": 286.12,
+              "Total Cost": 105841.31,
+              "Plan Rows": 173,
+              "Plan Width": 571,
+              "Disabled": false,
+              "Inner Unique": false,
+              "Merge Cond": "(t.address = stats.token_address)",
+              "Plans": [
+                {
+                  "Node Type": "Nested Loop",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Join Type": "Left",
+                  "Startup Cost": 286.12,
+                  "Total Cost": 105835.87,
+                  "Plan Rows": 173,
+                  "Plan Width": 467,
+                  "Disabled": false,
+                  "Inner Unique": false,
+                  "Join Filter": "(false AND NULL::boolean)",
+                  "Plans": [
+                    {
+                      "Node Type": "Nested Loop",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Join Type": "Left",
+                      "Startup Cost": 286.12,
+                      "Total Cost": 105834.14,
+                      "Plan Rows": 173,
+                      "Plan Width": 393,
+                      "Disabled": false,
+                      "Inner Unique": true,
+                      "Plans": [
+                        {
+                          "Node Type": "Nested Loop",
+                          "Parent Relationship": "Outer",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Join Type": "Left",
+                          "Startup Cost": 285.70,
+                          "Total Cost": 105642.37,
+                          "Plan Rows": 173,
+                          "Plan Width": 323,
+                          "Disabled": false,
+                          "Inner Unique": true,
+                          "Plans": [
+                            {
+                              "Node Type": "Merge Join",
+                              "Parent Relationship": "Outer",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Join Type": "Inner",
+                              "Startup Cost": 285.29,
+                              "Total Cost": 105552.93,
+                              "Plan Rows": 173,
+                              "Plan Width": 321,
+                              "Disabled": false,
+                              "Inner Unique": false,
+                              "Merge Cond": "(tokens_1.token_address = tokens.token_address)",
+                              "Join Filter": "(w.seconds = w_1.seconds)",
+                              "Plans": [
+                                {
+                                  "Node Type": "Nested Loop",
+                                  "Parent Relationship": "Outer",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Join Type": "Left",
+                                  "Startup Cost": 142.59,
+                                  "Total Cost": 52062.46,
+                                  "Plan Rows": 200,
+                                  "Plan Width": 179,
+                                  "Disabled": false,
+                                  "Inner Unique": false,
+                                  "Plans": [
+                                    {
+                                      "Node Type": "Nested Loop",
+                                      "Parent Relationship": "Outer",
+                                      "Parallel Aware": false,
+                                      "Async Capable": false,
+                                      "Join Type": "Left",
+                                      "Startup Cost": 132.53,
+                                      "Total Cost": 48807.10,
+                                      "Plan Rows": 200,
+                                      "Plan Width": 156,
+                                      "Disabled": false,
+                                      "Inner Unique": false,
+                                      "Plans": [
+                                        {
+                                          "Node Type": "Nested Loop",
+                                          "Parent Relationship": "Outer",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Join Type": "Left",
+                                          "Startup Cost": 0.41,
+                                          "Total Cost": 1615.01,
+                                          "Plan Rows": 200,
+                                          "Plan Width": 124,
+                                          "Disabled": false,
+                                          "Inner Unique": true,
+                                          "Plans": [
+                                            {
+                                              "Node Type": "Merge Join",
+                                              "Parent Relationship": "Outer",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Join Type": "Left",
+                                              "Startup Cost": 0.00,
+                                              "Total Cost": 16.01,
+                                              "Plan Rows": 200,
+                                              "Plan Width": 113,
+                                              "Disabled": false,
+                                              "Inner Unique": false,
+                                              "Merge Cond": "(tokens_1.token_address = s_1.token_address)",
+                                              "Join Filter": "(s_1.seconds = w_1.seconds)",
+                                              "Plans": [
+                                                {
+                                                  "Node Type": "Nested Loop",
+                                                  "Parent Relationship": "Outer",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Join Type": "Inner",
+                                                  "Startup Cost": 0.00,
+                                                  "Total Cost": 8.01,
+                                                  "Plan Rows": 200,
+                                                  "Plan Width": 49,
+                                                  "Disabled": false,
+                                                  "Inner Unique": false,
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "CTE Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "CTE Name": "tokens",
+                                                      "Alias": "tokens_1",
+                                                      "Startup Cost": 0.00,
+                                                      "Total Cost": 4.00,
+                                                      "Plan Rows": 200,
+                                                      "Plan Width": 32,
+                                                      "Disabled": false
+                                                    },
+                                                    {
+                                                      "Node Type": "CTE Scan",
+                                                      "Parent Relationship": "Inner",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "CTE Name": "windows",
+                                                      "Alias": "w_1",
+                                                      "Startup Cost": 0.00,
+                                                      "Total Cost": 0.02,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 17,
+                                                      "Disabled": false
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Materialize",
+                                                  "Parent Relationship": "Inner",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.00,
+                                                  "Total Cost": 4.50,
+                                                  "Plan Rows": 200,
+                                                  "Plan Width": 72,
+                                                  "Disabled": false,
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "CTE Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "CTE Name": "stats",
+                                                      "Alias": "s_1",
+                                                      "Startup Cost": 0.00,
+                                                      "Total Cost": 4.00,
+                                                      "Plan Rows": 200,
+                                                      "Plan Width": 72,
+                                                      "Disabled": false
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Node Type": "Index Scan",
+                                              "Parent Relationship": "Inner",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Scan Direction": "Forward",
+                                              "Index Name": "token_market_pkey",
+                                              "Relation Name": "token_market",
+                                              "Alias": "tm_1",
+                                              "Startup Cost": 0.41,
+                                              "Total Cost": 8.00,
+                                              "Plan Rows": 1,
+                                              "Plan Width": 42,
+                                              "Disabled": false,
+                                              "Index Cond": "((chain = 'solana'::chain_id) AND (address = tokens_1.token_address))"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Node Type": "Limit",
+                                          "Parent Relationship": "Inner",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Startup Cost": 132.11,
+                                          "Total Cost": 235.94,
+                                          "Plan Rows": 1,
+                                          "Plan Width": 56,
+                                          "Disabled": false,
+                                          "Plans": [
+                                            {
+                                              "Node Type": "Incremental Sort",
+                                              "Parent Relationship": "Outer",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Startup Cost": 132.11,
+                                              "Total Cost": 651.25,
+                                              "Plan Rows": 5,
+                                              "Plan Width": 56,
+                                              "Disabled": false,
+                                              "Sort Key": ["t_1.block_time DESC", "t_1.block_num DESC", "t_1.tx_index DESC", "t_1.ix_index DESC"],
+                                              "Presorted Key": ["t_1.block_time"],
+                                              "Plans": [
+                                                {
+                                                  "Node Type": "Append",
+                                                  "Parent Relationship": "Outer",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 2.37,
+                                                  "Total Cost": 651.03,
+                                                  "Plan Rows": 5,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "Subplans Removed": 0,
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Result",
+                                                      "Parent Relationship": "Member",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 0.55,
+                                                      "Total Cost": 252.26,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "One-Time Filter": "w_1.complete",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Index Scan",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Scan Direction": "Forward",
+                                                          "Index Name": "trades_20261024_chain_token_address_block_time_idx",
+                                                          "Relation Name": "trades_20261024",
+                                                          "Alias": "t_6",
+                                                          "Startup Cost": 0.55,
+                                                          "Total Cost": 252.25,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 55,
+                                                          "Disabled": false,
+                                                          "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time < w_1.from_time))",
+                                                          "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Node Type": "Result",
+                                                      "Parent Relationship": "Member",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 0.56,
+                                                      "Total Cost": 378.91,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "One-Time Filter": "w_1.complete",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Index Scan",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Scan Direction": "Forward",
+                                                          "Index Name": "trades_20261023_chain_token_address_block_time_idx",
+                                                          "Relation Name": "trades_20261023",
+                                                          "Alias": "t_5",
+                                                          "Startup Cost": 0.56,
+                                                          "Total Cost": 378.90,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 55,
+                                                          "Disabled": false,
+                                                          "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time < w_1.from_time))",
+                                                          "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Node Type": "Result",
+                                                      "Parent Relationship": "Member",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.91,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "One-Time Filter": "w_1.complete",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Index Scan",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Scan Direction": "Forward",
+                                                          "Index Name": "trades_20261022_chain_token_address_block_time_idx",
+                                                          "Relation Name": "trades_20261022",
+                                                          "Alias": "t_4",
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.91,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 57,
+                                                          "Disabled": false,
+                                                          "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time < w_1.from_time))",
+                                                          "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Node Type": "Result",
+                                                      "Parent Relationship": "Member",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.46,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "One-Time Filter": "w_1.complete",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Index Scan",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Scan Direction": "Forward",
+                                                          "Index Name": "trades_20261021_chain_token_address_block_time_idx",
+                                                          "Relation Name": "trades_20261021",
+                                                          "Alias": "t_3",
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.46,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 56,
+                                                          "Disabled": false,
+                                                          "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time < w_1.from_time))",
+                                                          "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Node Type": "Result",
+                                                      "Parent Relationship": "Member",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.46,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "One-Time Filter": "w_1.complete",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Index Scan",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Scan Direction": "Forward",
+                                                          "Index Name": "trades_20261020_chain_token_address_block_time_idx",
+                                                          "Relation Name": "trades_20261020",
+                                                          "Alias": "t_2",
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.45,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 54,
+                                                          "Disabled": false,
+                                                          "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time < w_1.from_time))",
+                                                          "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Node Type": "Limit",
+                                      "Parent Relationship": "Inner",
+                                      "Parallel Aware": false,
+                                      "Async Capable": false,
+                                      "Startup Cost": 10.07,
+                                      "Total Cost": 16.26,
+                                      "Plan Rows": 1,
+                                      "Plan Width": 56,
+                                      "Disabled": false,
+                                      "Plans": [
+                                        {
+                                          "Node Type": "Incremental Sort",
+                                          "Parent Relationship": "Outer",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Startup Cost": 10.07,
+                                          "Total Cost": 41.02,
+                                          "Plan Rows": 5,
+                                          "Plan Width": 56,
+                                          "Disabled": false,
+                                          "Sort Key": ["t_7.block_time", "t_7.block_num", "t_7.tx_index", "t_7.ix_index"],
+                                          "Presorted Key": ["t_7.block_time"],
+                                          "Plans": [
+                                            {
+                                              "Node Type": "Append",
+                                              "Parent Relationship": "Outer",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Startup Cost": 2.37,
+                                              "Total Cost": 40.79,
+                                              "Plan Rows": 5,
+                                              "Plan Width": 56,
+                                              "Disabled": false,
+                                              "Subplans Removed": 0,
+                                              "Plans": [
+                                                {
+                                                  "Node Type": "Result",
+                                                  "Parent Relationship": "Member",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.42,
+                                                  "Total Cost": 6.46,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "One-Time Filter": "(w_1.complete AND ((CASE WHEN (t_1.value_usd > '0'::numeric) THEN ((t_1.price_usd * t_1.value_native) / t_1.value_usd) ELSE NULL::numeric END) IS NULL))",
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Backward",
+                                                      "Index Name": "trades_20261020_chain_token_address_block_time_idx",
+                                                      "Relation Name": "trades_20261020",
+                                                      "Alias": "t_8",
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.46,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 54,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time >= w_1.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                      "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Result",
+                                                  "Parent Relationship": "Member",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.42,
+                                                  "Total Cost": 6.47,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "One-Time Filter": "(w_1.complete AND ((CASE WHEN (t_1.value_usd > '0'::numeric) THEN ((t_1.price_usd * t_1.value_native) / t_1.value_usd) ELSE NULL::numeric END) IS NULL))",
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Backward",
+                                                      "Index Name": "trades_20261021_chain_token_address_block_time_idx",
+                                                      "Relation Name": "trades_20261021",
+                                                      "Alias": "t_9",
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.46,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 56,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time >= w_1.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                      "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Result",
+                                                  "Parent Relationship": "Member",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.42,
+                                                  "Total Cost": 6.92,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "One-Time Filter": "(w_1.complete AND ((CASE WHEN (t_1.value_usd > '0'::numeric) THEN ((t_1.price_usd * t_1.value_native) / t_1.value_usd) ELSE NULL::numeric END) IS NULL))",
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Backward",
+                                                      "Index Name": "trades_20261022_chain_token_address_block_time_idx",
+                                                      "Relation Name": "trades_20261022",
+                                                      "Alias": "t_10",
+                                                      "Startup Cost": 0.42,
+                                                      "Total Cost": 6.91,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 57,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time >= w_1.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                      "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Result",
+                                                  "Parent Relationship": "Member",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.56,
+                                                  "Total Cost": 12.08,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "One-Time Filter": "(w_1.complete AND ((CASE WHEN (t_1.value_usd > '0'::numeric) THEN ((t_1.price_usd * t_1.value_native) / t_1.value_usd) ELSE NULL::numeric END) IS NULL))",
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Backward",
+                                                      "Index Name": "trades_20261023_chain_token_address_block_time_idx",
+                                                      "Relation Name": "trades_20261023",
+                                                      "Alias": "t_11",
+                                                      "Startup Cost": 0.56,
+                                                      "Total Cost": 12.07,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 55,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time >= w_1.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                      "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Result",
+                                                  "Parent Relationship": "Member",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 0.55,
+                                                  "Total Cost": 8.85,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 56,
+                                                  "Disabled": false,
+                                                  "One-Time Filter": "(w_1.complete AND ((CASE WHEN (t_1.value_usd > '0'::numeric) THEN ((t_1.price_usd * t_1.value_native) / t_1.value_usd) ELSE NULL::numeric END) IS NULL))",
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Backward",
+                                                      "Index Name": "trades_20261024_chain_token_address_block_time_idx",
+                                                      "Relation Name": "trades_20261024",
+                                                      "Alias": "t_12",
+                                                      "Startup Cost": 0.55,
+                                                      "Total Cost": 8.84,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 55,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens_1.token_address) AND (block_time >= w_1.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                      "Filter": "((price_usd IS NOT NULL) AND (CASE WHEN (value_usd > '0'::numeric) THEN ((price_usd * value_native) / value_usd) ELSE NULL::numeric END IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Node Type": "Materialize",
+                                  "Parent Relationship": "Inner",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Startup Cost": 142.69,
+                                  "Total Cost": 53487.38,
+                                  "Plan Rows": 173,
+                                  "Plan Width": 222,
+                                  "Disabled": false,
+                                  "Plans": [
+                                    {
+                                      "Node Type": "Nested Loop",
+                                      "Parent Relationship": "Outer",
+                                      "Parallel Aware": false,
+                                      "Async Capable": false,
+                                      "Join Type": "Inner",
+                                      "Startup Cost": 142.69,
+                                      "Total Cost": 53486.94,
+                                      "Plan Rows": 173,
+                                      "Plan Width": 222,
+                                      "Disabled": false,
+                                      "Inner Unique": true,
+                                      "Plans": [
+                                        {
+                                          "Node Type": "Nested Loop",
+                                          "Parent Relationship": "Outer",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Join Type": "Left",
+                                          "Startup Cost": 142.28,
+                                          "Total Cost": 51947.44,
+                                          "Plan Rows": 200,
+                                          "Plan Width": 164,
+                                          "Disabled": false,
+                                          "Inner Unique": false,
+                                          "Plans": [
+                                            {
+                                              "Node Type": "Nested Loop",
+                                              "Parent Relationship": "Outer",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Join Type": "Left",
+                                              "Startup Cost": 132.23,
+                                              "Total Cost": 48698.02,
+                                              "Plan Rows": 200,
+                                              "Plan Width": 160,
+                                              "Disabled": false,
+                                              "Inner Unique": false,
+                                              "Plans": [
+                                                {
+                                                  "Node Type": "Nested Loop",
+                                                  "Parent Relationship": "Outer",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Join Type": "Left",
+                                                  "Startup Cost": 0.41,
+                                                  "Total Cost": 1615.01,
+                                                  "Plan Rows": 200,
+                                                  "Plan Width": 148,
+                                                  "Disabled": false,
+                                                  "Inner Unique": true,
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Merge Join",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Join Type": "Left",
+                                                      "Startup Cost": 0.00,
+                                                      "Total Cost": 16.01,
+                                                      "Plan Rows": 200,
+                                                      "Plan Width": 137,
+                                                      "Disabled": false,
+                                                      "Inner Unique": false,
+                                                      "Merge Cond": "(tokens.token_address = s.token_address)",
+                                                      "Join Filter": "(s.seconds = w.seconds)",
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Nested Loop",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Join Type": "Inner",
+                                                          "Startup Cost": 0.00,
+                                                          "Total Cost": 8.01,
+                                                          "Plan Rows": 200,
+                                                          "Plan Width": 49,
+                                                          "Disabled": false,
+                                                          "Inner Unique": false,
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "CTE Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "CTE Name": "tokens",
+                                                              "Alias": "tokens",
+                                                              "Startup Cost": 0.00,
+                                                              "Total Cost": 4.00,
+                                                              "Plan Rows": 200,
+                                                              "Plan Width": 32,
+                                                              "Disabled": false
+                                                            },
+                                                            {
+                                                              "Node Type": "CTE Scan",
+                                                              "Parent Relationship": "Inner",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "CTE Name": "windows",
+                                                              "Alias": "w",
+                                                              "Startup Cost": 0.00,
+                                                              "Total Cost": 0.02,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 17,
+                                                              "Disabled": false
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Node Type": "Materialize",
+                                                          "Parent Relationship": "Inner",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.00,
+                                                          "Total Cost": 4.50,
+                                                          "Plan Rows": 200,
+                                                          "Plan Width": 96,
+                                                          "Disabled": false,
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "CTE Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "CTE Name": "stats",
+                                                              "Alias": "s",
+                                                              "Startup Cost": 0.00,
+                                                              "Total Cost": 4.00,
+                                                              "Plan Rows": 200,
+                                                              "Plan Width": 96,
+                                                              "Disabled": false
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Node Type": "Index Scan",
+                                                      "Parent Relationship": "Inner",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Scan Direction": "Forward",
+                                                      "Index Name": "token_market_pkey",
+                                                      "Relation Name": "token_market",
+                                                      "Alias": "tm",
+                                                      "Startup Cost": 0.41,
+                                                      "Total Cost": 8.00,
+                                                      "Plan Rows": 1,
+                                                      "Plan Width": 42,
+                                                      "Disabled": false,
+                                                      "Index Cond": "((chain = 'solana'::chain_id) AND (address = tokens.token_address))"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "Node Type": "Limit",
+                                                  "Parent Relationship": "Inner",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 131.81,
+                                                  "Total Cost": 235.40,
+                                                  "Plan Rows": 1,
+                                                  "Plan Width": 36,
+                                                  "Disabled": false,
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Incremental Sort",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 131.81,
+                                                      "Total Cost": 649.74,
+                                                      "Plan Rows": 5,
+                                                      "Plan Width": 36,
+                                                      "Disabled": false,
+                                                      "Sort Key": ["t_13.block_time DESC", "t_13.block_num DESC", "t_13.tx_index DESC", "t_13.ix_index DESC"],
+                                                      "Presorted Key": ["t_13.block_time"],
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Append",
+                                                          "Parent Relationship": "Outer",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 2.37,
+                                                          "Total Cost": 649.51,
+                                                          "Plan Rows": 5,
+                                                          "Plan Width": 36,
+                                                          "Disabled": false,
+                                                          "Subplans Removed": 0,
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Result",
+                                                              "Parent Relationship": "Member",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Startup Cost": 0.55,
+                                                              "Total Cost": 251.65,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "One-Time Filter": "w.complete",
+                                                              "Plans": [
+                                                                {
+                                                                  "Node Type": "Index Scan",
+                                                                  "Parent Relationship": "Outer",
+                                                                  "Parallel Aware": false,
+                                                                  "Async Capable": false,
+                                                                  "Scan Direction": "Forward",
+                                                                  "Index Name": "trades_20261024_chain_token_address_block_time_idx",
+                                                                  "Relation Name": "trades_20261024",
+                                                                  "Alias": "t_18",
+                                                                  "Startup Cost": 0.55,
+                                                                  "Total Cost": 251.65,
+                                                                  "Plan Rows": 1,
+                                                                  "Plan Width": 36,
+                                                                  "Disabled": false,
+                                                                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time < w.from_time))",
+                                                                  "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "Node Type": "Result",
+                                                              "Parent Relationship": "Member",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Startup Cost": 0.56,
+                                                              "Total Cost": 378.04,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "One-Time Filter": "w.complete",
+                                                              "Plans": [
+                                                                {
+                                                                  "Node Type": "Index Scan",
+                                                                  "Parent Relationship": "Outer",
+                                                                  "Parallel Aware": false,
+                                                                  "Async Capable": false,
+                                                                  "Scan Direction": "Forward",
+                                                                  "Index Name": "trades_20261023_chain_token_address_block_time_idx",
+                                                                  "Relation Name": "trades_20261023",
+                                                                  "Alias": "t_17",
+                                                                  "Startup Cost": 0.56,
+                                                                  "Total Cost": 378.04,
+                                                                  "Plan Rows": 1,
+                                                                  "Plan Width": 36,
+                                                                  "Disabled": false,
+                                                                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time < w.from_time))",
+                                                                  "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "Node Type": "Result",
+                                                              "Parent Relationship": "Member",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.90,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 37,
+                                                              "Disabled": false,
+                                                              "One-Time Filter": "w.complete",
+                                                              "Plans": [
+                                                                {
+                                                                  "Node Type": "Index Scan",
+                                                                  "Parent Relationship": "Outer",
+                                                                  "Parallel Aware": false,
+                                                                  "Async Capable": false,
+                                                                  "Scan Direction": "Forward",
+                                                                  "Index Name": "trades_20261022_chain_token_address_block_time_idx",
+                                                                  "Relation Name": "trades_20261022",
+                                                                  "Alias": "t_16",
+                                                                  "Startup Cost": 0.42,
+                                                                  "Total Cost": 6.90,
+                                                                  "Plan Rows": 1,
+                                                                  "Plan Width": 37,
+                                                                  "Disabled": false,
+                                                                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time < w.from_time))",
+                                                                  "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "Node Type": "Result",
+                                                              "Parent Relationship": "Member",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.45,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "One-Time Filter": "w.complete",
+                                                              "Plans": [
+                                                                {
+                                                                  "Node Type": "Index Scan",
+                                                                  "Parent Relationship": "Outer",
+                                                                  "Parallel Aware": false,
+                                                                  "Async Capable": false,
+                                                                  "Scan Direction": "Forward",
+                                                                  "Index Name": "trades_20261021_chain_token_address_block_time_idx",
+                                                                  "Relation Name": "trades_20261021",
+                                                                  "Alias": "t_15",
+                                                                  "Startup Cost": 0.42,
+                                                                  "Total Cost": 6.45,
+                                                                  "Plan Rows": 1,
+                                                                  "Plan Width": 36,
+                                                                  "Disabled": false,
+                                                                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time < w.from_time))",
+                                                                  "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "Node Type": "Result",
+                                                              "Parent Relationship": "Member",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.45,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "One-Time Filter": "w.complete",
+                                                              "Plans": [
+                                                                {
+                                                                  "Node Type": "Index Scan",
+                                                                  "Parent Relationship": "Outer",
+                                                                  "Parallel Aware": false,
+                                                                  "Async Capable": false,
+                                                                  "Scan Direction": "Forward",
+                                                                  "Index Name": "trades_20261020_chain_token_address_block_time_idx",
+                                                                  "Relation Name": "trades_20261020",
+                                                                  "Alias": "t_14",
+                                                                  "Startup Cost": 0.42,
+                                                                  "Total Cost": 6.45,
+                                                                  "Plan Rows": 1,
+                                                                  "Plan Width": 36,
+                                                                  "Disabled": false,
+                                                                  "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time < w.from_time))",
+                                                                  "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Node Type": "Limit",
+                                              "Parent Relationship": "Inner",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Startup Cost": 10.05,
+                                              "Total Cost": 16.23,
+                                              "Plan Rows": 1,
+                                              "Plan Width": 36,
+                                              "Disabled": false,
+                                              "Plans": [
+                                                {
+                                                  "Node Type": "Incremental Sort",
+                                                  "Parent Relationship": "Outer",
+                                                  "Parallel Aware": false,
+                                                  "Async Capable": false,
+                                                  "Startup Cost": 10.05,
+                                                  "Total Cost": 40.94,
+                                                  "Plan Rows": 5,
+                                                  "Plan Width": 36,
+                                                  "Disabled": false,
+                                                  "Sort Key": ["t_19.block_time", "t_19.block_num", "t_19.tx_index", "t_19.ix_index"],
+                                                  "Presorted Key": ["t_19.block_time"],
+                                                  "Plans": [
+                                                    {
+                                                      "Node Type": "Append",
+                                                      "Parent Relationship": "Outer",
+                                                      "Parallel Aware": false,
+                                                      "Async Capable": false,
+                                                      "Startup Cost": 2.37,
+                                                      "Total Cost": 40.71,
+                                                      "Plan Rows": 5,
+                                                      "Plan Width": 36,
+                                                      "Disabled": false,
+                                                      "Subplans Removed": 0,
+                                                      "Plans": [
+                                                        {
+                                                          "Node Type": "Result",
+                                                          "Parent Relationship": "Member",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.45,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 36,
+                                                          "Disabled": false,
+                                                          "One-Time Filter": "(w.complete AND (t_13.price_usd IS NULL))",
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Index Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Scan Direction": "Backward",
+                                                              "Index Name": "trades_20261020_chain_token_address_block_time_idx",
+                                                              "Relation Name": "trades_20261020",
+                                                              "Alias": "t_20",
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.45,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time >= w.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                              "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Node Type": "Result",
+                                                          "Parent Relationship": "Member",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.45,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 36,
+                                                          "Disabled": false,
+                                                          "One-Time Filter": "(w.complete AND (t_13.price_usd IS NULL))",
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Index Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Scan Direction": "Backward",
+                                                              "Index Name": "trades_20261021_chain_token_address_block_time_idx",
+                                                              "Relation Name": "trades_20261021",
+                                                              "Alias": "t_21",
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.45,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time >= w.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                              "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Node Type": "Result",
+                                                          "Parent Relationship": "Member",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.42,
+                                                          "Total Cost": 6.90,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 37,
+                                                          "Disabled": false,
+                                                          "One-Time Filter": "(w.complete AND (t_13.price_usd IS NULL))",
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Index Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Scan Direction": "Backward",
+                                                              "Index Name": "trades_20261022_chain_token_address_block_time_idx",
+                                                              "Relation Name": "trades_20261022",
+                                                              "Alias": "t_22",
+                                                              "Startup Cost": 0.42,
+                                                              "Total Cost": 6.90,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 37,
+                                                              "Disabled": false,
+                                                              "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time >= w.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                              "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Node Type": "Result",
+                                                          "Parent Relationship": "Member",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.56,
+                                                          "Total Cost": 12.06,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 36,
+                                                          "Disabled": false,
+                                                          "One-Time Filter": "(w.complete AND (t_13.price_usd IS NULL))",
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Index Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Scan Direction": "Backward",
+                                                              "Index Name": "trades_20261023_chain_token_address_block_time_idx",
+                                                              "Relation Name": "trades_20261023",
+                                                              "Alias": "t_23",
+                                                              "Startup Cost": 0.56,
+                                                              "Total Cost": 12.06,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time >= w.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                              "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "Node Type": "Result",
+                                                          "Parent Relationship": "Member",
+                                                          "Parallel Aware": false,
+                                                          "Async Capable": false,
+                                                          "Startup Cost": 0.55,
+                                                          "Total Cost": 8.83,
+                                                          "Plan Rows": 1,
+                                                          "Plan Width": 36,
+                                                          "Disabled": false,
+                                                          "One-Time Filter": "(w.complete AND (t_13.price_usd IS NULL))",
+                                                          "Plans": [
+                                                            {
+                                                              "Node Type": "Index Scan",
+                                                              "Parent Relationship": "Outer",
+                                                              "Parallel Aware": false,
+                                                              "Async Capable": false,
+                                                              "Scan Direction": "Backward",
+                                                              "Index Name": "trades_20261024_chain_token_address_block_time_idx",
+                                                              "Relation Name": "trades_20261024",
+                                                              "Alias": "t_24",
+                                                              "Startup Cost": 0.55,
+                                                              "Total Cost": 8.83,
+                                                              "Plan Rows": 1,
+                                                              "Plan Width": 36,
+                                                              "Disabled": false,
+                                                              "Index Cond": "((chain = 'solana'::chain_id) AND (token_address = tokens.token_address) AND (block_time >= w.from_time) AND (block_time < '2026-10-25 03:49:00+08'::timestamp with time zone))",
+                                                              "Filter": "((price_usd IS NOT NULL) AND (price_usd IS NOT NULL) AND (pool_id = main_pool_at(chain, token_address, block_time)))"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Node Type": "Index Scan",
+                                          "Parent Relationship": "Inner",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Scan Direction": "Forward",
+                                          "Index Name": "tokens_pkey",
+                                          "Relation Name": "tokens",
+                                          "Alias": "t",
+                                          "Startup Cost": 0.42,
+                                          "Total Cost": 7.70,
+                                          "Plan Rows": 1,
+                                          "Plan Width": 58,
+                                          "Disabled": false,
+                                          "Index Cond": "((chain = 'solana'::chain_id) AND (address = tokens.token_address))"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Node Type": "Index Scan",
+                              "Parent Relationship": "Inner",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Scan Direction": "Forward",
+                              "Index Name": "token_supplements_pkey",
+                              "Relation Name": "token_supplements",
+                              "Alias": "s_2",
+                              "Startup Cost": 0.41,
+                              "Total Cost": 0.51,
+                              "Plan Rows": 1,
+                              "Plan Width": 38,
+                              "Disabled": false,
+                              "Index Cond": "((chain = 'solana'::chain_id) AND (address = t.address))"
+                            }
+                          ]
+                        },
+                        {
+                          "Node Type": "Index Scan",
+                          "Parent Relationship": "Inner",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Scan Direction": "Forward",
+                          "Index Name": "token_market_pkey",
+                          "Relation Name": "token_market",
+                          "Alias": "m",
+                          "Startup Cost": 0.41,
+                          "Total Cost": 1.10,
+                          "Plan Rows": 1,
+                          "Plan Width": 109,
+                          "Disabled": false,
+                          "Index Cond": "((chain = 'solana'::chain_id) AND (address = t.address))"
+                        }
+                      ]
+                    },
+                    {
+                      "Node Type": "Result",
+                      "Parent Relationship": "Inner",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Startup Cost": 0.00,
+                      "Total Cost": 0.00,
+                      "Plan Rows": 0,
+                      "Plan Width": 74,
+                      "Disabled": false,
+                      "One-Time Filter": "false"
+                    }
+                  ]
+                },
+                {
+                  "Node Type": "Materialize",
+                  "Parent Relationship": "Inner",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Startup Cost": 0.00,
+                  "Total Cost": 4.50,
+                  "Plan Rows": 200,
+                  "Plan Width": 64,
+                  "Disabled": false,
+                  "Plans": [
+                    {
+                      "Node Type": "CTE Scan",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "CTE Name": "stats",
+                      "Alias": "stats",
+                      "Startup Cost": 0.00,
+                      "Total Cost": 4.00,
+                      "Plan Rows": 200,
+                      "Plan Width": 64,
+                      "Disabled": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Node Type": "Materialize",
+              "Parent Relationship": "Inner",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Startup Cost": 0.00,
+              "Total Cost": 4.50,
+              "Plan Rows": 200,
+              "Plan Width": 128,
+              "Disabled": false,
+              "Plans": [
+                {
+                  "Node Type": "CTE Scan",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "CTE Name": "long_series",
+                  "Alias": "spark",
+                  "Startup Cost": 0.00,
+                  "Total Cost": 4.00,
+                  "Plan Rows": 200,
+                  "Plan Width": 128,
+                  "Disabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Node Type": "CTE Scan",
+          "Parent Relationship": "Inner",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "CTE Name": "long_seeds",
+          "Alias": "seed",
+          "Startup Cost": 0.00,
+          "Total Cost": 4.00,
+          "Plan Rows": 200,
+          "Plan Width": 96,
+          "Disabled": false
+        }
+      ]
+    }
+  }
+]

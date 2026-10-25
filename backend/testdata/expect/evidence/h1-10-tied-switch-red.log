@@ -1,0 +1,17 @@
+# H1 10-tied-switch red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:13:28.699495+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestGraduationSwitchClampsToPreviousTime$ ./internal/compute
+# sha256 internal/compute/market_test.go 512ce29a52b54cc793261b1a549cad951d7b98ebbe4769446b2fd9ddc4d979e5
+# test diff sha256 1b907a3789722940c1c853c8f9bb4ef2452147f1a1fe2436465271783eabf9f7
+# sha256 migrations/0011_window.sql 6769606950a6f02d942138fd49e62ec336c18e9fdb741911d278dc28e36d5e8f
+# test diff sha256 a88b14a9184dd5b9690747eb31aa2a6bae2e9b8cede5941c0ea18347af54bab3
+=== RUN   TestGraduationSwitchClampsToPreviousTime
+    market_test.go:167: clamped graduation time=missing; want 30 (max of previous 30 and creation 5)
+    market_test.go:170: switches at the clamped time=1; want 2
+    market_test.go:177: main_pool_at(2026-10-23 10:00:30 +0000 UTC)=5031; want 5032 (retain first allocation before the tied switch)
+--- FAIL: TestGraduationSwitchClampsToPreviousTime (0.33s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.054s
+FAIL
+
+# exit_code=1

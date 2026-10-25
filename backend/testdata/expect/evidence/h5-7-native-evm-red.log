@@ -1,0 +1,16 @@
+# h5-7-native-evm red base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersNativeBalanceEVM$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_native_test.go be98ade20bb11cdd4731c381de049cd67bb784da7bce84833a1e50076512141f
+=== RUN   TestPgHoldersNativeBalanceEVM
+    holders_native_test.go:71: native row 0=<nil>, want 2.5
+    holders_native_test.go:71: native row 1=<nil>, want 0.000000000000000001
+    holders_native_test.go:72: native row 0=<nil>, want 2.5
+    holders_native_test.go:72: native row 1=<nil>, want 0.000000000000000001
+    holders_native_test.go:74: page lookup/cache calls=0, want 2
+    holders_native_test.go:81: expired lookups=0, want 4
+--- FAIL: TestPgHoldersNativeBalanceEVM (0.40s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.881s
+FAIL
+
+# exit=1

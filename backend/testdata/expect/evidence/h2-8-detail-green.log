@@ -1,0 +1,13 @@
+# h2-8-detail green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgTokenDetail ./internal/pgapi
+# test_sha256 3e8d7a6746f642d37368fb256dfa18bdd1bd6868bbc3e461e21e9191052c5367 internal/pgapi/detail_test.go
+=== RUN   TestPgTokenDetail
+=== RUN   TestPgTokenDetail/complete5m
+=== RUN   TestPgTokenDetail/partial5m
+--- PASS: TestPgTokenDetail (0.55s)
+    --- PASS: TestPgTokenDetail/complete5m (0.35s)
+    --- PASS: TestPgTokenDetail/partial5m (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.938s
+# exit_status=0

@@ -1,0 +1,2 @@
+bulk long sparkline: REPEATABLE READ READ ONLY; complete SELECT preview; undeployed H3/H4/H5 empty; 16s cap per query
+chain=solana window=24h as_of=2026-10-24T19:20:00Z expected_rows=32920 received_rows=28968 elapsed=16.331031167s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)

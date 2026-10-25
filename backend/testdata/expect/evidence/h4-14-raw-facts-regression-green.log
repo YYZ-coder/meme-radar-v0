@@ -1,0 +1,11 @@
+# h4-14-raw-facts-regression green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+34d244ec912f22d08901f1e82cac69fc9072c16d3eaf5ea0839a9c89eb015b42  internal/compute/inflow_raw_test.go
+# tracked diff sha256=126a8a4f8f011b9a14ded6bb1376f9a5fd58088bed6a25f88254de6cc2fa978e
+# command: go test -count=1 -v -run TestInflowMatchesRawTrades ./internal/compute
+=== RUN   TestInflowMatchesRawTrades
+--- PASS: TestInflowMatchesRawTrades (0.50s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.960s
+
+# exit=0

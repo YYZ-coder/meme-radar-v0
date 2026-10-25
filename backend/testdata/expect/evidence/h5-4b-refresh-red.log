@@ -1,0 +1,11 @@
+# h5-4b-refresh red base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancePassRefreshesTrackedTokensEveryBatch -v ./internal/parser
+# sha256 internal/parser/balances_refresh_test.go d53ac6871213bf19aaeab77f3a73eb77f4eed8a9b98331de90b190960576ebb3
+=== RUN   TestBalancePassRefreshesTrackedTokensEveryBatch
+    balances_refresh_test.go:50: new token next batch delta=0;want 100
+--- FAIL: TestBalancePassRefreshesTrackedTokensEveryBatch (0.20s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parser	0.765s
+FAIL
+
+# exit=1

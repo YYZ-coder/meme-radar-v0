@@ -1,0 +1,17 @@
+# task §7: 5xx fraction strictly >5% for five minutes; 4xx excluded
+# base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# test_sha256 dfb61cd9aaa880b1db5713c233d8095988984a85ba9e052c550c93aa83fa9de9 ops/observability/prometheus/h2_api_alerts_test.yml
+# command: docker run --rm -v /Users/yuezhang/yz/projects/meme-radar-h2/ops/observability/prometheus:/etc/radar:ro --entrypoint /bin/promtool prom/prometheus:v2.55.1 test rules /etc/radar/h2_api_alerts_test.yml
+
+
+  FAILED:
+    name: API 6 percent errors fire only after five minutes,
+    alertname: APIErrors, time: 7m, 
+        exp:[
+            0:
+              Labels:{alertname="APIErrors", severity="warning"}
+              Annotations:{summary="API 5xx responses exceed 5%"}
+            ], 
+        got:[]
+
+# exit_status=1

@@ -1,0 +1,20 @@
+# H3 local PG browser regression, built by preceding make check
+# Command: cd backend && RADAR_H3_PG_UI_SMOKE=1 RADAR_TEST_DATABASE_URL=<local-test-db> go test -race -count=1 -v -run ^TestH3PgFrontendSmoke$ ./internal/pgapi
+=== RUN   TestH3PgFrontendSmoke
+    admin_browser_test.go:115: [WebServer] (node:37229) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 1 test using 1 worker
+        
+        (node:37232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h3-pg-playwright-3904263587/h3-admin.spec.ts:2:5 › local PG import, activate, exclude and restore (8.6s)
+        
+          1 passed (10.0s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h3/.local/h3-pg-ui
+--- PASS: TestH3PgFrontendSmoke (10.93s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	12.777s
+
+exit=0

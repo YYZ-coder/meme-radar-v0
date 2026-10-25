@@ -1,0 +1,50 @@
+# h5-2-sol-deltas red base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestPumpEmitsBalanceDeltas -v ./internal/parse/pump
+# sha256 internal/parse/pump/balances_test.go ae51b3cd53bcafb7ca144e9e8cf701d5349c1229474b28d70d1be22fa65ef110
+=== RUN   TestPumpEmitsBalanceDeltas
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Trade
+    balances_test.go:44: deltas = []; want [BwWK17cbHxwWBKZkUYvzxLcNQ1YVyaFezduWbtm2de6s|v3b6fKyRpvpzf6oZ2YehmvMC5cA55cnbhmd6em1pump|-21912278756896 CWQ3mboh7inFnPqTcyVBehvMRQ4qoAy9gyYdFW3nPag|v3b6fKyRpvpzf6oZ2YehmvMC5cA55cnbhmd6em1pump|21912278756896]
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Create
+    balances_test.go:44: deltas = []; want [3q118aSNXV3hFkAacfXHoLMSNt5hzA8upV9pee5DHnz4|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|42865802289 3q118aSNXV3hFkAacfXHoLMSNt5hzA8upV9pee5DHnz4|HvhiRHnpCZfm9BDFNL8Je193BesKXF2sKme849HDpump|989214811023999 4n9rkpKkPUGFquBh6UXqNYbaCNyBcFq9VwNbutwGX5d6|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|-43066455219 5cjcW9wExnJJiqgLjq7DEG75Pm6JBgE1hNv4B2vHXUW6|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|200652930 722tXm5uB5uuG2tC43uKHXQ7Pbyz75pTokEAJv9x5VTx|HvhiRHnpCZfm9BDFNL8Je193BesKXF2sKme849HDpump|10785188976001]
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Complete
+    balances_test.go:44: deltas = []; want [8AVxEUh6ZUG5pgotNaebdEHT11t8mVosiDAJoujfdJe7|7jrwLDG1YqiH5CVyejMGHrSoyXVLtHS5SGmyvaAjpump|-3090486074958 FrwtUoo8TcadkJfrVbCwdNMa6MFkjhtVJrxCQprMFNeq|7jrwLDG1YqiH5CVyejMGHrSoyXVLtHS5SGmyvaAjpump|3090486074958]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Buy
+    balances_test.go:44: deltas = []; want [4n9rkpKkPUGFquBh6UXqNYbaCNyBcFq9VwNbutwGX5d6|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|-123930527427 9M4giFFMxmFGXtc3feFzRai56WbBqehoSeRE5GK7gf7|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|30813159 DUKyEHvovWqXGATUHji7cP9kyuNP8KzzsCfz78cSqWGM|6Hct4UnREJXbaUpttPuqCquYZktJr3NnxfasN1P5pump|1763423132563 FGG6peQv7q194B6w88sqfpQrhmVhZ3mevVRjtVxaLZqD|6Hct4UnREJXbaUpttPuqCquYZktJr3NnxfasN1P5pump|-1763423132563 FGG6peQv7q194B6w88sqfpQrhmVhZ3mevVRjtVxaLZqD|DoGEV7LASBkQbibMc5k5vKnTZoMg423GpJ5QtJEGfm7R|123899714268]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Sell
+    balances_test.go:44: deltas = []; want [5dRPK8EwCRY3rtxFJAS2orT8CQd4KxWgzv2HQRRrsK9i|Gtv7Ges2upYyJeW8Gh4QACW2J2CUnGf5LodcZBiupump|-168120647043 9vyAwqJjGP3q1UhMtUEarcd6hhcheWsCw68g9pz85GQu|Gtv7Ges2upYyJeW8Gh4QACW2J2CUnGf5LodcZBiupump|168120647043]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.CreatePool
+    balances_test.go:44: deltas = []; want [3EqFeLhAhC9Y3MYcJpAT6bPaP1CRVZeor95P9uzftXWd|997BvEYwbqgj4ev6nt1MyJYtseZM1oowXcoJ5Riypump|217799968320904 HSRyBiYzzrcGVvi6pc8nSC8JouuPqDVgsVgGTNdXn5U|997BvEYwbqgj4ev6nt1MyJYtseZM1oowXcoJ5Riypump|-217799968320904 HSRyBiYzzrcGVvi6pc8nSC8JouuPqDVgsVgGTNdXn5U|BiXr6joLX3gUKKvehveXdebRsmWJwLagmrW4zbMkxMDz|6048999477326]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Deposit
+    balances_test.go:44: deltas = []; want [7VV2yj7rvye6jif9po7VQknUpwejmf87DRFeJ1WAcDNZ|4C8xh6tW9wbeG7vX2DwmPJasXL7fQ6dUiNMCneu8pump|-1939966060288 7VV2yj7rvye6jif9po7VQknUpwejmf87DRFeJ1WAcDNZ|4xyLYNKMYAcAscxtDPGsJ7tv7Hg12AeCkAKSQ7NMwgmT|91515313309 9k81TP1Q1a1oc7k2FDnXujWsE1KHLGzMvL4mQ1M9Vydt|4C8xh6tW9wbeG7vX2DwmPJasXL7fQ6dUiNMCneu8pump|1939966060288]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Withdraw
+    balances_test.go:44: deltas = []; want [76qNH1myc1197BxzixxFG5YXXMyzG2j8rRGpBxuZKFb3|ARWVswY9LihJiMHxYRzk4opfBU56ch5vTzbjS5VnSaRJ|-41879637928 76qNH1myc1197BxzixxFG5YXXMyzG2j8rRGpBxuZKFb3|FaSKbMbM7FFYeAfyXYy2yFuKL4iG1kZZ1BgocKVnPxE9|1372291927074 91q2R15hGUHFps7iq2EXnscPyx3yZ8uSZAa5bnKzbfhf|FaSKbMbM7FFYeAfyXYy2yFuKL4iG1kZZ1BgocKVnPxE9|-1372291927074]
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Migration
+    balances_test.go:44: deltas = []; want [2gRqk46GiCtsnmFKRCTgSUVkDzGZKPRhL3841eUrRe2z|7jrwLDG1YqiH5CVyejMGHrSoyXVLtHS5SGmyvaAjpump|206900000000000 8AVxEUh6ZUG5pgotNaebdEHT11t8mVosiDAJoujfdJe7|7jrwLDG1YqiH5CVyejMGHrSoyXVLtHS5SGmyvaAjpump|-206900000000000]
+=== RUN   TestPumpEmitsBalanceDeltas/unrelated
+=== RUN   TestPumpEmitsBalanceDeltas/failed
+=== RUN   TestPumpEmitsBalanceDeltas/amm.MultiHop
+    balances_test.go:44: deltas = []; want [3Xuex4vjrGV6EpmghU7bCmErxVoARW6jEG6QnxURKfrD|4SUtyjYDkGGHVA68wqeNNSDv9UGirdXCfpdGHPUCpump|-41233763239 6KGbV6LxuATyk32jUaRuujgW63jmEJLezgyUxMqFWER7|8idEA8QovsZJka6d9Z35fejE5MbL37BJxvw5k5r6pump|1517438917 Hm2m7HkzzgxMwmycv9mSJnfYYosbb2G8QCxGCm4CEzdT|4SUtyjYDkGGHVA68wqeNNSDv9UGirdXCfpdGHPUCpump|41233763239 Hm2m7HkzzgxMwmycv9mSJnfYYosbb2G8QCxGCm4CEzdT|8idEA8QovsZJka6d9Z35fejE5MbL37BJxvw5k5r6pump|-1517438917]
+=== RUN   TestPumpEmitsBalanceDeltas/pump.MultiHopCurve
+    balances_test.go:44: deltas = []; want [5pr5AEio2Ryo5jcwgxkKy55nzJ87e8KY7udzryuVvNVg|v7wMoL1QreHTSR2KSkTan2bS5Pq3ZSUUkG1YPgkpump|502720588398 FbyWbN3UgbgJkhi5APg7DmnA7ZuiWJHqGpaC9oX182jn|6CaTKnA3eJEisxYrS4dKGmqBPJ8apePbc65xteJhpump|-21228383383 HUFZZcAFg1GEVDHHkim7iYe71HRSyqyEJJznjTiGWhgP|6CaTKnA3eJEisxYrS4dKGmqBPJ8apePbc65xteJhpump|21228383383 HUFZZcAFg1GEVDHHkim7iYe71HRSyqyEJJznjTiGWhgP|v7wMoL1QreHTSR2KSkTan2bS5Pq3ZSUUkG1YPgkpump|-502720588398]
+=== RUN   TestPumpEmitsBalanceDeltas/amm.SamePoolTwice
+    balances_test.go:44: deltas = []; want [5YPxToTobawvkbn5rkWKYDhZqHf5v6LAtRLNPGiq6U2A|pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn|472819826 5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD|DvdmEnztCmXwBnAbedD48XVGZJSxq31zNvnyftXdpump|6901506 5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD|pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn|118264 8fzwZAdTrMmvVVFR7EcTqyBaPybUHLUxaYZ7RKkAJuJf|DvdmEnztCmXwBnAbedD48XVGZJSxq31zNvnyftXdpump|15619203 B62ZXNJtSNzkZfDrwsbnZ2fAUqpevY6Se3ABfwJjLVGK|DvdmEnztCmXwBnAbedD48XVGZJSxq31zNvnyftXdpump|-1471110531 Bof2XL9zAbLZ15kzAXcXy39wDeZFgKwyvb3UVkv3FhsX|DvdmEnztCmXwBnAbedD48XVGZJSxq31zNvnyftXdpump|1448589822 Bof2XL9zAbLZ15kzAXcXy39wDeZFgKwyvb3UVkv3FhsX|pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn|-472938090]
+--- FAIL: TestPumpEmitsBalanceDeltas (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/pump.Trade (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/pump.Create (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/pump.Complete (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.Buy (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.Sell (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.CreatePool (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.Deposit (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.Withdraw (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/pump.Migration (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/unrelated (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/failed (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.MultiHop (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/pump.MultiHopCurve (0.00s)
+    --- FAIL: TestPumpEmitsBalanceDeltas/amm.SamePoolTwice (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parse/pump	0.351s
+FAIL
+
+# exit=1

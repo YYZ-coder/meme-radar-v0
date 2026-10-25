@@ -1,0 +1,13 @@
+# h4-10-http red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+b774d7d3cec777a06734749a439963c336bcceda778ca89fbf43461ca282cac3  internal/pgapi/inflow_test.go
+# tracked diff sha256=fe86938a0e26e21983681aa3af73eee6ae75c62b2511f3f8d23cd0e9c91ef2f6
+# command: go test -count=1 -v -run TestPgInflowEndToEnd ./internal/pgapi
+=== RUN   TestPgInflowEndToEnd
+    inflow_test.go:113: first page={QueryID:q_55ff80b3de914630 ListVersion:1 AsOf:2026-10-23T10:00:30.000Z ChainAsOf:map[] Window:5m Total:0 Truncated:false Offset:0 NextOffset:<nil> Items:[]}; want total3 A smart2 list2 as_of10:00 next1
+--- FAIL: TestPgInflowEndToEnd (0.31s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.938s
+FAIL
+
+# exit=1

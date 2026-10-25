@@ -1,0 +1,52 @@
+sparse_estimated_preview chain=solana window=24h as_of=2026-10-24T19:49:00Z mode=REPEATABLE_READ_READ_ONLY H3_H4_H5_not_deployed=true
+elapsed=311.295042ms error=<nil>
+execution_ms=<nil> planning_ms=<nil>
+depth=0 node=Nested Loop relation=<nil> actual_rows=173 loops=<nil> cost=181007.78 inclusive_cost=181007.78
+depth=1 node=Function Scan relation=<nil> actual_rows=1 loops=<nil> cost=1152.02 inclusive_cost=1152.02
+depth=2 node=Seq Scan relation=coverage_ranges actual_rows=2 loops=<nil> cost=2304 inclusive_cost=2304
+depth=1 node=Aggregate relation=<nil> actual_rows=200 loops=<nil> cost=60312.75 inclusive_cost=60312.75
+depth=2 node=Sort relation=<nil> actual_rows=167766 loops=<nil> cost=52755.78 inclusive_cost=52755.78
+depth=3 node=Nested Loop relation=<nil> actual_rows=167766 loops=<nil> cost=27452.56 inclusive_cost=27452.56
+depth=4 node=CTE Scan relation=<nil> actual_rows=1 loops=<nil> cost=0.02 inclusive_cost=0.02
+depth=4 node=Append relation=<nil> actual_rows=167767 loops=<nil> cost=25774.87 inclusive_cost=25774.87
+depth=5 node=Index Scan relation=pool_minute_stats_20261021 actual_rows=1 loops=<nil> cost=10.62 inclusive_cost=10.62
+depth=5 node=Index Scan relation=pool_minute_stats_20261022 actual_rows=1 loops=<nil> cost=8.44 inclusive_cost=8.44
+depth=5 node=Bitmap Heap Scan relation=pool_minute_stats_20261023 actual_rows=101645 loops=<nil> cost=15486.31 inclusive_cost=15486.31
+depth=6 node=Bitmap Index Scan relation=<nil> actual_rows=101645 loops=<nil> cost=2593.11 inclusive_cost=2593.11
+depth=5 node=Bitmap Heap Scan relation=pool_minute_stats_20261024 actual_rows=66120 loops=<nil> cost=9430.67 inclusive_cost=9430.67
+depth=6 node=Bitmap Index Scan relation=<nil> actual_rows=66120 loops=<nil> cost=1477.04 inclusive_cost=1477.04
+depth=1 node=Unique relation=<nil> actual_rows=200 loops=<nil> cost=4.5 inclusive_cost=4.5
+depth=2 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+depth=1 node=Unique relation=<nil> actual_rows=3079 loops=<nil> cost=11903.54 inclusive_cost=11903.54
+depth=2 node=Incremental Sort relation=<nil> actual_rows=3079 loops=<nil> cost=11888.14 inclusive_cost=11888.14
+depth=3 node=Nested Loop relation=<nil> actual_rows=3079 loops=<nil> cost=11784.93 inclusive_cost=11784.93
+depth=4 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+depth=4 node=Index Scan relation=candles actual_rows=15 loops=<nil> cost=58.52 inclusive_cost=58.52
+depth=1 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=888.49 inclusive_cost=888.49
+depth=2 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+depth=2 node=Limit relation=<nil> actual_rows=1 loops=<nil> cost=4.4 inclusive_cost=4.4
+depth=3 node=Index Scan relation=candles actual_rows=17 loops=<nil> cost=68 inclusive_cost=68
+depth=1 node=Aggregate relation=<nil> actual_rows=200 loops=<nil> cost=95.87 inclusive_cost=95.87
+depth=2 node=CTE Scan relation=<nil> actual_rows=3079 loops=<nil> cost=61.58 inclusive_cost=61.58
+depth=1 node=Merge Join relation=<nil> actual_rows=173 loops=<nil> cost=105846.76 inclusive_cost=105846.76
+depth=2 node=Merge Join relation=<nil> actual_rows=173 loops=<nil> cost=105841.31 inclusive_cost=105841.31
+depth=3 node=Nested Loop relation=<nil> actual_rows=173 loops=<nil> cost=105835.87 inclusive_cost=105835.87
+depth=4 node=Nested Loop relation=<nil> actual_rows=173 loops=<nil> cost=105834.14 inclusive_cost=105834.14
+depth=5 node=Nested Loop relation=<nil> actual_rows=173 loops=<nil> cost=105642.37 inclusive_cost=105642.37
+depth=6 node=Merge Join relation=<nil> actual_rows=173 loops=<nil> cost=105552.93 inclusive_cost=105552.93
+depth=7 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=52062.46 inclusive_cost=52062.46
+depth=8 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=48807.1 inclusive_cost=48807.1
+depth=9 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=1615.01 inclusive_cost=1615.01
+depth=7 node=Materialize relation=<nil> actual_rows=173 loops=<nil> cost=53487.38 inclusive_cost=53487.38
+depth=8 node=Nested Loop relation=<nil> actual_rows=173 loops=<nil> cost=53486.94 inclusive_cost=53486.94
+depth=9 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=51947.44 inclusive_cost=51947.44
+depth=10 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=48698.02 inclusive_cost=48698.02
+depth=11 node=Nested Loop relation=<nil> actual_rows=200 loops=<nil> cost=1615.01 inclusive_cost=1615.01
+depth=5 node=Index Scan relation=token_market actual_rows=1 loops=<nil> cost=1.1 inclusive_cost=1.1
+depth=4 node=Result relation=<nil> actual_rows=0 loops=<nil> cost=0 inclusive_cost=0
+depth=3 node=Materialize relation=<nil> actual_rows=200 loops=<nil> cost=4.5 inclusive_cost=4.5
+depth=4 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+depth=2 node=Materialize relation=<nil> actual_rows=200 loops=<nil> cost=4.5 inclusive_cost=4.5
+depth=3 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+depth=1 node=CTE Scan relation=<nil> actual_rows=200 loops=<nil> cost=4 inclusive_cost=4
+root_rows=<nil> root_total_ms=<nil>

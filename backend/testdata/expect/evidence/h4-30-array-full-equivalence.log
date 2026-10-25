@@ -1,0 +1,30 @@
+mode=REPEATABLE_READ_READ_ONLY full_row_equivalence old_sparse_go_vs_same_production_array_expression; H3/H4/H5 not deployed: empty smart copies and unknown holder/metadata fields in BOTH previews; no cloud writes
+server_array chain=solana window=24h as_of=2026-10-25T03:20:00Z rows=31666 query_decode=16.1393975s fill=0s total=16.1393975s heap_alloc_bytes=120254544 peak_rss_bytes_darwin=150290432 write=NOT_RUN_CLOUD_READ_ONLY
+warm_full_receive chain=solana window=24h rows=31666 field_value_bytes=23271931 elapsed=14.925364875s cold_label=first_natural_cache_not_forced_clear
+baseline_go_fill chain=solana window=24h fill=28.23209ms
+compare chain=solana window=24h old_rows=31666 new_rows=31666 diffs=0 old_query_decode_fill_elapsed=8.626492s sha256=b713bbf087baadf16da14ce21c1e665821d2b49c38f0bca162343c56491a1844
+server_array chain=solana window=1h as_of=2026-10-25T03:20:00Z rows=3182 query_decode=1.702124583s fill=0s total=1.702124583s heap_alloc_bytes=221165704 peak_rss_bytes_darwin=249069568 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=solana window=1h fill=3.187876ms
+compare chain=solana window=1h old_rows=3182 new_rows=3182 diffs=0 old_query_decode_fill_elapsed=1.977152792s sha256=188ad1e00e163c190eb0a40286751b6b1d49993331bf102c23cda213bc296a7e
+server_array chain=solana window=4h as_of=2026-10-25T03:20:00Z rows=9354 query_decode=3.976403709s fill=0s total=3.976403709s heap_alloc_bytes=42212432 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=solana window=4h fill=4.060343ms
+compare chain=solana window=4h old_rows=9354 new_rows=9354 diffs=0 old_query_decode_fill_elapsed=2.538643541s sha256=20a5a14f6c7487fb1a818e5223033370a06bda0dfe20108e883ac2133d78da2a
+server_array chain=base window=24h as_of=2026-10-25T03:25:00Z rows=1295 query_decode=2.591204333s fill=0s total=2.591204333s heap_alloc_bytes=69501208 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=base window=24h fill=1.14633ms
+compare chain=base window=24h old_rows=1295 new_rows=1295 diffs=0 old_query_decode_fill_elapsed=2.276381375s sha256=4504d41635e53d74d0ad28152dac780fb8dec2e4762aa7e6f0a1aa3f19573376
+server_array chain=base window=1h as_of=2026-10-25T03:25:00Z rows=194 query_decode=443.480333ms fill=0s total=443.480333ms heap_alloc_bytes=9829120 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=base window=1h fill=119.452µs
+compare chain=base window=1h old_rows=194 new_rows=194 diffs=0 old_query_decode_fill_elapsed=229.2ms sha256=906ca2832ef232acec07527a30db68512a087ee15d5bd211eadbc64f0c158634
+server_array chain=base window=4h as_of=2026-10-25T03:25:00Z rows=409 query_decode=440.325083ms fill=0s total=440.325083ms heap_alloc_bytes=2984152 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=base window=4h fill=210.797µs
+compare chain=base window=4h old_rows=409 new_rows=409 diffs=0 old_query_decode_fill_elapsed=484.935125ms sha256=62caaebbaa93eceaa3aa5fff6ffcf387e4e89fb79617682ab8dcbce58da249c2
+server_array chain=bsc window=24h as_of=2026-10-25T03:30:00Z rows=3188 query_decode=1.138352833s fill=0s total=1.138352833s heap_alloc_bytes=14167504 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=bsc window=24h fill=1.401712ms
+compare chain=bsc window=24h old_rows=3188 new_rows=3188 diffs=0 old_query_decode_fill_elapsed=725.753209ms sha256=f5b283317845f36734ed81764a6f2b4ca537fcc39d2ce429b37f0d082c804e9b
+server_array chain=bsc window=1h as_of=2026-10-25T03:30:00Z rows=283 query_decode=323.020167ms fill=0s total=323.020167ms heap_alloc_bytes=21398112 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=bsc window=1h fill=157.626µs
+compare chain=bsc window=1h old_rows=283 new_rows=283 diffs=0 old_query_decode_fill_elapsed=149.673875ms sha256=5bf542d13a36fb1face23638f7137cbd5027a5ec97c52428d1305402bd9884ef
+server_array chain=bsc window=4h as_of=2026-10-25T03:30:00Z rows=654 query_decode=640.552292ms fill=0s total=640.552292ms heap_alloc_bytes=3846056 peak_rss_bytes_darwin=253984768 write=NOT_RUN_CLOUD_READ_ONLY
+baseline_go_fill chain=bsc window=4h fill=346.961µs
+compare chain=bsc window=4h old_rows=654 new_rows=654 diffs=0 old_query_decode_fill_elapsed=328.634375ms sha256=104405de5b0575b8568773d26ac4a2ca527586e491dde7ffe5a9eceb444a51a0
+PASS full rows and all20 USD/native spark points identical for 3 chains x 3 long windows in ONE readonly snapshot

@@ -1,0 +1,3 @@
+# Isolated Go mock API, same healthz and port as the failing readiness check
+direct healthz HTTP=200; body={"status":"ok"}
+existing proxy healthz HTTP=502 exit=0

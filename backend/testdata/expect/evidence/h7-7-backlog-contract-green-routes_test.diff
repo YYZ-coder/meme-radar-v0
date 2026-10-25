@@ -1,0 +1,13 @@
+--- HEAD/internal/pgapi/routes_test.go
++++ worktree/internal/pgapi/routes_test.go
+@@ -103,7 +103,10 @@
+ func TestPgEveryRouteMatchesContract(t *testing.T) {
+ 	f := widestFixture(t)
+ 	h := f.handler()
++	failureID := f.failure(t, "bsc", 90000, 1, "four_meme", f.now.Add(-time.Minute))
+ 	requests := append(placeholderRoutes(), []routeRequest{
++		{"GET", "/api/v1/admin/health", "/api/v1/admin/health", "", 200},
++		{"POST", "/api/v1/admin/parse-failures/{id}/retry", fmt.Sprintf("/api/v1/admin/parse-failures/%d/retry", failureID), "", 202},
+ 		{"GET", "/healthz", "/healthz", "", 200},
+ 		{"GET", "/api/v1/market/natives", "/api/v1/market/natives", "", 200},
+ 		{"GET", "/api/v1/search", "/api/v1/search?q=DEMO", "", 200},

@@ -1,0 +1,40 @@
+# H3 and H7 browser runners retained byte-for-byte; integrated H1-H7 backend; local real PG; existing Node24 production frontend build
+Command=go test -race -count=1 -v -run ^(TestH3PgFrontendSmoke|TestPgAdminFrontendSmoke)$ ./internal/pgapi
+=== RUN   TestH3PgFrontendSmoke
+    admin_browser_test.go:115: [WebServer] (node:44195) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        [WebServer] ⚠ Warning: Next.js ignored package-lock.json in /Users/yuezhang because it is outside the current Git repository (/Users/yuezhang/yz/projects/meme-radar-v0).
+        [WebServer]  To use this directory, set `outputFileTracingRoot` in your Next.js config.
+        [WebServer] 
+        
+        Running 1 test using 1 worker
+        
+        (node:44200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h3-pg-playwright-3398531798/h3-admin.spec.ts:2:5 › local PG import, activate, exclude and restore (8.8s)
+        
+          1 passed (10.1s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-v0/.local/h3-pg-ui
+--- PASS: TestH3PgFrontendSmoke (11.92s)
+=== RUN   TestPgAdminFrontendSmoke
+    admin_health_browser_test.go:104: [WebServer] (node:44315) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        [WebServer] ⚠ Warning: Next.js ignored package-lock.json in /Users/yuezhang because it is outside the current Git repository (/Users/yuezhang/yz/projects/meme-radar-v0).
+        [WebServer]  To use this directory, set `outputFileTracingRoot` in your Next.js config.
+        [WebServer] 
+        
+        Running 1 test using 1 worker
+        
+        (node:44317) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h7-pg-playwright-887992732/pg-admin.spec.ts:20:5 › admin token gate, health and retry (real PG) (943ms)
+        
+          1 passed (1.7s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-v0/.local/h7-pg-ui
+--- PASS: TestPgAdminFrontendSmoke (2.52s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	15.857s
+
+# exit=0

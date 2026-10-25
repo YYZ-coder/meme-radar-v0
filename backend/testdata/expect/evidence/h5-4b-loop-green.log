@@ -1,0 +1,9 @@
+# h5-4b-loop green base=a465911d945ed65dcd81b33cac606808101ffea5+worktree
+# command: go test -count=1 -run TestBalancePassParsesOnlyBalances -v ./internal/parser
+# sha256 internal/parser/balances_test.go b003c4624eb8035a5e4f60ae6414988faa6ec36f9e6175a0f278a164eeca172b
+=== RUN   TestBalancePassParsesOnlyBalances
+--- PASS: TestBalancePassParsesOnlyBalances (4.71s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	5.181s
+
+# exit=0

@@ -28,10 +28,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * SOL / ETH / BNB 美元价（底部栏）
-         * @description 价格来自 quote_asset_prices（D54），超过 5 分钟标 stale，超过 30 分钟返回 null。
-         */
+        /** SOL / ETH / BNB 美元价（底部栏） */
         get: operations["getNativePrices"];
         put?: never;
         post?: never;
@@ -48,10 +45,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 全局搜索 Token 与钱包
-         * @description 合约/钱包地址精确匹配；名称与符号模糊匹配（pg_trgm），同名不合并。
-         */
+        /** 全局搜索 Token 与钱包 */
         get: operations["search"];
         put?: never;
         post?: never;
@@ -68,7 +62,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 资金流入页顶部概览卡片 */
+        /**
+         * 资金流入页顶部概览卡片
+         * @description 按链与窗口读取当前激活名单的聪明钱汇总；大仓为单笔买入 > 5,000 美元，其余已知金额为小仓。窗口未完整覆盖时完整字段为 null。
+         */
         get: operations["getSmartMoneyOverview"];
         put?: never;
         post?: never;
@@ -85,7 +82,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** DEX 与发射平台候选（工具栏下拉） */
+        /**
+         * DEX 与发射平台候选（工具栏下拉）
+         * @description 当前窗口内有成交的 DEX 与发射平台候选及其成交额；窗口未完整覆盖时 volume_usd/token_count 为 null，observed_token_count 为已看到的下界。
+         */
         get: operations["getInflowFacets"];
         put?: never;
         post?: never;
@@ -103,10 +103,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 资金流入列表（快照排序＋按需取值）
-         * @description 首次请求（不带 query_id）按筛选与排序取前 2,000 个 Token ID 存入进程内 LRU（TTL 10 分钟），
-         *     返回 `query_id` 与第一批。翻页只传 `query_id` + `offset`，其余参数被忽略，顺序不变、数值为当前值。
-         *     排序值相同按 Token ID 升序；排序列为 null 时无论升降序都排最后；设置了某字段的 min/max 时该字段为 null 的 Token 被排除。
+         * 资金流入列表（固定快照分页）
+         * @description 首次请求（不带 query_id）在一致的投影版本上筛选、排序，冻结前 2,000 行完整值与 list_version，
+         *     存入 API 进程内有界 LRU（TTL 10 分钟），返回 query_id 与第一批。翻页只读 query_id/offset/limit，切片原快照。
+         *     排序值相同按 (chain, address) 升序；排序列为 null 时恒排最后；设置某字段 min/max 时该字段为 null 的行被排除。
+         *     query_id 过期、不在本实例或投影已失效时返回 410，前端按 URL 条件重新查询。
          */
         get: operations["listInflow"];
         put?: never;
@@ -128,7 +129,8 @@ export interface paths {
         put?: never;
         /**
          * 可见行 10 秒刷新（不重排）
-         * @description 新查询限流不计入。不存在或不再收录的 Token 不出现在 items 中，前端保留旧值并标记过期。
+         * @description 可见行每 10 秒刷新数值，不改变顺序。带 query_id 时校验窗口、计价与 list_version；名单已换版或快照失效返回 410，
+         *     前端暂停刷新、保留旧分页并提示重查。已不在投影中的 Token 不出现在 items 中。观察列表调用不带 query_id，读当前投影。
          */
         post: operations["batchTokens"];
         delete?: never;
@@ -168,8 +170,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * K 线（主池，D55/D105）
-         * @description 只接受 6 个周期，其他返回 400。1s/30s 超过 24 小时的区间由 pool_trades 现算（D89）。单次最多 1,000 根。
+         * K 线（按主池，1s/30s 由成交现算）
+         * @description 基于主池成交生成；主池切换处在 pool_switches 标注。美元价缺失的区间写入 gaps；未收盘或窗口未完整覆盖的柱放在 observed_items。
          */
         get: operations["getCandles"];
         put?: never;
@@ -190,7 +192,10 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** 活动流（成交、加减池） */
+        /**
+         * 活动流（成交、加减池）
+         * @description 按链上位置倒序的成交与加减池记录，游标分页。label 过滤基于当前激活名单与地址标签；未归因成交只出现在 all。
+         */
         get: operations["listActivities"];
         put?: never;
         post?: never;
@@ -210,7 +215,10 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** 持有者（D107：仅采集范围内创建的 Token 完整覆盖） */
+        /**
+         * 持有者（带覆盖范围）
+         * @description 当前余额排名。余额来自已采集范围内的转账/成交增量；Token 创建早于采集起点时 coverage.status 为 partial。
+         */
         get: operations["listHolders"];
         put?: never;
         post?: never;
@@ -306,7 +314,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 确认导入，生成新名单版本（D92） */
+        /** 确认导入，异步准备新名单版本 */
         post: operations["applySmartMoneyImport"];
         delete?: never;
         options?: never;
@@ -361,7 +369,7 @@ export interface paths {
         /** 排除名单 */
         get: operations["listSmartMoneyExclusions"];
         put?: never;
-        /** 排除地址（自动识别不再纳入），生成新名单版本 */
+        /** 排除全部聪明钱统计，保留管理记录；异步生成新名单版本 */
         post: operations["addSmartMoneyExclusion"];
         delete?: never;
         options?: never;
@@ -389,6 +397,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/smart-money/imports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 恢复导入预览与已应用版本关联 */
+        get: operations["getSmartMoneyImport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/smart-money/list-builds/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: components["schemas"]["ListVersion"];
+            };
+            cookie?: never;
+        };
+        /** 查询名单准备、失败、阻塞与激活状态 */
+        get: operations["getSmartMoneyListBuild"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/smart-money/list-builds/{version}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 重试相同成员版本；不创建版本、不重新激活已完成版本 */
+        post: operations["retrySmartMoneyListBuild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/health": {
         parameters: {
             query?: never;
@@ -396,7 +457,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 运行质量：采集、解析、失败任务、预算 */
+        /**
+         * 运行质量：采集进度、解码模块、失败任务、数据源预算
+         * @description 各链数据流游标与积压、各解码模块进度与失败、当月数据源用量。数据库不可用时返回 503。
+         */
         get: operations["getAdminHealth"];
         put?: never;
         post?: never;
@@ -415,7 +479,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 重试失败的解析任务 */
+        /** 重试失败的解码任务 */
         post: operations["retryParseFailure"];
         delete?: never;
         options?: never;
@@ -438,33 +502,24 @@ export interface components {
         SummaryWindow: "5m" | "1h" | "4h" | "24h";
         /** @enum {string} */
         CandleInterval: "1s" | "30s" | "1m" | "5m" | "1h" | "1d";
-        /** @description Solana base58（32 字节）或 EVM 0x 校验和地址（20 字节） */
         Address: string;
-        /** @description Solana base58 签名或 EVM 0x 交易 hash */
+        PoolIdentifier: components["schemas"]["Address"] | string;
         TxHash: string;
         /** @example 30786.83 */
         Decimal: string;
         NullableDecimal: string | null;
-        /**
-         * @description USD 或原生币符号
-         * @enum {string}
-         */
+        /** @enum {string} */
         Currency: "USD" | "SOL" | "ETH" | "BNB";
         /** Format: date-time */
         Timestamp: string;
-        /** @description 聪明钱名单版本（不透明字符串，D30/D92） */
         ListVersion: string;
-        /**
-         * @description 业务错误码（与 backend/internal/obs 目录一致，测试强制同步）
-         * @enum {string}
-         */
+        /** @enum {string} */
         ErrorCode: "invalid_param" | "invalid_range" | "unauthorized" | "forbidden" | "not_found" | "import_closed" | "query_expired" | "file_too_large" | "too_many_rows" | "invalid_file" | "secret_detected" | "rate_limited" | "busy" | "api_unavailable" | "internal";
         ErrorResponse: {
             error: {
                 code: components["schemas"]["ErrorCode"];
                 message: string;
                 field?: string | null;
-                /** @description 与响应头 X-Trace-Id 相同，用于在日志中定位 */
                 trace_id: string;
             };
         };
@@ -479,7 +534,6 @@ export interface components {
             symbol: "SOL" | "ETH" | "BNB";
             price_usd: components["schemas"]["NullableDecimal"];
             change_24h_pct: components["schemas"]["NullableDecimal"];
-            /** @description 最近价格超过 5 分钟 */
             stale: boolean;
             as_of: components["schemas"]["Timestamp"];
         };
@@ -497,13 +551,9 @@ export interface components {
             address: components["schemas"]["Address"];
             symbol: string;
             name: string;
-            /** @description 经后端代理的图标地址；为空时前端按地址生成像素头像 */
             image_url?: string | null;
             launch_platform?: string | null;
-            /**
-             * Format: date-time
-             * @description 经核验的 Launch 时间（D27）
-             */
+            /** Format: date-time */
             launch_at?: string | null;
         };
         SearchToken: components["schemas"]["TokenRef"] & {
@@ -526,23 +576,20 @@ export interface components {
             as_of: components["schemas"]["Timestamp"];
             list_version: components["schemas"]["ListVersion"];
             window: components["schemas"]["Window"];
-            /** @description 窗口内聪明钱买入额 − 卖出额（全部收录 Token） */
+            /** @enum {string} */
+            coverage: "partial" | "complete";
             net_inflow_usd: components["schemas"]["NullableDecimal"];
-            /** @description 与上一个等长窗口相比的变化百分比；上一窗口为 0 或未知时为 null */
             net_inflow_change_pct: components["schemas"]["NullableDecimal"];
-            /** @description 窗口内有成交的去重聪明钱地址数 */
             active_wallets: number | null;
-            /** @description 列表收录的 Token 数（窗口内至少 1 笔成交） */
-            tracked_tokens: number;
-            /** @description 窗口内新发行且被收录的 Token 数 */
+            tracked_tokens: number | null;
             new_tokens: number | null;
-            /** @description 窗口内聪明钱买入额 */
             buy_volume_usd: components["schemas"]["NullableDecimal"];
-            /** @description 窗口内聪明钱卖出额 */
             sell_volume_usd: components["schemas"]["NullableDecimal"];
-            /** @description 买入额 ÷（买入额＋卖出额）×100，“市场脉搏”卡片 */
             buy_share_pct: components["schemas"]["NullableDecimal"];
-            /** @description 窗口等分 16 桶的聪明钱净流入，用于卡片柱图 */
+            large_buy_volume_usd: components["schemas"]["NullableDecimal"];
+            small_buy_volume_usd: components["schemas"]["NullableDecimal"];
+            large_buy_share_pct: components["schemas"]["NullableDecimal"];
+            small_buy_share_pct: components["schemas"]["NullableDecimal"];
             inflow_bars: components["schemas"]["NullableDecimal"][];
         };
         Facet: {
@@ -552,9 +599,13 @@ export interface components {
             name: string;
             chain?: components["schemas"]["Chain"];
             volume_usd: components["schemas"]["NullableDecimal"];
-            token_count: number;
+            token_count: number | null;
+            /** Format: int64 */
+            observed_token_count: number;
         };
         FacetsResponse: {
+            /** @enum {string} */
+            coverage: "partial" | "complete";
             dexes: components["schemas"]["Facet"][];
             platforms: components["schemas"]["Facet"][];
         };
@@ -563,7 +614,7 @@ export interface components {
          * @enum {string}
          */
         InflowSortKey: "age" | "sm_holders" | "sm_trades" | "market_cap" | "liquidity" | "trades" | "volume" | "net_inflow";
-        /** @description 列表行；同一 Token 多池只出现一次，金额为全部池合计（D53/D56）。 */
+        /** @description 资金流入一行。trades/buys/sells/volume/net_inflow 等完整统计在 coverage=partial 时为 null；observed 为已看到成交的下界计数。 */
         InflowRow: {
             token: components["schemas"]["TokenRef"];
             currency: components["schemas"]["Currency"];
@@ -574,8 +625,17 @@ export interface components {
             trades: number | null;
             buys: number | null;
             sells: number | null;
+            observed: {
+                /** Format: int64 */
+                trades: number;
+                /** Format: int64 */
+                buys: number;
+                /** Format: int64 */
+                sells: number;
+            };
+            /** @enum {string} */
+            coverage: "partial" | "complete";
             volume: components["schemas"]["NullableDecimal"];
-            /** @description 聪明钱买入额 − 卖出额 */
             net_inflow: components["schemas"]["NullableDecimal"];
             sm_holders: number | null;
             sm_trades: number | null;
@@ -583,17 +643,15 @@ export interface components {
             age_seconds: number | null;
             dexes: string[];
             socials: components["schemas"]["Socials"];
-            /** @description 窗口等分 20 桶收盘价；无成交的桶为 null */
             sparkline: components["schemas"]["NullableDecimal"][];
         };
         InflowPage: {
             query_id: string;
             list_version: components["schemas"]["ListVersion"];
             as_of: components["schemas"]["Timestamp"];
+            chain_as_of?: components["schemas"]["ChainTimes"];
             window: components["schemas"]["Window"];
-            /** @description 本次快照的 Token 数（≤2,000） */
             total: number;
-            /** @description 实际匹配超过 2,000 个，只缓存前 2,000 个 */
             truncated: boolean;
             offset: number;
             next_offset: number | null;
@@ -610,14 +668,22 @@ export interface components {
              * @enum {string}
              */
             currency: "usd" | "native";
+            query_id?: string;
             list_version?: components["schemas"]["ListVersion"];
             tokens: components["schemas"]["TokenKey"][];
         };
         BatchResponse: {
             as_of: components["schemas"]["Timestamp"];
+            chain_as_of?: components["schemas"]["ChainTimes"];
+            list_version: components["schemas"]["ListVersion"];
             items: components["schemas"]["InflowRow"][];
         };
-        /** @description 全部钱包口径（token-metrics §3） */
+        /** @description 各链投影实际截止时间；全部链视图下各链可能不同。 */
+        ChainTimes: {
+            solana?: components["schemas"]["Timestamp"];
+            base?: components["schemas"]["Timestamp"];
+            bsc?: components["schemas"]["Timestamp"];
+        };
         WindowSummary: {
             window: components["schemas"]["SummaryWindow"];
             volume: components["schemas"]["NullableDecimal"];
@@ -629,32 +695,26 @@ export interface components {
             sell_volume: components["schemas"]["NullableDecimal"];
             price_change_pct: components["schemas"]["NullableDecimal"];
         };
+        /** @description full：Token 在采集起点之后创建，余额从创建起完整重放；partial：创建更早，只含采集后变化；unknown：尚未处理。 */
         HolderCoverage: {
-            /**
-             * @description full＝创建于采集下界 L 之后（D107）；partial＝更早创建，余额不完整
-             * @enum {string}
-             */
+            /** @enum {string} */
             status: "full" | "partial" | "unknown";
-            /**
-             * Format: date-time
-             * @description 覆盖起点（采集下界 L 或创建时间）
-             */
+            /** Format: date-time */
             since: string | null;
             as_of: components["schemas"]["Timestamp"];
         };
         PoolRef: {
-            address: components["schemas"]["Address"];
+            address: components["schemas"]["PoolIdentifier"];
             /** @example PumpSwap */
             dex: string;
             /** @example SOL */
-            quote_symbol: string;
+            quote_symbol: string | null;
         };
         TokenDetail: {
             token: components["schemas"]["TokenRef"];
             currency: components["schemas"]["Currency"];
             as_of: components["schemas"]["Timestamp"];
             decimals: number;
-            /** @description 已按 decimals 换算的总供应量 */
             total_supply: components["schemas"]["NullableDecimal"];
             socials: components["schemas"]["Socials"];
             creator: {
@@ -670,30 +730,39 @@ export interface components {
             holders: number | null;
             sm_holders: number | null;
             ath_market_cap: components["schemas"]["NullableDecimal"];
-            /**
-             * Format: date-time
-             * @description 历史最高市值的统计起点（早于采集下界时为 L）
-             */
+            /** Format: date-time */
             ath_since: string | null;
             holder_coverage: components["schemas"]["HolderCoverage"];
             windows: components["schemas"]["WindowSummary"][];
-            /** @description 同名候选，只做提示不合并 */
             same_name: components["schemas"]["SearchToken"][];
         };
         Candle: {
-            /** @description 桶起点 Unix 秒 */
             t: number;
             o: components["schemas"]["Decimal"];
             h: components["schemas"]["Decimal"];
             l: components["schemas"]["Decimal"];
             c: components["schemas"]["Decimal"];
-            /** @description 成交额（currency 计价） */
             v: components["schemas"]["Decimal"];
+        };
+        ObservedCandle: {
+            t: number;
+            o: components["schemas"]["Decimal"];
+            h: components["schemas"]["Decimal"];
+            l: components["schemas"]["Decimal"];
+            c: components["schemas"]["Decimal"];
+            v: components["schemas"]["NullableDecimal"];
+            closed: boolean;
+        };
+        CandleGap: {
+            from: number;
+            to: number;
+            /** @enum {string} */
+            reason: "price_unavailable";
         };
         PoolSwitch: {
             t: number;
-            from_pool: string | null;
-            to_pool: string;
+            from_pool: components["schemas"]["PoolIdentifier"] | null;
+            to_pool: components["schemas"]["PoolIdentifier"];
             /** @enum {string} */
             reason: "liquidity" | "graduation";
         };
@@ -702,7 +771,14 @@ export interface components {
             /** @enum {string} */
             metric: "price" | "market_cap";
             currency: components["schemas"]["Currency"];
+            as_of: components["schemas"]["Timestamp"];
+            /** @enum {string} */
+            coverage: "complete" | "partial";
+            /** @enum {string|null} */
+            empty_reason: "no_main_pool" | "no_price" | "no_trades" | null;
             items: components["schemas"]["Candle"][];
+            observed_items: components["schemas"]["ObservedCandle"][];
+            gaps: components["schemas"]["CandleGap"][];
             pool_switches: components["schemas"]["PoolSwitch"][];
         };
         /** @enum {string} */
@@ -715,34 +791,40 @@ export interface components {
         WalletRef: {
             address: components["schemas"]["Address"];
             labels: components["schemas"]["WalletLabel"][];
-            /** @description 名单中的名称（如 KOL 名） */
             display_name: string | null;
         };
         Activity: {
-            /** @description 链上位置 block_num:tx_index:item_index（D78） */
             id: string;
             time: components["schemas"]["Timestamp"];
             /** @enum {string} */
             kind: "buy" | "sell" | "add" | "remove";
-            /** @description 归因未证明时为 null（D25） */
             wallet: components["schemas"]["WalletRef"] | null;
             /** @enum {string|null} */
             attribution: "confirmed" | "inferred" | "ambiguous" | null;
             token_amount: components["schemas"]["Decimal"];
-            quote_amount: components["schemas"]["Decimal"];
-            quote_symbol: string;
+            quote_amount: components["schemas"]["NullableDecimal"];
+            quote_symbol: string | null;
             value_usd: components["schemas"]["NullableDecimal"];
             price_usd: components["schemas"]["NullableDecimal"];
             market_cap_usd: components["schemas"]["NullableDecimal"];
             tx_hash: components["schemas"]["TxHash"];
-            pool: components["schemas"]["Address"];
+            pool: components["schemas"]["PoolIdentifier"];
             dex: string;
         };
-        /** @description 每个地址类型筛选项的数量（M1 只有 all、smart_money） */
+        /** @description 最近 24 小时各地址类型的成交数；窗口未完整覆盖时为 null。 */
         LabelCounts: {
-            [key: string]: number;
+            /** Format: int64 */
+            all: number | null;
+            /** Format: int64 */
+            smart_money: number | null;
+        } & {
+            [key: string]: number | null;
         };
         ActivitiesResponse: {
+            /** @enum {string} */
+            coverage: "partial" | "complete";
+            /** @enum {string} */
+            label_counts_coverage: "partial" | "complete";
             items: components["schemas"]["Activity"][];
             next_cursor: string | null;
             label_counts: components["schemas"]["LabelCounts"];
@@ -752,13 +834,10 @@ export interface components {
             wallet: components["schemas"]["WalletRef"];
             amount: components["schemas"]["Decimal"];
             share_pct: components["schemas"]["NullableDecimal"];
-            /** @description 原生币余额（按需查 RPC，D79），未查到为 null */
             native_balance: components["schemas"]["NullableDecimal"];
             avg_buy_price_usd: components["schemas"]["NullableDecimal"];
             avg_sell_price_usd: components["schemas"]["NullableDecimal"];
-            /** @description M2 起提供，M1 为 null */
             realized_pnl_usd: components["schemas"]["NullableDecimal"];
-            /** @description M2 起提供，M1 为 null */
             unrealized_pnl_usd: components["schemas"]["NullableDecimal"];
         };
         HoldersResponse: {
@@ -768,12 +847,12 @@ export interface components {
             next_cursor: string | null;
         };
         Pool: {
-            address: components["schemas"]["Address"];
+            address: components["schemas"]["PoolIdentifier"];
             /** @example Uniswap */
             dex: string;
             /** @example uniswap_v4 */
             protocol: string;
-            quote_symbol: string;
+            quote_symbol: string | null;
             liquidity_usd: components["schemas"]["NullableDecimal"];
             reserve_token: components["schemas"]["NullableDecimal"];
             reserve_quote: components["schemas"]["NullableDecimal"];
@@ -792,15 +871,17 @@ export interface components {
             /** @enum {string} */
             kind: "add" | "remove";
             token_amount: components["schemas"]["Decimal"];
-            quote_amount: components["schemas"]["Decimal"];
-            quote_symbol: string;
+            quote_amount: components["schemas"]["NullableDecimal"];
+            quote_symbol: string | null;
             value_usd: components["schemas"]["NullableDecimal"];
             wallet: components["schemas"]["WalletRef"] | null;
             tx_hash: components["schemas"]["TxHash"];
-            pool: components["schemas"]["Address"];
+            pool: components["schemas"]["PoolIdentifier"];
             dex: string;
         };
         LiquidityEventsResponse: {
+            /** @enum {string} */
+            coverage: "partial" | "complete";
             items: components["schemas"]["LiquidityEvent"][];
             next_cursor: string | null;
         };
@@ -818,10 +899,7 @@ export interface components {
             holders: number | null;
             items: components["schemas"]["TokenSmartMoneyEntry"][];
         };
-        /**
-         * @description duplicate＝文件内重复；existing＝已在名单中，确认后合并来源与标签
-         * @enum {string}
-         */
+        /** @enum {string} */
         ImportRowStatus: "valid" | "invalid" | "duplicate" | "existing";
         ImportRow: {
             line: number;
@@ -840,6 +918,8 @@ export interface components {
             created_at: components["schemas"]["Timestamp"];
             expires_at: components["schemas"]["Timestamp"];
             applied: boolean;
+            applied_list_version: string | null;
+            rows_archived: boolean;
             totals: {
                 rows: number;
                 valid: number;
@@ -847,12 +927,39 @@ export interface components {
                 duplicate: number;
                 existing: number;
             };
-            /** @description 逐行结果（最多返回前 500 行；错误行全部返回） */
             rows: components["schemas"]["ImportRow"][];
+        };
+        /** @enum {string} */
+        ListStatus: "building" | "active" | "retired";
+        /** @enum {string} */
+        ListBuildState: "queued" | "running" | "ready" | "activated" | "failed";
+        ListChangeCounts: {
+            added: number;
+            merged: number;
+            removed: number;
+            total_members: number;
+        };
+        /** @description 名单版本异步准备状态：准备期间旧版本继续生效，就绪后整体切换。 */
+        ListBuildStatus: {
+            list_version: components["schemas"]["ListVersion"];
+            previous_version: components["schemas"]["ListVersion"];
+            active_version: components["schemas"]["ListVersion"];
+            status: components["schemas"]["ListStatus"];
+            build_status: components["schemas"]["ListBuildState"];
+            blocking_version: string | null;
+            created_at: components["schemas"]["Timestamp"];
+            /** Format: date-time */
+            activated_at: string | null;
+            /** @enum {string|null} */
+            error_code: "invalid_param" | "invalid_range" | "unauthorized" | "forbidden" | "not_found" | "import_closed" | "query_expired" | "file_too_large" | "too_many_rows" | "invalid_file" | "secret_detected" | "rate_limited" | "busy" | "api_unavailable" | "internal" | null;
+            change_counts: components["schemas"]["ListChangeCounts"];
         };
         ListVersionChange: {
             list_version: components["schemas"]["ListVersion"];
             previous_version: components["schemas"]["ListVersion"];
+            active_version: components["schemas"]["ListVersion"];
+            status: components["schemas"]["ListStatus"];
+            build_status: components["schemas"]["ListBuildState"];
             added: number;
             merged: number;
             removed: number;
@@ -886,20 +993,17 @@ export interface components {
             created_at: components["schemas"]["Timestamp"];
         };
         ExclusionsResponse: {
+            list_version: components["schemas"]["ListVersion"];
             items: components["schemas"]["Exclusion"][];
             next_cursor: string | null;
         };
+        /** @description anchor 为数据流起点；lower_bound/history_position 为回补下界与进度；forward_position 为前向连续完成位置。 */
         ChainHealth: {
             chain: components["schemas"]["Chain"];
-            /** @description 最近观察到的链头 */
             head: number | null;
-            /** @description 启动锚点 A（D74） */
             anchor: number;
-            /** @description 历史下界 L（D73） */
             lower_bound: number;
-            /** @description 前向连续完成位置 */
             forward_position: number | null;
-            /** @description 历史回溯连续完成位置 */
             history_position: number | null;
             backlog_blocks: number | null;
             lag_seconds: number | null;
@@ -915,6 +1019,7 @@ export interface components {
             } | null;
             budget_paused: boolean;
         };
+        /** @description 按协议解码模块统计进度、隔离与未识别指令数。 */
         ParserHealth: {
             chain: components["schemas"]["Chain"];
             /** @example pumpswap */
@@ -930,7 +1035,6 @@ export interface components {
             id: string;
             chain: components["schemas"]["Chain"];
             module: string;
-            /** @description 链上位置 */
             position: string;
             error: string;
             attempts: number;
@@ -938,16 +1042,13 @@ export interface components {
             status: "failed" | "queued";
             last_attempt_at: components["schemas"]["Timestamp"];
         };
+        /** @description 当月数据源用量估算；到上限时暂停回补与新增付费请求。 */
         Budget: {
             /** @example 2026-10 */
             month: string;
-            /** @description 按请求数估算（D104） */
             spent_usd: components["schemas"]["Decimal"];
             limit_usd: components["schemas"]["Decimal"];
-            /**
-             * @description 70% 提醒、80% 停历史回溯与补证、100% 停前向（D104）
-             * @enum {string}
-             */
+            /** @enum {string} */
             state: "normal" | "warn" | "history_paused" | "paused";
         };
         AdminHealth: {
@@ -979,6 +1080,16 @@ export interface components {
                 "application/json": components["schemas"]["ErrorResponse"];
             };
         };
+        /** @description 管理接口未配置 RADAR_ADMIN_TOKEN，拒绝所有管理请求 */
+        Unauthorized: {
+            headers: {
+                "X-Trace-Id": components["headers"]["XTraceId"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
         /** @description 管理凭证缺失或错误 */
         Forbidden: {
             headers: {
@@ -1000,8 +1111,39 @@ export interface components {
                 "application/json": components["schemas"]["ErrorResponse"];
             };
         };
-        /** @description 数据库查询超过 2 秒；前端保留已加载行并提示重试 */
+        /** @description 查询超过 2 秒或投影正在切换；前端保留已加载行并提示重试 */
         Busy: {
+            headers: {
+                "X-Trace-Id": components["headers"]["XTraceId"];
+                "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description 游标无效、被修改或与当前筛选不匹配 */
+        ListCursorExpired: {
+            headers: {
+                "X-Trace-Id": components["headers"]["XTraceId"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description 内部错误；不含数据库或凭证细节 */
+        InternalError: {
+            headers: {
+                "X-Trace-Id": components["headers"]["XTraceId"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description 所需投影尚未就绪（error.code=api_unavailable） */
+        Unavailable: {
             headers: {
                 "X-Trace-Id": components["headers"]["XTraceId"];
                 "Retry-After"?: number;
@@ -1013,20 +1155,17 @@ export interface components {
         };
     };
     parameters: {
-        /** @description 不传表示全部链 */
+        IdempotencyKey: string;
         ChainFilter: components["schemas"]["Chain"];
         ChainPath: components["schemas"]["Chain"];
         AddressPath: components["schemas"]["Address"];
         Window: components["schemas"]["Window"];
-        /** @description 计价，usd 或该链原生币（D53） */
         Currency: "usd" | "native";
-        /** @description 上一页返回的 next_cursor */
         Cursor: string;
         Limit: number;
     };
     requestBodies: never;
     headers: {
-        /** @description 本次请求的 trace id（32 位十六进制） */
         XTraceId: string;
     };
     pathItems: never;
@@ -1042,7 +1181,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 进程就绪且数据库可达 */
+            /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1051,7 +1190,7 @@ export interface operations {
                     "application/json": components["schemas"]["HealthResponse"];
                 };
             };
-            /** @description 数据库不可达 */
+            /** @description 依赖不可用 */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -1080,13 +1219,14 @@ export interface operations {
                     "application/json": components["schemas"]["NativePricesResponse"];
                 };
             };
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     search: {
         parameters: {
             query: {
                 q: string;
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
                 limit?: number;
             };
@@ -1106,12 +1246,13 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getSmartMoneyOverview: {
         parameters: {
             query?: {
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
                 window?: components["parameters"]["Window"];
             };
@@ -1131,12 +1272,13 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getInflowFacets: {
         parameters: {
             query?: {
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
                 window?: components["parameters"]["Window"];
             };
@@ -1156,29 +1298,25 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listInflow: {
         parameters: {
             query?: {
-                /** @description 翻页锚点；带上时只读 offset。 */
                 query_id?: string;
                 offset?: number;
                 limit?: number;
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
                 window?: components["parameters"]["Window"];
-                /** @description 计价，usd 或该链原生币（D53） */
                 currency?: components["parameters"]["Currency"];
                 sort?: components["schemas"]["InflowSortKey"];
                 order?: "asc" | "desc";
-                /** @description 逗号分隔的 DEX id（来自 facets），与 platform 取交集。 */
                 dex?: string;
-                /** @description 逗号分隔的发射平台 id。 */
                 platform?: string;
                 min_market_cap?: components["schemas"]["Decimal"];
                 max_market_cap?: components["schemas"]["Decimal"];
-                /** @description 百分比数值，如 "-20" 表示 -20% */
                 min_price_change?: components["schemas"]["Decimal"];
                 max_price_change?: components["schemas"]["Decimal"];
                 min_liquidity?: components["schemas"]["Decimal"];
@@ -1195,13 +1333,9 @@ export interface operations {
                 max_sm_trades?: number;
                 min_holders?: number;
                 max_holders?: number;
-                /** @description 币龄下限（秒） */
                 min_age?: number;
-                /** @description 币龄上限（秒） */
                 max_age?: number;
-                /** @description 开发者已清仓 / 未清仓（M3 起有数据，M1 传入时按 null 排除）。 */
                 dev_status?: "sold" | "holding";
-                /** @description 逗号分隔，要求同时具备：twitter,telegram,github,website。 */
                 socials?: string;
             };
             header?: never;
@@ -1230,6 +1364,7 @@ export interface operations {
                 };
             };
             429: components["responses"]["RateLimited"];
+            500: components["responses"]["InternalError"];
             503: components["responses"]["Busy"];
         };
     };
@@ -1256,12 +1391,22 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            /** @description 快照已失效或名单已换版；暂停刷新并提示重新查询 */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getToken: {
         parameters: {
             query?: {
-                /** @description 计价，usd 或该链原生币（D53） */
                 currency?: components["parameters"]["Currency"];
             };
             header?: never;
@@ -1284,6 +1429,8 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getCandles: {
@@ -1291,11 +1438,8 @@ export interface operations {
             query: {
                 interval: components["schemas"]["CandleInterval"];
                 metric?: "price" | "market_cap";
-                /** @description 计价，usd 或该链原生币（D53） */
                 currency?: components["parameters"]["Currency"];
-                /** @description Unix 秒（含） */
                 from?: number;
-                /** @description Unix 秒（不含），默认当前 */
                 to?: number;
                 limit?: number;
             };
@@ -1319,18 +1463,17 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listActivities: {
         parameters: {
             query?: {
                 kind?: "all" | "trade" | "liquidity";
-                /** @description 地址类型筛选；M1 只有 all 与 smart_money，其余标签 M3 起生效。未归因成交只出现在 all 中。 */
                 label?: components["schemas"]["ActivityLabelFilter"];
-                /** @description Unix 秒（含），K 线打点用 */
                 from?: number;
                 to?: number;
-                /** @description 上一页返回的 next_cursor */
                 cursor?: components["parameters"]["Cursor"];
                 limit?: components["parameters"]["Limit"];
             };
@@ -1354,13 +1497,14 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listHolders: {
         parameters: {
             query?: {
                 label?: "all" | "smart_money";
-                /** @description 上一页返回的 next_cursor */
                 cursor?: components["parameters"]["Cursor"];
                 limit?: components["parameters"]["Limit"];
             };
@@ -1382,7 +1526,10 @@ export interface operations {
                     "application/json": components["schemas"]["HoldersResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listPools: {
@@ -1406,13 +1553,15 @@ export interface operations {
                     "application/json": components["schemas"]["PoolsResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listLiquidityEvents: {
         parameters: {
             query?: {
-                /** @description 上一页返回的 next_cursor */
                 cursor?: components["parameters"]["Cursor"];
                 limit?: components["parameters"]["Limit"];
             };
@@ -1434,7 +1583,10 @@ export interface operations {
                     "application/json": components["schemas"]["LiquidityEventsResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getTokenSmartMoney: {
@@ -1458,7 +1610,10 @@ export interface operations {
                     "application/json": components["schemas"]["TokenSmartMoneyResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     createSmartMoneyImport: {
@@ -1477,7 +1632,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 校验报告 */
+            /** @description 已创建 */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -1487,8 +1642,9 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
-            /** @description 文件超过 5MB 或 10,000 行 */
+            /** @description 文件超过上传上限 */
             413: {
                 headers: {
                     [name: string]: unknown;
@@ -1497,6 +1653,8 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     applySmartMoneyImport: {
@@ -1510,18 +1668,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
+            202: {
                 headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: 2;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ListVersionChange"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
-            /** @description 报告已应用或已过期 */
+            /** @description 导入已过期或已应用 */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1530,18 +1691,17 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listSmartMoneyMembers: {
         parameters: {
             query?: {
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
                 source?: "all" | "import" | "auto";
                 tag?: string;
-                /** @description 地址前缀或名称 */
                 q?: string;
-                /** @description 上一页返回的 next_cursor */
                 cursor?: components["parameters"]["Cursor"];
                 limit?: components["parameters"]["Limit"];
             };
@@ -1560,13 +1720,20 @@ export interface operations {
                     "application/json": components["schemas"]["MembersResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
+            410: components["responses"]["ListCursorExpired"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     removeSmartMoneyMember: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 chain: components["parameters"]["ChainPath"];
                 address: components["parameters"]["AddressPath"];
@@ -1575,25 +1742,29 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
+            202: {
                 headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: 2;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ListVersionChange"];
                 };
             };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     listSmartMoneyExclusions: {
         parameters: {
             query?: {
-                /** @description 不传表示全部链 */
                 chain?: components["parameters"]["ChainFilter"];
-                /** @description 上一页返回的 next_cursor */
                 cursor?: components["parameters"]["Cursor"];
                 limit?: components["parameters"]["Limit"];
             };
@@ -1612,13 +1783,20 @@ export interface operations {
                     "application/json": components["schemas"]["ExclusionsResponse"];
                 };
             };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
+            410: components["responses"]["ListCursorExpired"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     addSmartMoneyExclusion: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
             path?: never;
             cookie?: never;
         };
@@ -1628,9 +1806,11 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
+            202: {
                 headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: 2;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1638,16 +1818,51 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     removeSmartMoneyExclusion: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 chain: components["parameters"]["ChainPath"];
                 address: components["parameters"]["AddressPath"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
+            202: {
+                headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: 2;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListVersionChange"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
+        };
+    };
+    getSmartMoneyImport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
             };
             cookie?: never;
         };
@@ -1659,11 +1874,79 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ListVersionChange"];
+                    "application/json": components["schemas"]["ImportReport"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
+        };
+    };
+    getSmartMoneyListBuild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: components["schemas"]["ListVersion"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListBuildStatus"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
+        };
+    };
+    retrySmartMoneyListBuild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: components["schemas"]["ListVersion"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 该版本已就绪或已激活，无需重试 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListBuildStatus"];
+                };
+            };
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
+            202: {
+                headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: 2;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListBuildStatus"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
     getAdminHealth: {
@@ -1684,7 +1967,20 @@ export interface operations {
                     "application/json": components["schemas"]["AdminHealth"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
+            500: components["responses"]["InternalError"];
+            /** @description 数据库不可用 */
+            503: {
+                headers: {
+                    "X-Trace-Id": components["headers"]["XTraceId"];
+                    "Retry-After"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     retryParseFailure: {
@@ -1698,7 +1994,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 已重新排队 */
+            /** @description 已接受，后台异步准备；用 list-builds/{version} 查询状态 */
             202: {
                 headers: {
                     [name: string]: unknown;
@@ -1707,8 +2003,11 @@ export interface operations {
                     "application/json": components["schemas"]["ParseFailure"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+            503: components["responses"]["Unavailable"];
         };
     };
 }

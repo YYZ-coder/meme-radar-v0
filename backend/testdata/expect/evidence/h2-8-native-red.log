@@ -1,0 +1,12 @@
+# h2-8-native red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgTokenDetailNative ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 02e9de1fdf9b9ea143c8237c80e4f0124fdd5745f5650da2c59301f2f3e00b24 internal/pgapi/detail_native_test.go
+=== RUN   TestPgTokenDetailNative
+    detail_native_test.go:12: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061?currency=native = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"3f30defc42c46e5c66d7304dbd95008b"}}
+--- FAIL: TestPgTokenDetailNative (0.25s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.957s
+FAIL
+# exit_status=1

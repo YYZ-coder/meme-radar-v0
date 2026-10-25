@@ -1,0 +1,16 @@
+# H1 1-coverage red base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# UTC 2026-10-23T14:08:01.322668+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestChainAsOfAndCoverage$ ./internal/store
+# sha256 internal/store/window_test.go b319b2cb1676a9fda6fd707cc83e21cf7f9f063bdc5918c71b45cd1be0c0541b
+# test diff sha256 790d0e62c56e6ed0e1d605e52bce6dc82222317751bb8ea6d381067d2377e717
+=== RUN   TestChainAsOfAndCoverage
+    window_test.go:46: ChainAsOf(2026-10-23 10:05:00 +0000 UTC) = 0001-01-01 00:00:00 +0000 UTC, false, <nil>; want 2026-10-23 10:01:00 +0000 UTC, true
+    window_test.go:46: ChainAsOf(2026-10-23 10:01:20 +0000 UTC) = 0001-01-01 00:00:00 +0000 UTC, false, <nil>; want 2026-10-23 10:01:00 +0000 UTC, true
+    window_test.go:55: Coverage(+15s,+45s) = false, <nil>; want true
+    window_test.go:55: Coverage(+75s,+95s) = false, <nil>; want true
+--- FAIL: TestChainAsOfAndCoverage (0.58s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	1.601s
+FAIL
+
+# exit_code=1

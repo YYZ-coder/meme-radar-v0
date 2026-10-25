@@ -1,0 +1,263 @@
+# scripts/commit.sh successful feature commit=245c3ffc6d8bce5c2a6ac66978eaf27275203b02
+# Node24; local real PG; E2E ports31410/31420; full make check via required pre-commit hook
+/Library/Developer/CommandLineTools/usr/bin/make -C backend check
+go vet ./...
+go build ./...
+go build -o bin/radar ./cmd/radar
+go test -count=1 ./...
+ok  	github.com/meme-radar/radar/cmd/radar	3.983s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	1.012s
+ok  	github.com/meme-radar/radar/internal/compute	23.019s
+ok  	github.com/meme-radar/radar/internal/config	0.416s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	1.125s
+ok  	github.com/meme-radar/radar/internal/evm	0.382s
+ok  	github.com/meme-radar/radar/internal/httpapi	2.763s
+ok  	github.com/meme-radar/radar/internal/ingest	8.134s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	0.941s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	0.848s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	0.906s
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+ok  	github.com/meme-radar/radar/internal/metadata	5.070s
+ok  	github.com/meme-radar/radar/internal/metrics	0.388s
+ok  	github.com/meme-radar/radar/internal/mockdata	1.068s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	0.334s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	0.779s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	0.974s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	0.907s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	0.897s
+ok  	github.com/meme-radar/radar/internal/parse/pump	0.816s
+ok  	github.com/meme-radar/radar/internal/parser	6.587s
+ok  	github.com/meme-radar/radar/internal/pgapi	21.222s
+ok  	github.com/meme-radar/radar/internal/prices	0.444s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	0.356s
+ok  	github.com/meme-radar/radar/internal/store	21.986s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+../scripts/backend-smoke.sh bin/radar
+backend smoke passed on port 60731
+cd frontend && npm run check
+
+> meme-radar-frontend@0.1.0 check
+> npm run format:check && npm run lint && npm run api:check && npm run typecheck && npm run test && npm run build && npm run test:smoke
+
+
+> meme-radar-frontend@0.1.0 format:check
+> prettier --check "src/**/*.{ts,tsx,css}" "*.{ts,mjs,json}" "e2e/**/*.ts"
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> meme-radar-frontend@0.1.0 lint
+> eslint . --max-warnings=0
+
+
+> meme-radar-frontend@0.1.0 api:check
+> mkdir -p .next && openapi-typescript ../api/openapi.yaml -o .next/schema.check.ts && cmp .next/schema.check.ts src/lib/api/schema.gen.ts
+
+✨ openapi-typescript 7.13.0
+🚀 ../api/openapi.yaml → .next/schema.check.ts [40.6ms]
+
+> meme-radar-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+
+> meme-radar-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /Users/yuezhang/yz/projects/meme-radar-h4/frontend
+
+
+ Test Files  27 passed (27)
+      Tests  164 passed (164)
+   Start at  12:33:06
+   Duration  3.41s (transform 2.56s, setup 2.11s, import 7.54s, tests 3.75s, environment 18.43s)
+
+
+> meme-radar-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 35ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 290ms
+  Running TypeScript ...
+  Finished TypeScript in 725ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/10) ...
+  Generating static pages using 11 workers (2/10) 
+  Generating static pages using 11 workers (4/10) 
+  Generating static pages using 11 workers (7/10) 
+✓ Generating static pages using 11 workers (10/10) in 110ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /admin/health
+├ ƒ /admin/import
+├ ƒ /admin/members
+├ ƒ /api/v1/[...path]
+├ ƒ /inflow
+├ ƒ /smart-money/inflow
+├ ƒ /smart-money/leaderboard
+├ ƒ /smart-money/signals
+└ ƒ /token/[chain]/[address]
+
+
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> meme-radar-frontend@0.1.0 test:smoke
+> playwright test
+
+[WebServer] (node:14115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 6 workers
+
+(node:14118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14121) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14117) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14119) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [chromium] › e2e/smoke/health.spec.ts:15:5 › mock API answers the contract and flags itself (59ms)
+  -   2 [chromium] › e2e/smoke/health.spec.ts:27:5 › connected mode proxies /api/v1 to the Go API and labels demo data
+  ✓   3 [chromium] › e2e/smoke/health.spec.ts:3:5 › legacy /inflow redirects and the page loads without errors (948ms)
+  ✓   4 [chromium] › e2e/smoke/facets.spec.ts:107:5 › partial overview shows unknown complete totals with bilingual coverage status (1.3s)
+  ✓   8 [chromium] › e2e/smoke/inflow.spec.ts:50:5 › infinite scroll pages with query_id and recovers from 410 (1.0s)
+  ✓   7 [chromium] › e2e/smoke/inflow.spec.ts:9:5 › chain, window, sort and filters live in the URL (1.6s)
+  ✓   9 [chromium] › e2e/smoke/inflow.spec.ts:89:5 › keeps loaded rows and offers retry on 503 (820ms)
+  ✓   5 [chromium] › e2e/smoke/facets.spec.ts:3:5 › partial facets keep unknown totals and label parsed token counts in both languages (2.1s)
+  ✓  10 [chromium] › e2e/smoke/inflow.spec.ts:129:5 › language switch is remembered by cookie (954ms)
+  ✓  13 [chromium] › e2e/smoke/inflow.spec.ts:156:5 › mobile layout stays within the viewport (668ms)
+  ✓  12 [chromium] › e2e/smoke/inflow.spec.ts:144:5 › global search opens a token (1.2s)
+  ✓  15 [chromium] › e2e/smoke/overview-buy-size.spec.ts:23:5 › market pulse displays published buy-size amounts and shares in both languages (716ms)
+  ✓  14 [chromium] › e2e/smoke/inflow.spec.ts:168:5 › a stale list pauses refresh while keeping its rows until explicit requery (1.3s)
+  ✓  16 [chromium] › e2e/smoke/overview-buy-size.spec.ts:63:5 › market pulse distinguishes incomplete buys from a known empty buy window (1.3s)
+  ✓  11 [chromium] › e2e/smoke/inflow.spec.ts:113:5 › watchlist persists in the browser and shows unknown values as -- (2.5s)
+  ✓  17 [chromium] › e2e/smoke/token-activity-coverage.spec.ts:22:7 › token activity partial coverage stays usable in zh-CN (1.2s)
+  ✓  19 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:27:7 › observed candle coverage renders with the real chart SDK in zh-CN (757ms)
+  ✓  18 [chromium] › e2e/smoke/token-activity-coverage.spec.ts:22:7 › token activity partial coverage stays usable in en (1.2s)
+  ✓  20 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:27:7 › observed candle coverage renders with the real chart SDK in en (609ms)
+  ✓  22 [chromium] › e2e/smoke/token-pool-quote.spec.ts:7:7 › proved pool with unknown quote remains readable in zh-CN (647ms)
+  ✓  23 [chromium] › e2e/smoke/token-pool-quote.spec.ts:7:7 › proved pool with unknown quote remains readable in en (563ms)
+  ✓  26 [chromium] › e2e/smoke/token.spec.ts:41:5 › partial holder coverage and unknown token (541ms)
+  ✓  21 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:66:5 › candle empty reasons remain distinct in production rendering (1.4s)
+  ✓  25 [chromium] › e2e/smoke/token.spec.ts:14:5 › chart, activity, holders and pools (930ms)
+  ✓  28 [chromium] › e2e/smoke/token.spec.ts:60:5 › English token tabs fit a phone and remain usable (419ms)
+  ✓  27 [chromium] › e2e/smoke/token.spec.ts:51:5 › token page fits a phone (1.0s)
+  ✓  24 [chromium] › e2e/smoke/token.spec.ts:5:5 › opens token detail from the list (2.0s)
+  ✓   1 [chromium] › e2e/smoke/admin.spec.ts:20:5 › admin token gate, import, exclusion and retry (9.3s)
+
+  1 skipped
+  27 passed (10.8s)
+/Library/Developer/CommandLineTools/usr/bin/make smoke-connected
+/Library/Developer/CommandLineTools/usr/bin/make -C backend build
+go build ./...
+go build -o bin/radar ./cmd/radar
+cd frontend && npm run build && npm run test:connected
+
+> meme-radar-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 54ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 236ms
+  Running TypeScript ...
+  Finished TypeScript in 929ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/10) ...
+  Generating static pages using 11 workers (2/10) 
+  Generating static pages using 11 workers (4/10) 
+  Generating static pages using 11 workers (7/10) 
+✓ Generating static pages using 11 workers (10/10) in 75ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /admin/health
+├ ƒ /admin/import
+├ ƒ /admin/members
+├ ƒ /api/v1/[...path]
+├ ƒ /inflow
+├ ƒ /smart-money/inflow
+├ ƒ /smart-money/leaderboard
+├ ƒ /smart-money/signals
+└ ƒ /token/[chain]/[address]
+
+
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> meme-radar-frontend@0.1.0 test:connected
+> RADAR_E2E_MODE=connected playwright test
+
+[WebServer] {"time":"2026-10-25T12:33:28.044703+08:00","level":"INFO","msg":"listening","addr":"127.0.0.1:31420","store":"mock"}
+[WebServer] (node:14303) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 6 workers
+
+(node:14316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14317) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14318) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14313) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14315) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -   4 [chromium] › e2e/smoke/health.spec.ts:15:5 › mock API answers the contract and flags itself
+  ✓   1 [chromium] › e2e/smoke/health.spec.ts:3:5 › legacy /inflow redirects and the page loads without errors (863ms)
+  ✓   5 [chromium] › e2e/smoke/health.spec.ts:27:5 › connected mode proxies /api/v1 to the Go API and labels demo data (976ms)
+  ✓   2 [chromium] › e2e/smoke/facets.spec.ts:107:5 › partial overview shows unknown complete totals with bilingual coverage status (1.3s)
+  ✓   8 [chromium] › e2e/smoke/inflow.spec.ts:50:5 › infinite scroll pages with query_id and recovers from 410 (973ms)
+  ✓   9 [chromium] › e2e/smoke/inflow.spec.ts:89:5 › keeps loaded rows and offers retry on 503 (1.0s)
+  ✓   7 [chromium] › e2e/smoke/inflow.spec.ts:9:5 › chain, window, sort and filters live in the URL (2.1s)
+  ✓   6 [chromium] › e2e/smoke/facets.spec.ts:3:5 › partial facets keep unknown totals and label parsed token counts in both languages (2.2s)
+  ✓  11 [chromium] › e2e/smoke/inflow.spec.ts:129:5 › language switch is remembered by cookie (597ms)
+  ✓  13 [chromium] › e2e/smoke/inflow.spec.ts:156:5 › mobile layout stays within the viewport (592ms)
+  ✓  12 [chromium] › e2e/smoke/inflow.spec.ts:144:5 › global search opens a token (961ms)
+  ✓  15 [chromium] › e2e/smoke/overview-buy-size.spec.ts:23:5 › market pulse displays published buy-size amounts and shares in both languages (777ms)
+  ✓  16 [chromium] › e2e/smoke/overview-buy-size.spec.ts:63:5 › market pulse distinguishes incomplete buys from a known empty buy window (824ms)
+  ✓  14 [chromium] › e2e/smoke/inflow.spec.ts:168:5 › a stale list pauses refresh while keeping its rows until explicit requery (1.6s)
+  ✓  10 [chromium] › e2e/smoke/inflow.spec.ts:113:5 › watchlist persists in the browser and shows unknown values as -- (3.0s)
+  ✓  20 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:27:7 › observed candle coverage renders with the real chart SDK in en (692ms)
+  ✓  17 [chromium] › e2e/smoke/token-activity-coverage.spec.ts:22:7 › token activity partial coverage stays usable in zh-CN (1.7s)
+  ✓  18 [chromium] › e2e/smoke/token-activity-coverage.spec.ts:22:7 › token activity partial coverage stays usable in en (1.6s)
+  ✓  19 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:27:7 › observed candle coverage renders with the real chart SDK in zh-CN (1.3s)
+  ✓  22 [chromium] › e2e/smoke/token-pool-quote.spec.ts:7:7 › proved pool with unknown quote remains readable in zh-CN (556ms)
+  ✓  23 [chromium] › e2e/smoke/token-pool-quote.spec.ts:7:7 › proved pool with unknown quote remains readable in en (558ms)
+  ✓  26 [chromium] › e2e/smoke/token.spec.ts:41:5 › partial holder coverage and unknown token (623ms)
+  ✓  27 [chromium] › e2e/smoke/token.spec.ts:51:5 › token page fits a phone (556ms)
+  ✓  21 [chromium] › e2e/smoke/token-candles-coverage.spec.ts:66:5 › candle empty reasons remain distinct in production rendering (1.5s)
+  ✓  25 [chromium] › e2e/smoke/token.spec.ts:14:5 › chart, activity, holders and pools (1.2s)
+  ✓  28 [chromium] › e2e/smoke/token.spec.ts:60:5 › English token tabs fit a phone and remain usable (549ms)
+  ✓  24 [chromium] › e2e/smoke/token.spec.ts:5:5 › opens token detail from the list (2.0s)
+  ✓   3 [chromium] › e2e/smoke/admin.spec.ts:20:5 › admin token gate, import, exclusion and retry (9.2s)
+
+  1 skipped
+  27 passed (10.7s)
+
+# scripts/commit.sh exit=0; feature commit created

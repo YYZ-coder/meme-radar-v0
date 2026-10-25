@@ -1,0 +1,15 @@
+# h2-5 handoff checker green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary: checker CLI; expectations: 00-common deployed 0010 vs local reserved 0012
+# test_sha256 980e5189f4f2622fbb973ba4a83a597e1d038564a06181b6389f2dcffedf3ab6 scripts/test_check_handoff.py
+# command: python3 -m unittest discover -s scripts -p test_check_handoff.py -v
+test_deployed_numbers_remain_unavailable (test_check_handoff.HandoffMigrationTests.test_deployed_numbers_remain_unavailable) ... ok
+test_duplicate_reservations_are_still_rejected (test_check_handoff.HandoffMigrationTests.test_duplicate_reservations_are_still_rejected) ... ok
+test_missing_deployed_watermark_is_an_error (test_check_handoff.HandoffMigrationTests.test_missing_deployed_watermark_is_an_error) ... ok
+test_pending_local_migrations_do_not_advance_deployed_watermark (test_check_handoff.HandoffMigrationTests.test_pending_local_migrations_do_not_advance_deployed_watermark) ... ok
+test_prompt_and_book_must_still_agree (test_check_handoff.HandoffMigrationTests.test_prompt_and_book_must_still_agree) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.265s
+
+OK
+# exit_status=0

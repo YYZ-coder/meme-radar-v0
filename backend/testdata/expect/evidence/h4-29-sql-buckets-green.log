@@ -1,0 +1,19 @@
+# h4-29-sql-buckets green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+7056f724140e7a112e1093e8318b92cd98c0e71ba92e5e8e2505120deae8a244  internal/store/inflow_sql_buckets_test.go
+# tracked diff sha256=9fb65f45ad27b1bcb8a5931bb33e14f77b61508e71416fd2ce2adb7b2e5cf2c5
+# command: go test -count=1 -v -run ^TestInflowSQLBuckets$ ./internal/store
+=== RUN   TestInflowSQLBuckets
+=== RUN   TestInflowSQLBuckets/all_empty
+=== RUN   TestInflowSQLBuckets/seed_only
+=== RUN   TestInflowSQLBuckets/first_and_last
+=== RUN   TestInflowSQLBuckets/all_twenty
+--- PASS: TestInflowSQLBuckets (0.14s)
+    --- PASS: TestInflowSQLBuckets/all_empty (0.00s)
+    --- PASS: TestInflowSQLBuckets/seed_only (0.00s)
+    --- PASS: TestInflowSQLBuckets/first_and_last (0.00s)
+    --- PASS: TestInflowSQLBuckets/all_twenty (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.590s
+
+# exit=0

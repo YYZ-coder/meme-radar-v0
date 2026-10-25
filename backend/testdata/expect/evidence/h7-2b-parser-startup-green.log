@@ -1,0 +1,13 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestParserRegistersStatusAtStartup ./internal/parser
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/parser/health_test.go=4166544e129f7bfdceaf87df27e91245d8896326729d16320a5668bf6931a69d
+test_diff=h7-2b-parser-startup-green-health_test.diff sha256=f5a10ce1acec16d014a76641264bf165ce71f04114c70ab0c31e98492404d972
+=== RUN   TestParserRegistersStatusAtStartup
+2026/10/24 22:52:12 INFO parse started chain=solana version=8 reset_blocks=0
+2026/10/24 22:52:12 INFO parse started chain=solana version=9 reset_blocks=0
+--- PASS: TestParserRegistersStatusAtStartup (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.640s
+
+exit_code=0

@@ -1,0 +1,19 @@
+# h4-8b-exact-buckets green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+43744c8ee321943764aa0a2d566034651ace39951486bae69581e2a9c5225b47  internal/store/inflow_buckets_test.go
+# tracked diff sha256=61745134cd3e9ad393e46d9f30d7b8202cdbc0f14787762122878bba45153d6e
+# command: go test -count=1 -v -run TestFillInflowBuckets ./internal/store
+=== RUN   TestFillInflowBuckets
+=== RUN   TestFillInflowBuckets/all_empty
+=== RUN   TestFillInflowBuckets/seed_only
+=== RUN   TestFillInflowBuckets/first_and_last
+=== RUN   TestFillInflowBuckets/all_twenty
+--- PASS: TestFillInflowBuckets (0.00s)
+    --- PASS: TestFillInflowBuckets/all_empty (0.00s)
+    --- PASS: TestFillInflowBuckets/seed_only (0.00s)
+    --- PASS: TestFillInflowBuckets/first_and_last (0.00s)
+    --- PASS: TestFillInflowBuckets/all_twenty (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.501s
+
+# exit=0

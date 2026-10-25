@@ -1,0 +1,13 @@
+# h4-3d-activation-hook red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+8be6f216e235c8c3b91430b0dbcfa9b710d34e67ecb9254fbf969151c217a07c  internal/compute/smtrades_build_test.go
+# tracked diff sha256=b3d72b15bbc3da458e98bb9d977a6fa193c5f0284415b10f5cad10ae4db33053
+# command: go test -count=1 -v -run TestListActivationSwitchesHeadsAndRollsBackOnFailure ./internal/compute
+=== RUN   TestListActivationSwitchesHeadsAndRollsBackOnFailure
+    smtrades_build_test.go:293: activation should fail when transactional head switch fails
+--- FAIL: TestListActivationSwitchesHeadsAndRollsBackOnFailure (0.21s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.707s
+FAIL
+
+# exit=1

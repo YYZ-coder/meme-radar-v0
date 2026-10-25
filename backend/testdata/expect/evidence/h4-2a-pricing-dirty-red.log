@@ -1,0 +1,13 @@
+# h4-2a-pricing-dirty red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+5fcc61964aeb214d2cefe226fed1767f01f50dd6649f44435dcb47c98682da96  internal/compute/smtrades_test.go
+# tracked diff sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+# command: go test -count=1 -v -run TestFillValuesMarksSmTradesDirty ./internal/compute
+=== RUN   TestFillValuesMarksSmTradesDirty
+    smtrades_test.go:133: repriced dirty minute count=0, want 1
+--- FAIL: TestFillValuesMarksSmTradesDirty (0.32s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.773s
+FAIL
+
+# exit=1

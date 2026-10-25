@@ -1,0 +1,13 @@
+# H1 4-tiny-price green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:30:52.493498+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenWindowsKeepsTinyPriceChanges$ ./internal/store
+# sha256 internal/store/window_test.go 81f5a02d5fad7d0327a801b002bc0eb9a96a9c7ee61822150aa5888b046762cf
+# test diff sha256 1099bce48669ad14eaad3db67e15709f9d049e2b4b8d63f2fbb23212313f3325
+# sha256 internal/store/window.go 0dc1524312a4d0c29b35dd556da5ab551501a37048b613a3371b92eb0c99de0d
+# test diff sha256 449e7eda8480d1584e2e92be15a9ae2ef9e30cb1cc73325bbd47f4666d50f122
+=== RUN   TestTokenWindowsKeepsTinyPriceChanges
+--- PASS: TestTokenWindowsKeepsTinyPriceChanges (0.24s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.689s
+
+# exit_code=0

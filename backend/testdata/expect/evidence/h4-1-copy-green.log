@@ -1,0 +1,12 @@
+# h4-1-copy green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+# fixture correction before valid Red: quote_prices source test is invalid; use registered binance (expectations unchanged).
+677d55220e9b7206717fd5a1d07c870f45a391e0848f6b63d4206bcd9761c4e7  internal/compute/smtrades_test.go
+# tracked diff sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+# command: go test -count=1 -v -run TestSmTradesCopyMemberTrades ./internal/compute
+=== RUN   TestSmTradesCopyMemberTrades
+--- PASS: TestSmTradesCopyMemberTrades (0.25s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.694s
+
+# exit=0

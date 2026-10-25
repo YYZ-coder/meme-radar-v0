@@ -1,0 +1,7 @@
+# H6 2c-ipv6-benchmark green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Same literal IPv6 DNS address now rejected by final-IP guard using IANA benchmarking prefix; no network request.
+# command: go test -count=1 -run ^TestFetchRejectsIPv6BenchmarkAddresses$ ./internal/metadata
+# sha256 internal/metadata/security_regression_test.go: c56f7be1219e3c1c4437ee7dd0f336b3faeae9fc8b2e430d9ad7a1f71a79f0ae
+ok  	github.com/meme-radar/radar/internal/metadata	0.461s
+
+# exit=0

@@ -1,0 +1,15 @@
+# h5-8-edge-regression green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run TestPg(HoldingsCoverageAndUnknowns|HolderCursorBoundaries|NativeLookupHonorsRateAndDeadline|MissingHolderSupply)$ -v ./internal/pgapi
+# sha256 internal/pgapi/holdings_edges_test.go 698f0906e3ecead009710276b0901bff25e7e0540fd9e63672c2dd0fc3b680d1
+=== RUN   TestPgHoldingsCoverageAndUnknowns
+--- PASS: TestPgHoldingsCoverageAndUnknowns (0.31s)
+=== RUN   TestPgHolderCursorBoundaries
+--- PASS: TestPgHolderCursorBoundaries (0.22s)
+=== RUN   TestPgNativeLookupHonorsRateAndDeadline
+--- PASS: TestPgNativeLookupHonorsRateAndDeadline (0.21s)
+=== RUN   TestPgMissingHolderSupply
+--- PASS: TestPgMissingHolderSupply (0.12s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	1.358s
+
+# exit=0

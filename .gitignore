@@ -21,15 +21,14 @@ frontend/tsconfig.tsbuildinfo
 *.pid
 **/__pycache__/
 *.pyc
+# Local design, operations and handoff material; keep the directory on disk.
+/docs/
 
 # Secrets — never commit
 *.env
 .env
 /config.yaml
 backend/config.yaml
-
-# Third-party reference material stays local (not redistributed)
-docs/references/
 
 # OS
 .DS_Store
@@ -39,3 +38,7 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+.claude
+
+# Retain reviewed, sanitized H4 TDD and verification evidence.
+!backend/testdata/expect/evidence/h4-*.log

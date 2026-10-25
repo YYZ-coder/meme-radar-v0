@@ -1,0 +1,11 @@
+# h4-12h-no-head-age green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+d4ece0c840ef610b8807a48fa14fcb169ca9b07c28daaf52a6f06fd042cdecac  internal/compute/inflow_cycle_test.go
+# tracked diff sha256=30ceda5bf9126418c195634f4c6b8f1947ddcda001d3c4ccf7aa918bb781f28b
+# command: go test -count=1 -v -run TestCycleReportsPositiveInfinityBeforeFirstProjection ./internal/compute
+=== RUN   TestCycleReportsPositiveInfinityBeforeFirstProjection
+--- PASS: TestCycleReportsPositiveInfinityBeforeFirstProjection (0.26s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.707s
+
+# exit=0

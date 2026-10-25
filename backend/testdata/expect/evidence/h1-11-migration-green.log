@@ -1,0 +1,13 @@
+# H1 11-migration green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:16:00.202045+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestMigrationFixesGraduationSwitchTimes$ ./internal/store
+# sha256 internal/store/window_test.go dec21684c46f6e4eb3b602767415c0103f74bbdd693cd5d6f3f5c4a9fb8d8e6d
+# test diff sha256 c27c7c4e0e90556a901f0584c371a5e279c33c9c12e34e7bb063d3a1cecf9afb
+# sha256 migrations/0011_window.sql 12be0a0d115b4d5dc650290b5b111fdfc55a9916b4ccca70b21e88a3428c537e
+# test diff sha256 28a4ceb06cc976f8a2b10dcb9030555214422cfe3023c5aa6a424195dc683043
+=== RUN   TestMigrationFixesGraduationSwitchTimes
+--- PASS: TestMigrationFixesGraduationSwitchTimes (0.20s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.678s
+
+# exit_code=0

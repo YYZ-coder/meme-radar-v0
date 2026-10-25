@@ -1,0 +1,9 @@
+# h5-4b-decode-error green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -run TestBalanceDecodeFailureDoesNotBlockOtherBlocks -v ./internal/parser
+# sha256 internal/parser/balances_error_test.go 39752c1e24268ca41322f9e7a8ba259c4ace754f669725c87693fce6c400368b
+=== RUN   TestBalanceDecodeFailureDoesNotBlockOtherBlocks
+--- PASS: TestBalanceDecodeFailureDoesNotBlockOtherBlocks (0.12s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.553s
+
+# exit=0

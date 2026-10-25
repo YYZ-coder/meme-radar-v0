@@ -1,0 +1,37 @@
+# h5-2-sol-deltas green base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestPumpEmitsBalanceDeltas -v ./internal/parse/pump
+# sha256 internal/parse/pump/balances_test.go ae51b3cd53bcafb7ca144e9e8cf701d5349c1229474b28d70d1be22fa65ef110
+=== RUN   TestPumpEmitsBalanceDeltas
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Trade
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Create
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Complete
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Buy
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Sell
+=== RUN   TestPumpEmitsBalanceDeltas/amm.CreatePool
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Deposit
+=== RUN   TestPumpEmitsBalanceDeltas/amm.Withdraw
+=== RUN   TestPumpEmitsBalanceDeltas/pump.Migration
+=== RUN   TestPumpEmitsBalanceDeltas/unrelated
+=== RUN   TestPumpEmitsBalanceDeltas/failed
+=== RUN   TestPumpEmitsBalanceDeltas/amm.MultiHop
+=== RUN   TestPumpEmitsBalanceDeltas/pump.MultiHopCurve
+=== RUN   TestPumpEmitsBalanceDeltas/amm.SamePoolTwice
+--- PASS: TestPumpEmitsBalanceDeltas (0.01s)
+    --- PASS: TestPumpEmitsBalanceDeltas/pump.Trade (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/pump.Create (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/pump.Complete (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.Buy (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.Sell (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.CreatePool (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.Deposit (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.Withdraw (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/pump.Migration (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/unrelated (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/failed (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.MultiHop (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/pump.MultiHopCurve (0.00s)
+    --- PASS: TestPumpEmitsBalanceDeltas/amm.SamePoolTwice (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/pump	0.372s
+
+# exit=0

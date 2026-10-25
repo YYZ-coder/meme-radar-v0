@@ -1,0 +1,13 @@
+# h4-3b-worker-prepare red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+5eebffc82f36d72a22b8ea94aee805a6d0c75ac62268c75a12ebdf1f2a980fd2  internal/compute/smtrades_build_test.go
+# tracked diff sha256=ea6f4cb0e936fddc70254df506ca4740900e197cbfc1a2057202db598521ed96
+# command: go test -count=1 -v -run TestListWorkerPreparesBeforeActivation ./internal/compute
+=== RUN   TestListWorkerPreparesBeforeActivation
+    smtrades_build_test.go:156: worker should commit preparation before activation: ERROR: missing committed preparation (SQLSTATE P0001)
+--- FAIL: TestListWorkerPreparesBeforeActivation (0.21s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.651s
+FAIL
+
+# exit=1

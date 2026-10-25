@@ -1,0 +1,9 @@
+# h5-5-accumulate green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancesAccumulateAndFollowReparse -v ./internal/compute
+# sha256 internal/compute/balances_test.go 42199f292ad148f1eb8788200ae0055af7a58783c3ac83c72800587c7c8083e7
+=== RUN   TestBalancesAccumulateAndFollowReparse
+--- PASS: TestBalancesAccumulateAndFollowReparse (0.17s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.637s
+
+# exit=0

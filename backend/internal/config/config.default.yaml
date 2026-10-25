@@ -1,0 +1,176 @@
+# Default chain configuration, embedded in the binary. A file given with
+# --config / RADAR_CONFIG replaces it entirely (start from backend/config.example.yaml).
+# Free-tier endpoints and limits per D144 and docs/engineering/05-ingest.md;
+# contract addresses from the protocols' official repositories (06-parse.md).
+# Every external endpoint lives here; secrets (API keys) only in environment
+# variables named by the file (docs/TECHNICAL_PLAN.md §12).
+
+# Native-coin USD prices for compute, tried in order (D147, 07-compute §2).
+prices:
+  sources:
+    - type: binance   # <COIN>USDT spot, 1 USDT = 1 USD
+      url: https://api.binance.com
+    - type: coinbase  # <COIN>-USD
+      url: https://api.exchange.coinbase.com
+    # Pyth Hermes needs an API key since 2026-10-23; to switch, put this
+    # entry first (or alone) and export RADAR_PYTH_API_KEY.
+    # - type: pyth
+    #   url: https://hermes.pyth.network
+    #   api_key_env: RADAR_PYTH_API_KEY
+    #   api_key_header: x-api-key
+    #   feeds:
+    #     SOL: ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d
+    #     ETH: ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace
+    #     BNB: 2f95862b045670cd22bee3114c39763a4a08beeb663b145d283c31d7d1101c4f
+
+# Enrich step 2: display metadata only (D155/D156); each gateway has a host budget.
+metadata:
+  host_cooldown: 10m
+  host_failures: 3
+  ipfs_gateways:
+    - https://gateway.pinata.cloud/ipfs/
+    - https://ipfs.io/ipfs/
+  rps: 10
+  per_host_rps: 2
+  fourmeme_api_url: https://four.meme/meme-api/v1/private/token/get/v2 # empty disables
+  fourmeme_rps: 2
+
+# Automatic deletion in days (0 keeps rows); scripts/prune-raw.sh deletes
+# raw blocks earlier by hand (D150).
+retention:
+  raw_blocks_days: 30
+  ledger_days: 30
+
+chains:
+  - name: solana
+    family: solana
+    native: SOL
+    wrapped_native: So11111111111111111111111111111111111111112
+    quote_assets:
+      SOL: So11111111111111111111111111111111111111112
+      USDC: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+      USDT: Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+    ingest:
+      rpc_url: https://api.mainnet-beta.solana.com
+      rps: 9            # 100 requests/10s per IP
+      block_rps: 0.45   # getBlock measured at 6/10s per IP, shared with backfill
+      follow_head: true # cannot keep up on the free tier
+      block_interval: 400ms
+      poll: 400ms
+    lookup_rps: 2
+    # Free tier: the rest of the getBlock budget fills skipped slots slowly,
+    # newest first, until the paid tier (D144).
+    backfill: {hours: 24, rps: 1, block_rps: 0.1, prefetch: 1}
+    protocols:
+      - type: pump_fun
+        addresses: {program: 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P}
+      - type: pumpswap
+        addresses: {program: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA}
+
+  - name: base
+    family: evm
+    native: ETH
+    wrapped_native: "0x4200000000000000000000000000000000000006"
+    quote_assets:
+      ETH: "0x0000000000000000000000000000000000000000"
+      WETH: "0x4200000000000000000000000000000000000006"
+      USDC: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+    ingest:
+      rpc_url: https://mainnet.base.org
+      rps: 5
+      confirmations: 12
+      reorg_depth: 128
+      prefetch: 4
+      block_interval: 2s
+      poll: 2s
+    lookup_rps: 5
+    backfill: {hours: 168, rps: 3, prefetch: 4}
+    protocols:
+      - type: uniswap_v4
+        addresses: {pool_manager: "0x498581fF718922c3f8e6A244956aF099b2652b2b"}
+      - type: clanker_v4   # github.com/clanker-devco/v4-contracts README
+        addresses: {factory: "0xE85A59c628F7d27878ACeB4bf3b35733630083a9"}
+        hooks:
+          - "0x34a45c6B61876d739400Bd71228CbcbD4F53E8cC" # ClankerHookDynamicFee
+          - "0xDd5EeaFf7BD481AD55Db083062b13a3cdf0A68CC" # ClankerHookStaticFee
+          - "0xd60D6B218116cFd801E28F78d011a203D2b068Cc" # ClankerHookDynamicFeeV2
+          - "0xb429d62f8f3bFFb98CdB9569533eA23bF0Ba28CC" # ClankerHookStaticFeeV2
+      - type: doppler      # github.com/whetstoneresearch/doppler Deployments.json (8453)
+        addresses: {airlock: "0x660eAaEdEBc968f8f3694354FA8EC0b4c5Ba8D12"}
+        hooks:
+          - "0xbdf938149ac6a781f94faa0ed45e6a0e984c6544" # DopplerHookInitializer
+          - "0xbb7784a4d481184283ed89619a3e3ed143e1adc0" # DecayMulticurveInitializerHook (seen on chain)
+          - "0x5f9eb5f6726fe88d5e39867967f5b833d2fa3215" # RehypeDopplerHookInitializer
+          - "0x1e40b0875dda35f41e15cfb475403859b8c860c4" # DopplerHookMigrator
+          - "0x660740d7d6fb2c8998fa3fff459cceb9ac12c84b" # RehypeDopplerHookMigrator
+
+  - name: bsc
+    family: evm
+    native: BNB
+    # Four.meme lookups (eth_call) stay off publicnode, which ingest uses heavily.
+    lookup_rpc_url: https://bsc-dataseed.bnbchain.org
+    wrapped_native: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+    quote_assets:
+      BNB: "0x0000000000000000000000000000000000000000"
+      WBNB: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      USDT: "0x55d398326f99059fF775485246999027B3197955"
+      USDC: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+      # World Liberty Financial USD1, a Four.meme quote asset; 1 USD (D149)
+      USD1: "0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d"
+    ingest:
+      rpc_url: https://bsc-rpc.publicnode.com
+      rps: 16
+      confirmations: 12
+      reorg_depth: 128
+      prefetch: 10 # publicnode takes ~0.8s per call from here (2026-10-23 14:00)
+      # publicnode refuses receipts ~8k-12k blocks behind the head ("archive
+      # requests require a personal token", 2026-10-24): forward jumps to the
+      # head beyond this and leaves the rest to the backfill role (dataseed).
+      max_lag_blocks: 6000
+      block_interval: 450ms # 2.22 blocks/s from block timestamps
+      poll: 2s
+    lookup_rps: 10
+    # publicnode serves receipts only ~5k–20k blocks back; the dataseed
+    # served receipts 100k blocks back (2026-10-23).
+    backfill: {hours: 168, rpc_url: https://bsc-dataseed.bnbchain.org, rps: 6, prefetch: 8}
+    protocols:
+      - type: four_meme    # github.com/four-meme-community/fourmeme-docs
+        addresses:
+          token_manager_v1: "0xEC4549caDcE5DA21Df6E6422d448034B5233bFbC"
+          token_manager_v2: "0x5c952063c7fc8610FFDB798152D69F0B9550762b"
+          helper3: "0xF251F83e40a78868FcfA3FA4599Dad6494E46034"
+      - type: pancake_v2
+        addresses:
+          factory: "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"
+          init_code_hash: "0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5"
+      - type: pancake_v3   # github.com/pancakeswap/pancake-v3-contracts deployments/bscMainnet.json
+        addresses:
+          deployer: "0x41ff9AA7e16B8B1a8a8dc4f0eFacd93D02d071c9"
+          init_code_hash: "0x6ce8eb472fa82df5469c6ab6d485f17c3ad13c8cd7af59b3d4a8026c5ce0f7e2"
+        fees: [100, 500, 2500, 10000]
+      - type: pancake_infinity_cl # github.com/pancakeswap/infinity-core script/config/bsc-mainnet.json
+        addresses: {pool_manager: "0xa0FfB9c1CE1Fe56963B0321B32E7A0302114058b"}
+
+# D153: projection scheduling is independent of the serial compute cycle.
+compute:
+  inflow_intervals:
+    1m: 5s
+    5m: 5s
+    1h: 15s
+    4h: 15s
+    24h: 15s
+
+display_names:
+  dexes:
+    pumpswap: PumpSwap
+    pump_curve: Pump
+    raydium_cpmm: Raydium CPMM
+    launchlab_curve: LaunchLab
+    uniswap_v4: Uniswap v4
+    pancakeswap_v2: PancakeSwap v2
+    four_meme_curve: Four.meme
+  platforms:
+    pump_fun: Pump.fun
+    raydium_launchlab: Raydium LaunchLab
+    clanker: Clanker
+    four_meme: Four.meme

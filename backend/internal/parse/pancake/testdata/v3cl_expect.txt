@@ -1,0 +1,42 @@
+## v3.0
+token 0x73b84f7e3901f39fc29f3704a03126d317ab4444 seen dec=18 four_meme
+pool 0x11dda5952d206971dd0c11089a371afba36010cc token=0x73b84f7e3901f39fc29f3704a03126d317ab4444 quote=0x55d398326f99059ff775485246999027b3197955 USDT pancake_v3 seen status= grad=- rt= rq=
+trade 641 pool=0x11dda5952d206971dd0c11089a371afba36010cc token=0x73b84f7e3901f39fc29f3704a03126d317ab4444 wallet=- ambiguous buy tok=3756269769415887937103 quote=997000000000000000 USDT price=0.000265422895905327 value= pancake_v3
+## v3.1
+token 0x71c7667fa365e818fa083fbdb40765267d7b4444 seen dec=18 four_meme
+pool 0x0703a6618bea4b6696cc1fc5d727cc9b7c55cdcd token=0x71c7667fa365e818fa083fbdb40765267d7b4444 quote=0x2c3a8ee94ddd97244a93bc48298f97d2c412f7db AKE pancake_v3 seen status= grad=- rt= rq=
+trade 79 pool=0x0703a6618bea4b6696cc1fc5d727cc9b7c55cdcd token=0x71c7667fa365e818fa083fbdb40765267d7b4444 wallet=- ambiguous buy tok=36759507788417470909086 quote=48824507460437845539 AKE price=0.001328214396706964 value= pancake_v3
+## v3.2
+## v3.3
+token 0x71c7667fa365e818fa083fbdb40765267d7b4444 seen dec=18 four_meme
+pool 0xa027f675a1b086e7bdce7e830d86d2fd1cbcf6d3 token=0x71c7667fa365e818fa083fbdb40765267d7b4444 quote=0xff7d6a96ae471bbcd7713af9cb1feeb16cf56b41 BR pancake_v3 seen status= grad=- rt= rq=
+trade 25 pool=0xa027f675a1b086e7bdce7e830d86d2fd1cbcf6d3 token=0x71c7667fa365e818fa083fbdb40765267d7b4444 wallet=- ambiguous sell tok=39224083888576114278060 quote=3314532980378662974 BR price=0.000084502495706318 value= pancake_v3
+## v3.4
+token 0x0a43fc31a73013089df59194872ecae4cae14444 seen dec=18 four_meme
+pool 0xee04b2a82bab9efefcd626f5d66f51cc2b6fa12a token=0x0a43fc31a73013089df59194872ecae4cae14444 quote=0x55d398326f99059ff775485246999027b3197955 USDT pancake_v3 seen status= grad=- rt= rq=
+trade 195 pool=0xee04b2a82bab9efefcd626f5d66f51cc2b6fa12a token=0x0a43fc31a73013089df59194872ecae4cae14444 wallet=- ambiguous buy tok=7125833197251834425723 quote=93781240000000000000 USDT price=0.013160740281735460 value= pancake_v3
+## cl.0
+token 0x71c7667fa365e818fa083fbdb40765267d7b4444 seen dec=18 four_meme
+pool 0x0703a6618bea4b6696cc1fc5d727cc9b7c55cdcd token=0x71c7667fa365e818fa083fbdb40765267d7b4444 quote=0x2c3a8ee94ddd97244a93bc48298f97d2c412f7db AKE pancake_v3 seen status= grad=- rt= rq=
+trade 79 pool=0x0703a6618bea4b6696cc1fc5d727cc9b7c55cdcd token=0x71c7667fa365e818fa083fbdb40765267d7b4444 wallet=- ambiguous buy tok=36759507788417470909086 quote=48824507460437845539 AKE price=0.001328214396706964 value= pancake_v3
+## cl.1
+## cl.2
+token 0x6bdcce4a559076e37755a78ce0c06214e59e4444 seen dec=18 four_meme
+pool 0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 quote=0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d USD1 pancake_v3 seen status= grad=- rt= rq=
+trade 9 pool=0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 wallet=- ambiguous sell tok=1668462170005232457480 quote=223204920844849764628 USD1 price=0.133778832302892293 value= pancake_v3
+## cl.3
+token 0x6bdcce4a559076e37755a78ce0c06214e59e4444 seen dec=18 four_meme
+pool 0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 quote=0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d USD1 pancake_v3 seen status= grad=- rt= rq=
+trade 9 pool=0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 wallet=- ambiguous sell tok=1668462170005232457480 quote=223204920844849764628 USD1 price=0.133778832302892293 value= pancake_v3
+## cl.4
+token 0x6bdcce4a559076e37755a78ce0c06214e59e4444 seen dec=18 four_meme
+pool 0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 quote=0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d USD1 pancake_v3 seen status= grad=- rt= rq=
+trade 64 pool=0x0f0cf38f67ed6fb00881cdb815e25441f7f022e0 token=0x6bdcce4a559076e37755a78ce0c06214e59e4444 wallet=- ambiguous sell tok=3591377746581712200840 quote=479970140691387563098 USD1 price=0.133645128571681182 value= pancake_v3
+## cl.four.0
+token 0x1a1e69f1e6182e2f8b9e8987e83c016ac9444444 seen dec=18 four_meme
+pool 0x5ec75d77867f7e464497e2424138ffa78924566b167afbb4ff415b551578c104 token=0x1a1e69f1e6182e2f8b9e8987e83c016ac9444444 quote=0xd7862113f9ee1e3feb392d0d3d32398d26455a69 Flagship Bot Ai pancake_infinity_cl seen status= grad=- rt= rq=
+trade 114 pool=0x5ec75d77867f7e464497e2424138ffa78924566b167afbb4ff415b551578c104 token=0x1a1e69f1e6182e2f8b9e8987e83c016ac9444444 wallet=- ambiguous buy tok=2129648259118738877119 quote=7979616850168549996946 Flagship Bot Ai price=3.746917743811160128 value= pancake_infinity_cl
+## cl.four.1
+token 0xeccbb861c0dda7efd964010085488b69317e4444 seen dec=18 four_meme
+pool 0x0ac01d4ccad0dfe0c38a03a0108a52ae908252e1393fbfcecff65be60e714970 token=0xeccbb861c0dda7efd964010085488b69317e4444 quote=0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c BNB pancake_infinity_cl seen status= grad=- rt= rq=
+trade 481 pool=0x0ac01d4ccad0dfe0c38a03a0108a52ae908252e1393fbfcecff65be60e714970 token=0xeccbb861c0dda7efd964010085488b69317e4444 wallet=- ambiguous sell tok=0 quote=0 BNB price= value=0.000000000000000000 pancake_infinity_cl

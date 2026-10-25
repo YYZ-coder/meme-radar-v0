@@ -1,0 +1,13 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestHealthFailures ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=206ed3f7d9e89a5b4c5a8fd4331b85c51027deb0aa2f50631d86927024e86e33
+test_diff=h7-3-failures-red-admin_health_test.diff sha256=f9bccdf470fdc2e83cb5c3dd6392c4aaa9ae38edac0895a50c4c8af1ee88e2de
+=== RUN   TestHealthFailures
+    admin_health_test.go:188: failures=0; want newest 50 of 60
+--- FAIL: TestHealthFailures (0.40s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.877s
+FAIL
+
+exit_code=1

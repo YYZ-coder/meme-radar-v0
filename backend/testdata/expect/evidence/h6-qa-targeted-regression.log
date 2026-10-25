@@ -1,0 +1,9 @@
+# H6 qa-targeted regression; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Post-H6-7 affected regression; includes real PG, HTTP/DNS security, source replays, fuzz seeds, metrics and role wiring. First green is regression coverage, not a new TDD claim.
+# command: go test -race -count=1 ./internal/metadata ./internal/config ./cmd/radar
+# sha256 internal/metadata/fuzz_test.go: b4f7fd3682cb4319a60b910da468f9b15c15ff19d7beed8f60ecf27a431fd236
+ok  	github.com/meme-radar/radar/internal/metadata	2.542s
+ok  	github.com/meme-radar/radar/internal/config	1.615s
+ok  	github.com/meme-radar/radar/cmd/radar	2.025s
+
+# exit=0

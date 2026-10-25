@@ -1,0 +1,23 @@
+# h2-7b-decimals green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgMissingDecimalsReturns503 ./internal/pgapi
+# test_sha256 3088b8bde28e39e84f9f7b0ef6ac5fa8b5b44f4b82db46a5c105312ed2513fb2 internal/pgapi/decimals_test.go
+=== RUN   TestPgMissingDecimalsReturns503
+=== RUN   TestPgMissingDecimalsReturns503/#00
+=== RUN   TestPgMissingDecimalsReturns503//activities
+=== RUN   TestPgMissingDecimalsReturns503//liquidity-events
+=== RUN   TestPgMissingDecimalsReturns503//holders
+=== RUN   TestPgMissingDecimalsReturns503//candles?interval=1m&metric=market_cap
+=== RUN   TestPgMissingDecimalsReturns503/price_candles_remain_readable
+=== RUN   TestPgMissingDecimalsReturns503/pools_remain_readable
+--- PASS: TestPgMissingDecimalsReturns503 (0.33s)
+    --- PASS: TestPgMissingDecimalsReturns503/#00 (0.04s)
+    --- PASS: TestPgMissingDecimalsReturns503//activities (0.00s)
+    --- PASS: TestPgMissingDecimalsReturns503//liquidity-events (0.00s)
+    --- PASS: TestPgMissingDecimalsReturns503//holders (0.00s)
+    --- PASS: TestPgMissingDecimalsReturns503//candles?interval=1m&metric=market_cap (0.00s)
+    --- PASS: TestPgMissingDecimalsReturns503/price_candles_remain_readable (0.01s)
+    --- PASS: TestPgMissingDecimalsReturns503/pools_remain_readable (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.783s
+# exit_status=0

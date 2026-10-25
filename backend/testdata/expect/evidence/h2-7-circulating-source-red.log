@@ -1,0 +1,12 @@
+# h2-7-circulating-source red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgActivitiesUsesProjectedSupply ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 ccf6e33223ed9dfe3bc66227835658342c2ea6c81ea9d28d8ea2806181fdb9eb internal/pgapi/activities_supply_test.go
+=== RUN   TestPgActivitiesUsesProjectedSupply
+    activities_supply_test.go:43: projected market cap must remain .001 x 1e9 = 1000000: [{ID:1:1:1 Time:2026-10-23T09:59:00.000Z Kind:buy Wallet:<nil> Attribution:0x36b1a8c83820 TokenAmount:1 QuoteAmount:0x36b1a8c83830 QuoteSymbol:0x36b1a8c83840 ValueUSD:0x36b1a8c83850 PriceUSD:0x36b1a8c83860 MarketCapUSD:0x36b1a8c83870 TxHash:0x0000000000000000000000000000000000000000000000000000000000000001 Pool:0x00000000000000000000000000000000000000a4 Dex:pancake_v2}]
+--- FAIL: TestPgActivitiesUsesProjectedSupply (0.37s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.853s
+FAIL
+# exit_status=1

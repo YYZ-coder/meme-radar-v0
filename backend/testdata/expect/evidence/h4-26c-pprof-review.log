@@ -1,0 +1,78 @@
+File: audit
+Type: cpu
+Time: 2026-10-25 11:11:53 CST
+Duration: 2.42s, Total samples = 3110ms (128.51%)
+Showing nodes accounting for 1680ms, 54.02% of 3110ms total
+Dropped 56 nodes (cum <= 15.55ms)
+Showing top 12 nodes out of 155
+      flat  flat%   sum%        cum   cum%
+     300ms  9.65%  9.65%      300ms  9.65%  runtime.madvise
+     290ms  9.32% 18.97%      310ms  9.97%  runtime.tryDeferToSpanScan
+     210ms  6.75% 25.72%      210ms  6.75%  runtime.memclrNoHeapPointers
+     150ms  4.82% 30.55%      240ms  7.72%  main.targets
+     120ms  3.86% 34.41%      120ms  3.86%  runtime.(*mspan).typePointersOfUnchecked
+     120ms  3.86% 38.26%      600ms 19.29%  runtime.scanObject
+     100ms  3.22% 41.48%      310ms  9.97%  math/big.nat.mul
+     100ms  3.22% 44.69%      100ms  3.22%  runtime.typePointers.next
+      80ms  2.57% 47.27%      700ms 22.51%  github.com/jackc/pgx/v5/pgtype.scanPlanBinaryNumericToNumericScanner.Scan
+      80ms  2.57% 49.84%       80ms  2.57%  runtime.usleep
+      70ms  2.25% 52.09%      220ms  7.07%  runtime.scanObjectsSmall
+      60ms  1.93% 54.02%      380ms 12.22%  math/big.(*Int).mul
+File: audit
+Type: cpu
+Time: 2026-10-25 11:11:55 CST
+Duration: 1.31s, Total samples = 1290ms (98.55%)
+Showing nodes accounting for 770ms, 59.69% of 1290ms total
+Showing top 12 nodes out of 126
+      flat  flat%   sum%        cum   cum%
+     120ms  9.30%  9.30%      120ms  9.30%  runtime.madvise
+      90ms  6.98% 16.28%       90ms  6.98%  math/big.mulAddVWW
+      90ms  6.98% 23.26%      290ms 22.48%  math/big.nat.mulAddWW
+      80ms  6.20% 29.46%      390ms 30.23%  math/big.(*Int).mul
+      80ms  6.20% 35.66%       80ms  6.20%  math/big.nat.norm (inline)
+      70ms  5.43% 41.09%       70ms  5.43%  runtime.pthread_cond_signal
+      60ms  4.65% 45.74%      710ms 55.04%  github.com/jackc/pgx/v5/pgtype.scanPlanBinaryNumericToNumericScanner.Scan
+      50ms  3.88% 49.61%       50ms  3.88%  runtime.pthread_cond_wait
+      40ms  3.10% 52.71%      110ms  8.53%  runtime.scanObject
+      30ms  2.33% 55.04%       60ms  4.65%  github.com/jackc/pgx/v5/internal/pgio.(*Reader).Uint16
+      30ms  2.33% 57.36%       30ms  2.33%  github.com/jackc/pgx/v5/internal/pgio.(*Reader).need (inline)
+      30ms  2.33% 59.69%       30ms  2.33%  internal/runtime/atomic.(*UnsafePointer).Load (inline)
+File: audit
+Type: cpu
+Time: 2026-10-25 11:11:56 CST
+Duration: 1.81s, Total samples = 3900ms (215.10%)
+Showing nodes accounting for 3080ms, 78.97% of 3900ms total
+Dropped 45 nodes (cum <= 19.50ms)
+Showing top 12 nodes out of 114
+      flat  flat%   sum%        cum   cum%
+     580ms 14.87% 14.87%      580ms 14.87%  runtime.pthread_cond_wait
+     470ms 12.05% 26.92%      820ms 21.03%  runtime.scanObjectsSmall
+     470ms 12.05% 38.97%      470ms 12.05%  runtime.usleep
+     370ms  9.49% 48.46%      470ms 12.05%  runtime.tryDeferToSpanScan
+     280ms  7.18% 55.64%      280ms  7.18%  runtime.madvise
+     270ms  6.92% 62.56%      750ms 19.23%  main.fillInflowBuckets
+     180ms  4.62% 67.18%      600ms 15.38%  runtime.scanObject
+     160ms  4.10% 71.28%      180ms  4.62%  runtime.typePointers.next
+     140ms  3.59% 74.87%      140ms  3.59%  runtime.kevent
+      60ms  1.54% 76.41%       70ms  1.79%  runtime.(*mspan).writeHeapBitsSmall
+      50ms  1.28% 77.69%       50ms  1.28%  internal/runtime/atomic.(*Uint64).Add (inline)
+      50ms  1.28% 78.97%       50ms  1.28%  runtime.extractHeapBitsSmall
+File: audit
+Type: alloc_space
+Time: 2026-10-25 11:11:58 CST
+Showing nodes accounting for 9.97GB, 95.59% of 10.43GB total
+Dropped 86 nodes (cum <= 0.05GB)
+Showing top 12 nodes out of 45
+      flat  flat%   sum%        cum   cum%
+    6.84GB 65.55% 65.55%     6.84GB 65.55%  main.fillInflowBuckets (inline)
+    0.97GB  9.26% 74.81%     0.97GB  9.26%  main.targets (inline)
+    0.53GB  5.05% 79.86%     0.53GB  5.05%  math/big.nat.make (inline)
+    0.53GB  5.04% 84.90%     7.36GB 70.59%  main.main.func3
+    0.36GB  3.48% 88.38%     0.89GB  8.53%  github.com/jackc/pgx/v5/pgtype.scanPlanBinaryNumericToNumericScanner.Scan
+    0.22GB  2.14% 90.52%     0.82GB  7.90%  github.com/jackc/pgx/v5/pgtype.NumericCodec.DecodeValue
+    0.12GB  1.16% 91.68%     2.33GB 22.39%  main.decode
+    0.09GB  0.91% 92.59%     0.14GB  1.33%  encoding/json.Unmarshal
+    0.08GB  0.81% 93.39%     0.08GB  0.81%  reflect.unsafe_NewArray
+    0.08GB  0.74% 94.14%     0.08GB  0.74%  github.com/jackc/pgx/v5/pgtype.TextCodec.DecodeValue
+    0.08GB  0.74% 94.87%     0.16GB  1.54%  reflect.MakeSlice
+    0.07GB  0.72% 95.59%     0.58GB  5.55%  github.com/jackc/pgx/v5/pgtype.(*wrapPtrSliceReflectScanPlan).Scan

@@ -1,0 +1,11 @@
+# h5-4b-backfilled-token green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -run TestBalancePassTracks|TestBalancePassRefreshes -v ./internal/parser
+# sha256 internal/parser/balances_refresh_test.go b61e456e7e386d7149a8625c8ee2030c0d2f9cd05bc5e4b565e798cf00392d6b
+=== RUN   TestBalancePassRefreshesTrackedTokensEveryBatch
+--- PASS: TestBalancePassRefreshesTrackedTokensEveryBatch (0.12s)
+=== RUN   TestBalancePassTracksBackfilledTokenBeforeNewerBlock
+--- PASS: TestBalancePassTracksBackfilledTokenBeforeNewerBlock (0.10s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.667s
+
+# exit=0

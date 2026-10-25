@@ -1,0 +1,10 @@
+# h5-8-h3-regression green base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -race -count=1 ./internal/pgapi
+# sha256 internal/pgapi/holdings_detail_test.go dcf9daf13751421fbd35c4b88e24713ef71ebd5dcfd2cc50c7151e633d75ca33
+# sha256 internal/pgapi/holdings_edges_test.go b63c42b7d6343fcace6ce2863df1b50c766f8cb90b993411585f6d580c61d510
+# sha256 internal/pgapi/decimals_test.go 6066edad847343ff9faabd0d0350bee5a1d3631a31e1d0f10abb59b77b4d7d7a
+# sha256 internal/pgapi/routes_test.go 5a9fe1c887f243a168ce6580465420f48dddd811daa91c82d7e421b553fb1e72
+# sha256 internal/pgapi/smart_money_lifecycle_test.go 5bbe032a869d5abf58b5c605c239aff38e348192e49d798e394bd9466f90b83e
+ok  	github.com/meme-radar/radar/internal/pgapi	12.722s
+
+# exit=0

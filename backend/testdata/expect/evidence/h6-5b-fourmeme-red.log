@@ -1,0 +1,16 @@
+# H6 5b-fourmeme red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Fetcher.FetchFourMeme; D155 hand-read Onevi envelope, shortName=ONEVI vs quote symbol=BNB, absent data/disabled/error outcomes
+# command: go test -count=1 -run ^TestFourMemeMetadata$ ./internal/metadata
+# sha256 internal/metadata/fourmeme_test.go: 4f23d23431105dc666a42de78aa391689a680eb7e7e7380d7f08aad1c7a7ab91
+--- FAIL: TestFourMemeMetadata (0.00s)
+    --- FAIL: TestFourMemeMetadata/recorded (0.00s)
+        fourmeme_test.go:70: metadata: not implemented
+    --- FAIL: TestFourMemeMetadata/missing_data (0.00s)
+        fourmeme_test.go:59: missing data err=metadata: not implemented; want ErrNoSource
+    --- FAIL: TestFourMemeMetadata/disabled (0.00s)
+        fourmeme_test.go:53: disabled err=metadata: not implemented hits=0
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.589s
+FAIL
+
+# exit=1

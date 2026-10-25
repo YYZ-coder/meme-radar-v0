@@ -1,0 +1,2 @@
+f56fd5a6de91e2bb129e3d79329faeef77305d56e9dbc48f51118f4cf183c60f  internal/parse/clanker/clanker_test.go
+c50e39c5acc36100e2740a7cd948044bfc20bee23d4d7056751789febc43303c  internal/parse/clanker/testdata/expect.txt

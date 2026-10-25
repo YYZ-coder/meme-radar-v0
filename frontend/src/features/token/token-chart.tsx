@@ -14,6 +14,14 @@ import { bollinger, ema, macd, rsi, sma, type Series } from "./indicators";
 
 const indicatorKeys = ["MA", "EMA", "BOLL", "VOL", "MACD", "RSI"] as const;
 type Indicator = (typeof indicatorKeys)[number];
+const intervalSeconds: Record<CandleInterval, number> = {
+  "1s": 1,
+  "30s": 30,
+  "1m": 60,
+  "5m": 300,
+  "1h": 3600,
+  "1d": 86400,
+};
 
 const colors = {
   up: "#a5df78",
@@ -66,7 +74,28 @@ export function TokenChart({
       }),
     refetchInterval: interval === "1s" ? 5_000 : 15_000,
   });
-  const items = useMemo(() => candles.data?.items ?? [], [candles.data]);
+  const items = useMemo(() => {
+    if (!candles.data) return [];
+    const step = intervalSeconds[interval];
+    const end = (Math.ceil(Date.parse(candles.data.as_of) / 1000 / step) - 1) * step;
+    const start = end - 299 * step;
+    return [...candles.data.items, ...candles.data.observed_items]
+      .filter((item) => item.t >= start && item.t <= end)
+      .sort((a, b) => a.t - b.t);
+  }, [candles.data, interval]);
+  const incomplete =
+    candles.data?.coverage === "partial" ||
+    !!candles.data?.observed_items.length ||
+    !!candles.data?.gaps.length;
+  const discontinuous = items.some(
+    (item, index) => index > 0 && item.t - items[index - 1].t !== intervalSeconds[interval]
+  );
+  const indicatorsBlocked = incomplete || discontinuous;
+  const unclosed = candles.data?.observed_items.some((item) => !item.closed);
+  const cutoff = candles.data?.as_of
+    .replace("T", " ")
+    .replace(/\.\d+Z$/, "Z")
+    .replace(/Z$/, " UTC");
   const from = items[0]?.t;
   const smTrades = useQuery({
     queryKey: ["sm-markers", chain, address, from],
@@ -127,6 +156,14 @@ export function TokenChart({
       chartRef.current = chart;
       const times = items.map((c) => c.t as UTCTimestamp);
       const closes = items.map((c) => Number(c.c));
+      const actualTimes = new Set(items.map((item) => item.t));
+      const step = intervalSeconds[interval];
+      const end = (Math.ceil(Date.parse(candles.data!.as_of) / 1000 / step) - 1) * step;
+      const timeSlots = Array.from(
+        { length: 300 },
+        (_, index) => (end - (299 - index) * step) as UTCTimestamp
+      );
+      const gapTimes = timeSlots.filter((time) => !actualTimes.has(time));
       const main = chart.addSeries(lw.CandlestickSeries, {
         upColor: colors.up,
         downColor: colors.down,
@@ -136,13 +173,16 @@ export function TokenChart({
         priceFormat: { type: "price", minMove: 1e-12, precision: 12 },
       });
       main.setData(
-        items.map((c) => ({
-          time: c.t as UTCTimestamp,
-          open: Number(c.o),
-          high: Number(c.h),
-          low: Number(c.l),
-          close: Number(c.c),
-        }))
+        [
+          ...items.map((c) => ({
+            time: c.t as UTCTimestamp,
+            open: Number(c.o),
+            high: Number(c.h),
+            low: Number(c.l),
+            close: Number(c.c),
+          })),
+          ...gapTimes.map((time) => ({ time })),
+        ].sort((a, b) => a.time - b.time)
       );
       const overlay = (values: Series, color: string, width: 1 | 2 = 1) => {
         const s: ISeriesApi<"Line"> = chart!.addSeries(lw.LineSeries, {
@@ -155,36 +195,43 @@ export function TokenChart({
         s.setData(line(values, times));
         return s;
       };
-      if (indicators.includes("MA")) {
+      if (!indicatorsBlocked && indicators.includes("MA")) {
         overlay(sma(closes, 7), colors.ma1);
         overlay(sma(closes, 25), colors.ma2);
       }
-      if (indicators.includes("EMA")) {
+      if (!indicatorsBlocked && indicators.includes("EMA")) {
         overlay(ema(closes, 12), "#eb984d");
         overlay(ema(closes, 26), "#92d758");
       }
-      if (indicators.includes("BOLL")) {
+      if (!indicatorsBlocked && indicators.includes("BOLL")) {
         const b = bollinger(closes);
         overlay(b.mid, colors.boll);
         overlay(b.upper, colors.boll);
         overlay(b.lower, colors.boll);
       }
       let pane = 1;
-      if (indicators.includes("VOL")) {
+      if (indicators.includes("VOL") && items.some((item) => item.v !== null)) {
         const vol = chart.addSeries(
           lw.HistogramSeries,
           { priceFormat: { type: "volume" }, priceLineVisible: false, lastValueVisible: false },
           pane++
         );
         vol.setData(
-          items.map((c) => ({
-            time: c.t as UTCTimestamp,
-            value: Number(c.v),
-            color: Number(c.c) >= Number(c.o) ? "#a5df7866" : "#e18c8866",
-          }))
+          [
+            ...items.map((c) =>
+              c.v === null
+                ? { time: c.t as UTCTimestamp }
+                : {
+                    time: c.t as UTCTimestamp,
+                    value: Number(c.v),
+                    color: Number(c.c) >= Number(c.o) ? "#a5df7866" : "#e18c8866",
+                  }
+            ),
+            ...gapTimes.map((time) => ({ time })),
+          ].sort((a, b) => a.time - b.time)
         );
       }
-      if (indicators.includes("MACD")) {
+      if (!indicatorsBlocked && indicators.includes("MACD")) {
         const m = macd(closes);
         const p = pane++;
         const hist = chart.addSeries(
@@ -212,7 +259,7 @@ export function TokenChart({
         );
         l2.setData(line(m.signal, times));
       }
-      if (indicators.includes("RSI")) {
+      if (!indicatorsBlocked && indicators.includes("RSI")) {
         const r = chart.addSeries(
           lw.LineSeries,
           { color: colors.boll, lineWidth: 1, priceLineVisible: false, lastValueVisible: true },
@@ -222,7 +269,6 @@ export function TokenChart({
       }
       chart.panes().forEach((p, i) => p.setStretchFactor(i === 0 ? 3 : 1));
 
-      const step = items.length > 1 ? items[1].t - items[0].t : 60;
       const bucket = (sec: number) => (Math.floor(sec / step) * step) as UTCTimestamp;
       const marks: {
         time: Time;
@@ -234,7 +280,7 @@ export function TokenChart({
       if (markers) {
         for (const a of smTrades.data?.items ?? []) {
           const sec = Math.floor(Date.parse(a.time) / 1000);
-          if (sec < items[0].t) continue;
+          if (!actualTimes.has(bucket(sec))) continue;
           marks.push({
             time: bucket(sec),
             position: a.kind === "buy" ? "belowBar" : "aboveBar",
@@ -245,6 +291,7 @@ export function TokenChart({
         }
       }
       for (const s of candles.data?.pool_switches ?? []) {
+        if (!actualTimes.has(bucket(s.t))) continue;
         marks.push({
           time: bucket(s.t),
           position: "aboveBar",
@@ -255,7 +302,11 @@ export function TokenChart({
       }
       marks.sort((a, b) => (a.time as number) - (b.time as number));
       if (marks.length) lw.createSeriesMarkers(main, marks);
-      chart.timeScale().fitContent();
+      const firstActualIndex = timeSlots.indexOf(items[0].t as UTCTimestamp);
+      chart.timeScale().setVisibleLogicalRange({
+        from: Math.max(0, Math.min(firstActualIndex - 3, 270)),
+        to: 299,
+      });
     });
     return () => {
       disposed = true;
@@ -274,6 +325,8 @@ export function TokenChart({
     quote,
     locale,
     candles.data,
+    incomplete,
+    indicatorsBlocked,
     t,
   ]);
 
@@ -373,8 +426,16 @@ export function TokenChart({
             <button
               type="button"
               key={k}
-              aria-pressed={indicators.includes(k)}
-              className={indicators.includes(k) ? "selected" : ""}
+              aria-pressed={indicators.includes(k) && (k === "VOL" || !indicatorsBlocked)}
+              className={
+                indicators.includes(k) && (k === "VOL" || !indicatorsBlocked) ? "selected" : ""
+              }
+              disabled={indicatorsBlocked && k !== "VOL"}
+              title={
+                indicatorsBlocked && k !== "VOL"
+                  ? t(incomplete ? "indicatorsUnavailable" : "indicatorsContinuous")
+                  : undefined
+              }
               onClick={() =>
                 setIndicators(
                   indicators.includes(k) ? indicators.filter((x) => x !== k) : [...indicators, k]
@@ -411,10 +472,31 @@ export function TokenChart({
           </label>
         </div>
       ) : null}
+      {candles.data ? (
+        <div className={`coverage-note chart-coverage${incomplete ? " partial" : ""}`} role="note">
+          <strong>{t(incomplete ? "partial" : "complete")}</strong>
+          <time dateTime={candles.data.as_of}>{t("asOf", { time: cutoff ?? "--" })}</time>
+          {unclosed ? <span>{t("unclosed")}</span> : null}
+          {candles.data.gaps.length ? <span>{t("priceGaps")}</span> : null}
+          {indicatorsBlocked ? (
+            <span>{t(incomplete ? "indicatorsUnavailable" : "indicatorsContinuous")}</span>
+          ) : null}
+        </div>
+      ) : null}
       <div className="chart-host" ref={host} data-testid="token-chart">
         {candles.isPending ? <span className="chart-note">{t("loading")}</span> : null}
         {candles.isSuccess && !items.length ? (
-          <span className="chart-note">{t("empty")}</span>
+          <span className="chart-note">
+            {t(
+              candles.data.empty_reason === "no_main_pool"
+                ? "noMainPool"
+                : candles.data.empty_reason === "no_price"
+                  ? "noPrice"
+                  : candles.data.empty_reason === "no_trades"
+                    ? "empty"
+                    : "incompleteEmpty"
+            )}
+          </span>
         ) : null}
       </div>
       {candles.isError ? (

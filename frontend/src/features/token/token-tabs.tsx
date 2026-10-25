@@ -28,7 +28,7 @@ import { Icon } from "@/components/icon";
 
 type Tab = "activity" | "holders" | "liquidity";
 
-const m1Labels: ActivityLabelFilter[] = ["all", "smart_money"];
+const m1Labels = ["all", "smart_money"] as const satisfies readonly ActivityLabelFilter[];
 const m3Labels: ActivityLabelFilter[] = ["kol", "insider", "whale", "sniper", "dev", "bundler"];
 const labelKey: Record<ActivityLabelFilter, string> = {
   all: "labelAll",
@@ -111,7 +111,9 @@ function ActivityTab({ chain, address }: { chain: Chain; address: string }) {
     refetchInterval: 10_000,
   });
   const rows = q.data?.pages.flatMap((p) => p.items) ?? [];
-  const counts = q.data?.pages[0]?.label_counts ?? {};
+  const counts = q.data?.pages[0]?.label_counts;
+  const partialFeed = q.data?.pages.some((page) => page.coverage === "partial") ?? false;
+  const partialCounts = q.data?.pages[0]?.label_counts_coverage === "partial";
   return (
     <>
       <div className="tab-filters">
@@ -125,7 +127,7 @@ function ActivityTab({ chain, address }: { chain: Chain; address: string }) {
               onClick={() => setLabel(l)}
             >
               {t(labelKey[l])}
-              <small>{counts[l] !== undefined ? formatCount(counts[l], locale) : ""}</small>
+              <small>{counts ? formatCount(counts[l], locale) : ""}</small>
             </button>
           ))}
           {m3Labels.map((l) => (
@@ -148,6 +150,16 @@ function ActivityTab({ chain, address }: { chain: Chain; address: string }) {
           ))}
         </div>
       </div>
+      {partialFeed ? (
+        <p className="panel-note" role="note" title={t("activityPartialHint")}>
+          {t("activityPartial")}
+        </p>
+      ) : null}
+      {partialCounts ? (
+        <p className="panel-note" role="note" title={t("activityCountsPartialHint")}>
+          {t("activityCountsPartial")}
+        </p>
+      ) : null}
       {q.isPending ? (
         <LoadingState />
       ) : q.isError && !rows.length ? (
@@ -187,7 +199,7 @@ function ActivityTab({ chain, address }: { chain: Chain; address: string }) {
                     <td className="mono">
                       {formatQuantity(a.token_amount, locale)}
                       <small>
-                        {formatQuantity(a.quote_amount, locale)} {a.quote_symbol}
+                        {formatQuantity(a.quote_amount, locale)} {a.quote_symbol ?? UNKNOWN}
                       </small>
                     </td>
                     <td className={`mono ${buyish ? "positive" : "negative"}`}>
@@ -344,6 +356,8 @@ function LiquidityTab({ chain, address }: { chain: Chain; address: string }) {
     enabled: sub === "events",
   });
   const eventRows = events.data?.pages.flatMap((p) => p.items) ?? [];
+  const partialEvents =
+    sub === "events" && (events.data?.pages.some((page) => page.coverage === "partial") ?? false);
   return (
     <>
       <div className="tab-filters">
@@ -366,6 +380,11 @@ function LiquidityTab({ chain, address }: { chain: Chain; address: string }) {
           </button>
         </div>
       </div>
+      {partialEvents ? (
+        <p className="panel-note" role="note" title={t("liquidityEventsPartialHint")}>
+          {t("liquidityEventsPartial")}
+        </p>
+      ) : null}
       {sub === "pools" ? (
         pools.isPending ? (
           <LoadingState />
@@ -388,7 +407,7 @@ function LiquidityTab({ chain, address }: { chain: Chain; address: string }) {
                   <tr key={p.address}>
                     <td>
                       <strong>{p.dex}</strong>
-                      <small className="muted"> · {p.quote_symbol}</small>
+                      <small className="muted"> · {p.quote_symbol ?? UNKNOWN}</small>
                       {p.is_main ? <span className="tiny-tag">{t("mainBadge")}</span> : null}
                       {p.status !== "active" ? (
                         <span className="tiny-tag muted-tag">
@@ -400,11 +419,15 @@ function LiquidityTab({ chain, address }: { chain: Chain; address: string }) {
                     <td className="mono">
                       {formatQuantity(p.reserve_token, locale)}
                       <small>
-                        {formatQuantity(p.reserve_quote, locale)} {p.quote_symbol}
+                        {formatQuantity(p.reserve_quote, locale)} {p.quote_symbol ?? UNKNOWN}
                       </small>
                     </td>
                     <td>
-                      <Address chain={chain} value={p.address} />
+                      <Address
+                        chain={chain}
+                        value={p.address}
+                        showExplorer={!/^0x[0-9a-f]{64}$/i.test(p.address)}
+                      />
                     </td>
                     <td className="mono" title={timeTitle(p.created_at)}>
                       {formatAge(secondsSince(p.created_at))}
@@ -442,7 +465,7 @@ function LiquidityTab({ chain, address }: { chain: Chain; address: string }) {
                     <td className="mono">
                       {formatQuantity(e.token_amount, locale)}
                       <small>
-                        {formatQuantity(e.quote_amount, locale)} {e.quote_symbol}
+                        {formatQuantity(e.quote_amount, locale)} {e.quote_symbol ?? UNKNOWN}
                       </small>
                     </td>
                     <td className="mono">{formatAmount(e.value_usd, locale)}</td>

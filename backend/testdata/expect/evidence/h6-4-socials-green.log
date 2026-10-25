@@ -1,0 +1,7 @@
+# H6 4-socials green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: ParseMetadata; H6 §2-6 username URLs, nested disjoint-field merge and Unicode limits; manual 20+236 URL characters and D103
+# command: go test -count=1 ./internal/metadata
+# sha256 internal/metadata/socials_test.go: 6036331a3859bbc9397ff012b9cd251c92059a444b97b7124938a82db03f2ef5
+ok  	github.com/meme-radar/radar/internal/metadata	0.479s
+
+# exit=0

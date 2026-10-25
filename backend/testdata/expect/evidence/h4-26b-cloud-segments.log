@@ -1,0 +1,51 @@
+profile mode=REPEATABLE_READ_READ_ONLY chain=solana window=24h as_of=2026-10-25T02:56:00Z production_sql_unchanged=true H3_H4_H5_not_deployed=true
+server execution_ms=8853.905 planning_ms=18.049 client_explain_elapsed=16.312814208s
+transfer rows=31813 columns=40 field_value_bytes=11207801 data_row_protocol_bytes=16520572 first_row=917.546416ms last_row=12.6185315s elapsed=12.61858225s raw_copy_cpu_ns=175703000 raw_copy_alloc_bytes=48996360 raw_copy_allocs=658624
+transfer bytes count exact RawValues payload plus DataRow headers; excludes TLS/TCP framing, RowDescription and completion messages; CPU includes buffering/copying, not Numeric decode
+column=0 name=int8 oid=20 format=1 value_bytes=254504
+column=1 name=chain_id oid=63940 format=0 value_bytes=190878
+column=2 name=text oid=25 format=0 value_bytes=95439
+column=3 name=address oid=17 format=1 value_bytes=1018016
+column=4 name=coalesce oid=25 format=0 value_bytes=17536
+column=5 name=coalesce oid=25 format=0 value_bytes=38093
+column=6 name=text oid=25 format=0 value_bytes=0
+column=7 name=launch_platform oid=25 format=0 value_bytes=199544
+column=8 name=launch_at oid=1184 format=1 value_bytes=25352
+column=9 name=price_usd oid=1700 format=1 value_bytes=475020
+column=10 name=price_native oid=1700 format=1 value_bytes=493506
+column=11 name=market_cap_usd oid=1700 format=1 value_bytes=539422
+column=12 name=market_cap_native oid=1700 format=1 value_bytes=540468
+column=13 name=case oid=1700 format=1 value_bytes=0
+column=14 name=case oid=1700 format=1 value_bytes=0
+column=15 name=liquidity_usd oid=1700 format=1 value_bytes=465100
+column=16 name=liquidity_native oid=1700 format=1 value_bytes=432952
+column=17 name=case oid=20 format=1 value_bytes=0
+column=18 name=case oid=20 format=1 value_bytes=0
+column=19 name=case oid=20 format=1 value_bytes=0
+column=20 name=trades oid=20 format=1 value_bytes=254504
+column=21 name=buys oid=20 format=1 value_bytes=254504
+column=22 name=sells oid=20 format=1 value_bytes=254504
+column=23 name=case oid=25 format=0 value_bytes=222691
+column=24 name=case oid=1700 format=1 value_bytes=0
+column=25 name=case oid=1700 format=1 value_bytes=0
+column=26 name=case oid=1700 format=1 value_bytes=0
+column=27 name=case oid=1700 format=1 value_bytes=0
+column=28 name=int8 oid=20 format=1 value_bytes=0
+column=29 name=case oid=20 format=1 value_bytes=0
+column=30 name=case oid=20 format=1 value_bytes=0
+column=31 name=floor oid=20 format=1 value_bytes=25352
+column=32 name=coalesce oid=1009 format=1 value_bytes=1023368
+column=33 name=coalesce oid=3802 format=0 value_bytes=63626
+column=34 name=usd oid=1231 format=1 value_bytes=1585284
+column=35 name=native oid=1231 format=1 value_bytes=1615454
+column=36 name=case oid=1700 format=1 value_bytes=0
+column=37 name=buckets oid=1007 format=1 value_bytes=967828
+column=38 name=usd oid=1700 format=1 value_bytes=74964
+column=39 name=native oid=1700 format=1 value_bytes=79892
+benchmark=full-row-decode rows_per_op=31813 iterations=9 wall_ns_per_op=112158615 cpu_ns_per_op=145040666 bytes_per_op=104693915 allocs_per_op=2605539
+benchmark=numeric-codecs-only rows_per_op=31813 iterations=19 wall_ns_per_op=61312984 cpu_ns_per_op=72751842 bytes_per_op=31990706 allocs_per_op=1358717
+benchmark=exact-20-bucket-carry rows_per_op=31813 iterations=243 wall_ns_per_op=4746247 cpu_ns_per_op=14399469 bytes_per_op=21892298 allocs_per_op=63627
+local_same_cloud_rows round=1 rows=31813 copy=330.53875ms retire_head_commit=33.802042ms full_transaction=365.55975ms cloud_write=NOT_RUN
+local_same_cloud_rows round=2 rows=31813 copy=313.625417ms retire_head_commit=1.040162125s full_transaction=1.354504083s cloud_write=NOT_RUN
+local_same_cloud_rows round=3 rows=31813 copy=2.20851s retire_head_commit=3.290849916s full_transaction=5.500039708s cloud_write=NOT_RUN
+PASS segment audit; no cloud writes and no production SQL/config/semantics changes

@@ -1,0 +1,119 @@
+diff --git a/backend/internal/compute/candles_test.go b/backend/internal/compute/candles_test.go
+index 50f1183..e4a403d 100644
+--- a/backend/internal/compute/candles_test.go
++++ b/backend/internal/compute/candles_test.go
+@@ -143,3 +143,114 @@ func TestCandlesUseMainPoolPerTrade(t *testing.T) {
+ 		t.Errorf("per-trade main-pool candle=%s; want %s", got, want)
+ 	}
+ }
++
++// H1-12 exercises the persisted candle boundary and the public read API.
++// Expectations are the task book's independent sums, not sums of stored bars.
++func TestCoarseCandleVolumeIncludesMinutesWithoutBars(t *testing.T) {
++	ctx := context.Background()
++	s, c := open(t)
++	t0 := day.Add(10 * time.Hour)
++	now := t0.Add(7 * time.Minute)
++	token, wsol := []byte("M"), []byte("wsol")
++	chains := []compute.ChainNative{{Chain: "solana", Symbol: "SOL"}}
++	if err := s.SaveQuoteAssets(ctx, []store.QuoteAsset{{Chain: "solana", Asset: wsol, Symbol: "SOL", Kind: "native", Decimals: 9}}); err != nil {
++		t.Fatal(err)
++	}
++	var prices []store.QuotePrice
++	for minute := 0; minute <= 7; minute++ {
++		prices = append(prices, store.QuotePrice{Symbol: "SOL", Minute: t0.Add(time.Duration(minute) * time.Minute), USD: "100", Source: "binance"})
++	}
++	if err := s.SaveQuotePrices(ctx, prices); err != nil {
++		t.Fatal(err)
++	}
++	six := int16(6)
++	for _, x := range []struct {
++		num                 uint64
++		minute              int
++		pool, quote, native string
++	}{
++		{1, 0, "A", "1500000000", "1.5"}, // 1.5 SOL * 100 = 150 USD.
++		{2, 1, "B", "2000000000", "2"},   // B alone: 200 USD but no main-pool bar.
++		{4, 6, "A", "500000000", "0.5"},  // After 10:05: 50 USD.
++	} {
++		tr := trade(1, []byte(x.pool), token, "1000000", x.quote, "SOL")
++		tr.PriceNative, tr.ValueNative = x.native, x.native
++		f := parse.Facts{Trades: []parse.Trade{tr}}
++		if x.num == 1 {
++			f.Tokens = []parse.Token{{Address: token, Created: true, Decimals: &six}}
++			f.Pools = []parse.Pool{
++				{ID: []byte("A"), Token: token, Quote: wsol, QuoteSymbol: "SOL", Protocol: "pumpswap", Dex: "pumpswap", Created: true, Status: "active"},
++				{ID: []byte("B"), Token: token, Quote: wsol, QuoteSymbol: "SOL", Protocol: "pumpswap", Dex: "pumpswap", Created: true, Status: "active"},
++			}
++		}
++		apply(t, s, "solana", x.num, t0.Add(time.Duration(x.minute)*time.Minute+5*time.Second), f)
++	}
++	if err := s.SaveMainPools(ctx, "solana", []store.MainPoolChange{{Token: token, Pool: []byte("A"), Reason: "liquidity"}}, t0); err != nil {
++		t.Fatal(err)
++	}
++	refresh := func() {
++		t.Helper()
++		if err := compute.NewValues(s, chains).Step(ctx, t0); err != nil {
++			t.Fatal(err)
++		}
++		if err := compute.NewStats(s, []string{"solana"}).Step(ctx, now); err != nil {
++			t.Fatal(err)
++		}
++	}
++	check := func(five, hour, dayVolume string) {
++		t.Helper()
++		for _, x := range []struct {
++			interval     string
++			at, to       time.Time
++			volume, ohlc string
++		}{
++			{"5m", t0, t0.Add(5 * time.Minute), five, "150 150 150 150"},
++			{"1h", t0, t0.Add(time.Hour), hour, "150 150 50 50"},
++			{"1d", day, day.Add(24 * time.Hour), dayVolume, "150 150 50 50"},
++		} {
++			got := one(t, c, `SELECT trim_scale(v)::text FROM candles WHERE chain='solana' AND token_address=$1 AND interval=$2 AND t=$3`, token, x.interval, x.at)
++			if got != x.volume {
++				t.Errorf("%s volume=%s; want %s including all priced pool-minutes", x.interval, got, x.volume)
++			}
++			got = one(t, c, `SELECT concat_ws(' ',trim_scale(o),trim_scale(h),trim_scale(l),trim_scale(c)) FROM candles WHERE chain='solana' AND token_address=$1 AND interval=$2 AND t=$3`, token, x.interval, x.at)
++			if got != x.ohlc {
++				t.Errorf("%s OHLC=%s; want main-pool-only %s", x.interval, got, x.ohlc)
++			}
++			for _, native := range []bool{false, true} {
++				set, err := s.TokenCandles(ctx, "solana", token, x.interval, "price", native, x.at, x.to, 10, now)
++				if err != nil {
++					t.Fatal(err)
++				}
++				if len(set.Bars) != 1 {
++					t.Fatalf("%s native=%t bars=%d; want one", x.interval, native, len(set.Bars))
++				}
++				v := set.Bars[0].V
++				if v == nil || *v != x.volume {
++					t.Errorf("%s native=%t returned v=%v; want USD %s", x.interval, native, v, x.volume)
++				}
++			}
++		}
++		if got := one(t, c, `SELECT count(*)::text FROM candles WHERE chain='solana' AND token_address=$1 AND interval='1m' AND t IN($2,$3)`, token, t0.Add(time.Minute), t0.Add(2*time.Minute)); got != "0" {
++			t.Errorf("non-main-only minute bars=%s; want 0", got)
++		}
++		for _, x := range []struct {
++			at     time.Time
++			volume string
++		}{{t0, "150"}, {t0.Add(6 * time.Minute), "50"}} {
++			if got := one(t, c, `SELECT trim_scale(v)::text FROM candles WHERE chain='solana' AND token_address=$1 AND interval='1m' AND t=$2`, token, x.at); got != x.volume {
++				t.Errorf("1m %s volume=%s; want unchanged %s", x.at, got, x.volume)
++			}
++		}
++	}
++	refresh()
++	// Independent sums: 5m 150+200=350; 1h/1d 150+200+50=400.
++	check("350", "400", "400")
++	// Late block 3 fills a historical minute with B alone (25 USD). Rebuilding
++	// that minute must update its containing coarse buckets even without a 1m
++	// bar, and must read the freshly rebuilt pool_minute_stats in the same txn.
++	tr := trade(1, []byte("B"), token, "1000000", "250000000", "SOL")
++	tr.PriceNative, tr.ValueNative = "0.25", "0.25"
++	apply(t, s, "solana", 3, t0.Add(2*time.Minute+5*time.Second), parse.Facts{Trades: []parse.Trade{tr}})
++	refresh()
++	check("375", "425", "425") // 350+25; 400+25.
++}

@@ -1,0 +1,12 @@
+# h5-8-smart-cards red base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyAndCreator$ -v ./internal/pgapi
+# sha256 internal/pgapi/holdings_smart_money_test.go f0775767c934b2d58b3c4517d4779ad2f33923cb7312bbbb5aed479fd17366e3
+=== RUN   TestPgTokenSmartMoneyAndCreator
+    holdings_smart_money_test.go:56: active smart holders={ListVersion:1 Holders:<nil> Items:[]}; want version 3, holders 1
+    holdings_smart_money_test.go:59: cards=[]; want only m1
+--- FAIL: TestPgTokenSmartMoneyAndCreator (0.34s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.002s
+FAIL
+
+# exit=1

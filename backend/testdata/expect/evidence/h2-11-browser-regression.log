@@ -1,0 +1,157 @@
+# h2-11-browser regression base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgFrontendSmoke$ ./internal/pgapi
+# dependency_merge_pending=5e1f0c86445a831bb1226179065b15fdb5db9df9; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 33dc50227c3bef9d6d4a4b9b315787310c184cbc5e3f691939852c50d026f0d1 internal/pgapi/browser_test.go
+# test_sha256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 internal/pgapi/routes_test.go
+=== RUN   TestPgFrontendSmoke
+=== RUN   TestPgFrontendSmoke/stock
+    browser_test.go:137: [WebServer] (node:60050) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 5 tests using 1 worker
+        
+        (node:60052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✘  1 [chromium] › e2e/smoke/token.spec.ts:5:5 › opens token detail from the list (5.5s)
+        (node:60108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✘  2 [chromium] › e2e/smoke/token.spec.ts:14:5 › chart, activity, holders and pools (6.2s)
+        (node:60142) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✘  3 [chromium] › e2e/smoke/token.spec.ts:41:5 › partial holder coverage and unknown token (5.4s)
+        (node:60161) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  4 [chromium] › e2e/smoke/token.spec.ts:51:5 › token page fits a phone (994ms)
+          ✓  5 [chromium] › e2e/smoke/token.spec.ts:60:5 › English token tabs fit a phone and remain usable (324ms)
+        
+        
+          1) [chromium] › e2e/smoke/token.spec.ts:5:5 › opens token detail from the list ───────────────────
+        
+            Error: expect(locator).toBeVisible() failed
+        
+            Locator: locator('.token-open').first()
+            Expected: visible
+            Timeout: 5000ms
+            Error: element(s) not found
+        
+            Call log:
+              - Expect "toBeVisible" locator('.token-open').first() with timeout 5000ms
+              - waiting for locator('.token-open').first()
+        
+        
+               6 |   await page.goto("/smart-money/inflow");
+               7 |   const link = page.locator(".token-open").first();
+            >  8 |   await expect(link).toBeVisible();
+                 |                      ^
+               9 |   await link.click();
+              10 |   await expect(page).toHaveURL(/\/token\/(solana|base|bsc)\//);
+              11 |   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+                at /Users/yuezhang/yz/projects/meme-radar-h2/frontend/e2e/smoke/token.spec.ts:8:22
+        
+            Error Context: ../.local/h2-pg-ui/stock-results/smoke-token-opens-token-detail-from-the-list-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h2-pg-ui/stock-results/smoke-token-opens-token-detail-from-the-list-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h2-pg-ui/stock-results/smoke-token-opens-token-detail-from-the-list-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          2) [chromium] › e2e/smoke/token.spec.ts:14:5 › chart, activity, holders and pools ────────────────
+        
+            Error: expect(locator).toContainText(expected) failed
+        
+            Locator: locator('.data-table tbody tr').first()
+            Expected substring: "聪明钱"
+            Timeout: 5000ms
+            Error: element(s) not found
+        
+            Call log:
+              - Expect "toContainText" locator('.data-table tbody tr').first() with timeout 5000ms
+              - waiting for locator('.data-table tbody tr').first()
+        
+        
+              30 |     .first()
+              31 |     .click();
+            > 32 |   await expect(page.locator(".data-table tbody tr").first()).toContainText("聪明钱");
+                 |                                                              ^
+              33 |
+              34 |   await page.getByRole("tab", { name: /持有者/ }).click();
+              35 |   await expect(page.getByRole("tabpanel").getByRole("note")).toContainText("完整覆盖");
+                at /Users/yuezhang/yz/projects/meme-radar-h2/frontend/e2e/smoke/token.spec.ts:32:62
+        
+            Error Context: ../.local/h2-pg-ui/stock-results/smoke-token-chart-activity-holders-and-pools-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h2-pg-ui/stock-results/smoke-token-chart-activity-holders-and-pools-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h2-pg-ui/stock-results/smoke-token-chart-activity-holders-and-pools-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          3) [chromium] › e2e/smoke/token.spec.ts:41:5 › partial holder coverage and unknown token ─────────
+        
+            Error: expect(locator).toContainText(expected) failed
+        
+            Locator: getByRole('tabpanel').getByRole('note')
+            Expected substring: "部分覆盖"
+            Received string:    "覆盖范围未知"
+            Timeout: 5000ms
+        
+            Call log:
+              - Expect "toContainText" getByRole('tabpanel').getByRole('note') with timeout 5000ms
+              - waiting for getByRole('tabpanel').getByRole('note')
+                14 × locator resolved to <p role="note" class="coverage-note unknown">覆盖范围未知</p>
+                   - unexpected value "覆盖范围未知"
+        
+        
+              42 |   await page.goto("/token/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222");
+              43 |   await page.getByRole("tab", { name: /持有者/ }).click();
+            > 44 |   await expect(page.getByRole("tabpanel").getByRole("note")).toContainText("部分覆盖");
+                 |                                                              ^
+              45 |   await page.goto("/token/solana/11111111111111111111111111111111");
+              46 |   await expect(page.getByRole("heading", { name: "找不到这个代币" })).toBeVisible();
+              47 |   const res = await page.goto("/token/eth/0x00");
+                at /Users/yuezhang/yz/projects/meme-radar-h2/frontend/e2e/smoke/token.spec.ts:44:62
+        
+            Error Context: ../.local/h2-pg-ui/stock-results/smoke-token-partial-holder-coverage-and-unknown-token-chromium/error-context.md
+        
+            attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+            ../.local/h2-pg-ui/stock-results/smoke-token-partial-holder-coverage-and-unknown-token-chromium/trace.zip
+            Usage:
+        
+                npx playwright show-trace ../.local/h2-pg-ui/stock-results/smoke-token-partial-holder-coverage-and-unknown-token-chromium/trace.zip
+        
+            ────────────────────────────────────────────────────────────────────────────────────────────────
+        
+          3 failed
+            [chromium] › e2e/smoke/token.spec.ts:5:5 › opens token detail from the list ────────────────────
+            [chromium] › e2e/smoke/token.spec.ts:14:5 › chart, activity, holders and pools ─────────────────
+            [chromium] › e2e/smoke/token.spec.ts:41:5 › partial holder coverage and unknown token ──────────
+          2 passed (20.6s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h2/.local/h2-pg-ui
+    browser_test.go:139: Playwright stock failed: exit status 1 (preserved without weakening assertions)
+=== RUN   TestPgFrontendSmoke/pg-only
+    browser_test.go:137: [WebServer] (node:60217) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 1 test using 1 worker
+        
+        (node:60218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h2-pg-playwright-1644614265/pg-token.spec.ts:3:5 › PG token renders chart and known unknown states (1.3s)
+        
+          1 passed (2.1s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h2/.local/h2-pg-ui
+--- FAIL: TestPgFrontendSmoke (24.33s)
+    --- FAIL: TestPgFrontendSmoke/stock (21.28s)
+    --- PASS: TestPgFrontendSmoke/pg-only (2.66s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	24.965s
+FAIL
+# exit_status=1

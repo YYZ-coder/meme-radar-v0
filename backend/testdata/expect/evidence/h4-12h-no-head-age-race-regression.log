@@ -1,0 +1,7 @@
+# command: go test -race -count=1 ./internal/compute ./cmd/radar ./internal/pgapi
+# real local PG; validates finite-head age, no-head +Inf, H3 lifecycle and H2 initial empty API
+ok  	github.com/meme-radar/radar/internal/compute	15.977s
+ok  	github.com/meme-radar/radar/cmd/radar	3.781s
+ok  	github.com/meme-radar/radar/internal/pgapi	16.295s
+
+# exit=0

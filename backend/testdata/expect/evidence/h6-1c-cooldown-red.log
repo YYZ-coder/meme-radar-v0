@@ -1,0 +1,14 @@
+# H6 1c-cooldown red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: H6-1c: literal request sequence at 0, 10m-1ns, 10m; six original attempts with one intervening success prove counter resets. Clock fields only; behavior absent.
+# command: go test -count=1 -run ^TestGatewayHostCooldown$ ./internal/metadata
+# sha256 internal/metadata/cooldown_test.go: 50efc1832d2aacb0b77ed7138c3b2d9bed8d97d14592cfba936b5f05fb037ee1
+--- FAIL: TestGatewayHostCooldown (0.00s)
+    --- FAIL: TestGatewayHostCooldown/three_failures_skip_ten_minutes_then_resume (0.00s)
+        cooldown_test.go:31: request order=[original.example gateway.example original.example gateway.example original.example gateway.example original.example gateway.example original.example gateway.example original.example]; want [original.example gateway.example original.example gateway.example original.example gateway.example gateway.example gateway.example original.example]
+    --- FAIL: TestGatewayHostCooldown/success_resets_consecutive_failures (0.00s)
+        cooldown_test.go:42: original=7 gateway=6; want 6/6
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.518s
+FAIL
+
+# exit=1

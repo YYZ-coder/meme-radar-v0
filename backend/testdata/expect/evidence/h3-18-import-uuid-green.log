@@ -1,0 +1,17 @@
+# h3-18-import-uuid green base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 977fc0c1ca919cb38d6723943d01169b0cde26dbaf9dd288832641f908b9eb7f backend/internal/mockdata/lists_pg_test.go
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 66b08993418edb0544c721bd4b26f3a9c809d4d701512d0c8b4a484a6115293f backend/internal/compute/lists_test.go
+# SHA256 0de5247cdcecac9fd2ce2073f53873dc7501c690988b84f6e51a33c5d3fe2b37 backend/internal/pgapi/routes_test.go
+# SHA256 431f985d430fd41a2d4679f92a96c8a0e9bbe9fe81305e5086b4b761ce1005ee backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 24d78a1c87a5ef014322926f2dddd5120e702bc75726ea66c13361b0146d5431 backend/internal/pgapi/placeholders_test.go
+# SHA256 b7e7e47c2b6320c4afcb92f48520cbdd92731cc1ab42205b34d615a62b3feaf7 backend/internal/store/lists_test.go
+# Tracked test diff SHA256 0ad26f68df8cdde15932bf29556e1fe1b6a0c9e9d8cf4cc90491a4a20d1fd7e5
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestImportIdentifiersUseUUIDStorage|TestAppliedImportRowsArchiveAfterSevenDays|TestPgImportPreview|TestPgApplyImportQueuesVersion|TestConcurrentApplyAndListBuilders|TestListLifecycleMatchesMock|TestPgEveryRouteMatchesContract)$ ./internal/store ./internal/pgapi ./internal/mockdata
+ok  	github.com/meme-radar/radar/internal/store	1.161s
+ok  	github.com/meme-radar/radar/internal/pgapi	1.428s
+ok  	github.com/meme-radar/radar/internal/mockdata	0.810s
+
+exit=0

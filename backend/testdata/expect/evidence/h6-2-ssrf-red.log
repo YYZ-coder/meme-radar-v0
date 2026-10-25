@@ -1,0 +1,31 @@
+# H6 2-ssrf red; base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary / independent expectation: Fetcher.Fetch real socket/DNS + external 302 replay; reject private, loopback, link-local, multicast before any request (H6 §2-5)
+# command: go test -count=1 -run ^TestFetchRejectsPrivateAddresses$ ./internal/metadata
+# sha256 internal/metadata/fetch_test.go: 001e4149f96f21f948a23b730d032bb96715406baf39da5fd844223a86c4d7aa
+--- FAIL: TestFetchRejectsPrivateAddresses (0.00s)
+    fetch_test.go:31: loopback request = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/127.0.0.1 (0.00s)
+        fetch_test.go:41: DNS 127.0.0.1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/10.0.0.1 (0.00s)
+        fetch_test.go:41: DNS 10.0.0.1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/169.254.169.254 (0.00s)
+        fetch_test.go:41: DNS 169.254.169.254 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/::1 (0.00s)
+        fetch_test.go:41: DNS ::1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/fc00::1 (0.00s)
+        fetch_test.go:41: DNS fc00::1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/fe80::1 (0.00s)
+        fetch_test.go:41: DNS fe80::1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/224.0.0.1 (0.00s)
+        fetch_test.go:41: DNS 224.0.0.1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/0.0.0.0 (0.00s)
+        fetch_test.go:41: DNS 0.0.0.0 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/::ffff:127.0.0.1 (0.00s)
+        fetch_test.go:41: DNS ::ffff:127.0.0.1 = <nil>; want ErrBlocked
+    --- FAIL: TestFetchRejectsPrivateAddresses/public_redirect_to_private (0.00s)
+        fetch_test.go:67: redirect = <nil>; want ErrBlocked
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.685s
+FAIL
+
+# exit=1

@@ -1,0 +1,13 @@
+# H1 10-recompute green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T15:47:02.971079+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestGraduationSwitchUsesChainTime/rebuild_already_computed$ ./internal/compute
+# sha256 internal/compute/market_test.go fffec2e9a92bfe10e7223548644bea062803b0523bf33a6aaf5071bc3d60776d
+# test diff sha256 ccb3665b55363da451bd5d52018894b9736622f6ae818afa4c0c89e6fb8daaec
+=== RUN   TestGraduationSwitchUsesChainTime
+=== RUN   TestGraduationSwitchUsesChainTime/rebuild_already_computed
+--- PASS: TestGraduationSwitchUsesChainTime (0.18s)
+    --- PASS: TestGraduationSwitchUsesChainTime/rebuild_already_computed (0.18s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.649s
+
+# exit_code=0

@@ -1,0 +1,11 @@
+# h4-12e-command-schedule green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+1beca020c55cd12fbb5bc000509e7e6b48e1e6a8026e7a2d063ef8dee83efcd4  cmd/radar/compute_test.go
+# tracked diff sha256=b9f2761732738ebe6ffa24a7250f03456fabbea2d6a97046b73fceb47b55b02f
+# command: go test -count=1 -v -run TestComputeReceivesInflowSchedule ./cmd/radar
+=== RUN   TestComputeReceivesInflowSchedule
+--- PASS: TestComputeReceivesInflowSchedule (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/cmd/radar	0.705s
+
+# exit=0

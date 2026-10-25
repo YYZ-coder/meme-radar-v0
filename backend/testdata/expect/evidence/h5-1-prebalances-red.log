@@ -1,0 +1,13 @@
+# h5-1-prebalances red base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestParseTxReadsPreTokenBalances -v ./internal/solana
+# sha256 internal/solana/prebalances_test.go 124dad484dc00d0612304fb208e699271a2580daa7a5f48b3ee0e5865475b437
+=== RUN   TestParseTxReadsPreTokenBalances
+    prebalances_test.go:57: tx 2 pre balances = []; want [{Mint:Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB Owner:AWRMhrckk4xEa26C4RKtC43G3LNit9Mys1B1q8xwkKzv Amount:65280300583 AccountIndex:3} {Mint:Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB Owner:A77HErqtfN1hLLpvZ9pCtu66FEtM8BveoaKbbMoZ4RiR Amount:12142423467600 AccountIndex:4}]
+    prebalances_test.go:57: tx 7 pre balances = []; want [{Mint:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v Owner:36Q2NicqLeS2a6vPc3G2g9nS7inrTQQL8azsY3suQwJ8 Amount:42267865 AccountIndex:4} {Mint:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v Owner:36Q2NicqLeS2a6vPc3G2g9nS7inrTQQL8azsY3suQwJ8 Amount:803923 AccountIndex:5} {Mint:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v Owner:GdegE4nrvYZFqdm63wWTQaZwVsfuDkEUPgtMKYdnVpFw Amount:255698288 AccountIndex:7}]
+    prebalances_test.go:57: tx 9 pre balances = []; want [{Mint:PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB Owner:HaQkVYVjMgEjr17BZHZz12qw1QvKHFchGaqfoYmwWtSz Amount:187103577009 AccountIndex:1} {Mint:GTZPzH1b6TGm62WbGYcCT4BhvVBhBRtYQqx7rSzwpump Owner:4UcXw7wcK7HjnFYYnmjzLiizUj2MGJXGJaA9KzVa7m3E Amount:0 AccountIndex:2} {Mint:PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB Owner:4UcXw7wcK7HjnFYYnmjzLiizUj2MGJXGJaA9KzVa7m3E Amount:4641918728 AccountIndex:3} {Mint:GTZPzH1b6TGm62WbGYcCT4BhvVBhBRtYQqx7rSzwpump Owner:HaQkVYVjMgEjr17BZHZz12qw1QvKHFchGaqfoYmwWtSz Amount:74077425920566 AccountIndex:4} {Mint:PresTj4Yc2bAR197Er7wz4UUKSfqt6FryBEdAriBoQB Owner:5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD Amount:203646092 AccountIndex:6}]
+--- FAIL: TestParseTxReadsPreTokenBalances (0.02s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/solana	0.735s
+FAIL
+
+# exit=1

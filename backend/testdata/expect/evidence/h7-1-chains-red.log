@@ -1,0 +1,13 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestHealthChains ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=d0735ad16fabf58c80cfafe2435752de248181cdcbd3c11979df8f6d4ce07a29
+test_diff=h7-1-chains-red-admin_health_test.diff sha256=fa6f8357ef7926557ba6ebef64de6aa824856d5e626eb9411933ef34dd92a217
+=== RUN   TestHealthChains
+    admin_health_test.go:65: store chain rows=0; want 3 configured chains
+--- FAIL: TestHealthChains (0.26s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.740s
+FAIL
+
+exit_code=1

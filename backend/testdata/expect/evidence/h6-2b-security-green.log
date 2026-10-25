@@ -1,0 +1,7 @@
+# H6 2b-security green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Fetcher + JSON logs; non-public shared/reserved ranges rejected and blocked host means actual fallback gateway, not original token URI
+# command: go test -count=1 -run TestFetchRejectsSharedAndReservedAddresses|TestMetadataReportsBlockedGatewayHost|TestFetchRejectsPrivateAddresses ./internal/metadata
+# sha256 internal/metadata/security_regression_test.go: fd4787b2a4e8501512f906632280f345fef072590d04f69cf9b40aeb52cbebb2
+ok  	github.com/meme-radar/radar/internal/metadata	0.313s
+
+# exit=0

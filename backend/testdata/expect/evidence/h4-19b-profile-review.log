@@ -1,0 +1,41 @@
+# cpu
+File: compute.test
+Type: cpu
+Time: 2026-10-25 04:14:13 CST
+Duration: 40.64s, Total samples = 1100ms ( 2.71%)
+Showing nodes accounting for 870ms, 79.09% of 1100ms total
+Showing top 12 nodes out of 244
+      flat  flat%   sum%        cum   cum%
+     210ms 19.09% 19.09%      210ms 19.09%  syscall.rawsyscalln
+     180ms 16.36% 35.45%      180ms 16.36%  runtime.memclrNoHeapPointers
+     150ms 13.64% 49.09%      150ms 13.64%  runtime.madvise
+     100ms  9.09% 58.18%      100ms  9.09%  runtime.pthread_cond_signal
+      50ms  4.55% 62.73%       50ms  4.55%  runtime.kevent
+      50ms  4.55% 67.27%       50ms  4.55%  runtime.tryDeferToSpanScan
+      30ms  2.73% 70.00%       30ms  2.73%  runtime.memmove
+      20ms  1.82% 71.82%       20ms  1.82%  internal/runtime/atomic.(*UnsafePointer).Load
+      20ms  1.82% 73.64%       20ms  1.82%  internal/runtime/maps.(*groupsReference).group
+      20ms  1.82% 75.45%       20ms  1.82%  runtime.(*mspan).moveInlineMarks
+      20ms  1.82% 77.27%       20ms  1.82%  runtime.(*spanInlineMarkBits).init
+      20ms  1.82% 79.09%       20ms  1.82%  runtime.nanotime1
+
+# alloc_space
+File: compute.test
+Type: alloc_space
+Time: 2026-10-25 04:14:53 CST
+Showing nodes accounting for 593.73MB, 83.46% of 711.38MB total
+Dropped 95 nodes (cum <= 3.56MB)
+Showing top 12 nodes out of 97
+      flat  flat%   sum%        cum   cum%
+  104.14MB 14.64% 14.64%   104.14MB 14.64%  github.com/jackc/pgx/v5/internal/pgio.AppendUint32 (inline)
+   90.88MB 12.77% 27.41%   248.65MB 34.95%  github.com/jackc/pgx/v5/pgproto3.(*Bind).Encode
+   68.50MB  9.63% 37.04%    68.50MB  9.63%  math/big.nat.make (inline)
+   66.43MB  9.34% 46.38%   623.09MB 87.59%  github.com/meme-radar/radar/internal/compute_test.TestInflowPerformance35000
+   62.51MB  8.79% 55.17%    70.54MB  9.92%  github.com/meme-radar/radar/internal/store.queueParsed
+   54.14MB  7.61% 62.78%    54.14MB  7.61%  github.com/jackc/pgx/v5/internal/pgio.AppendUint16 (inline)
+   50.01MB  7.03% 69.81%   148.52MB 20.88%  github.com/meme-radar/radar/internal/store.collectInflowRows
+   25.50MB  3.58% 73.39%    25.50MB  3.58%  reflect.unsafe_New
+   23.50MB  3.30% 76.70%    23.50MB  3.30%  container/list.(*List).insertValue (inline)
+   20.01MB  2.81% 79.51%    20.01MB  2.81%  github.com/meme-radar/radar/internal/store.fillInflowBuckets (inline)
+   14.43MB  2.03% 81.54%    14.43MB  2.03%  github.com/jackc/pgx/v5.(*Batch).Queue (inline)
+   13.68MB  1.92% 83.46%    13.68MB  1.92%  github.com/klauspost/compress/zstd.encoderOptions.encoder

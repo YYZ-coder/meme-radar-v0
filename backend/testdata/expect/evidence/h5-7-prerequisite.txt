@@ -1,0 +1,6 @@
+H5-7 prerequisite confirmed 2026-10-24
+H5-1..6 commit 62892ce
+Main ref 1ff1b07
+H2 skeleton c0b4d20; full PostgreSQL read API b102026; merged db6db13
+internal/pgapi exists in main. Frozen Backend/New signatures retained.
+H3/H4 not merged at this checkpoint.

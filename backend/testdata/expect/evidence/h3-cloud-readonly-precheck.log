@@ -1,0 +1,12 @@
+# H3 pre-deployment cloud check, 2026-10-24 Asia/Shanghai
+# Worktree: agent/h3, base 1ff1b076c024d1cd4bf5df094be181b248942740
+# Command: docker run --rm -i --env-file .env postgres:17 sh -c 'psql "$RADAR_DATABASE_URL" -X -v ON_ERROR_STOP=1 -At'
+# SQL was supplied on stdin; credentials were not printed.
+BEGIN READ ONLY;
+SELECT name FROM schema_migrations ORDER BY name;
+SELECT to_regclass('public.sm_lists'),to_regclass('public.jobs');
+COMMIT;
+# Result: 0001_ingest.sql through 0011_window.sql are applied.
+# to_regclass(sm_lists) = NULL; to_regclass(jobs) = NULL.
+# Exit 0. No DDL or data mutation. Full production lifecycle/screenshots require
+# user-arranged deployment; no production import was attempted.

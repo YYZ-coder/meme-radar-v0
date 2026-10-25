@@ -1,0 +1,11 @@
+# h4-12d-projection-age green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+48b7fd62113dfc1ce13d4b0c0518219ce495ee4f47fe846c780cebf40a3122bd  internal/compute/inflow_cycle_test.go
+# tracked diff sha256=1f423429115a5144caf239b1e7c28a541334384c75c8c874485ed2f813121b31
+# command: go test -count=1 -v -run TestCycleReportsProjectionAgeFromPersistedHead ./internal/compute
+=== RUN   TestCycleReportsProjectionAgeFromPersistedHead
+--- PASS: TestCycleReportsProjectionAgeFromPersistedHead (0.31s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.803s
+
+# exit=0

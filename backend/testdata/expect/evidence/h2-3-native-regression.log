@@ -1,0 +1,7 @@
+# h2-3 priced rows regression base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# command: go test -race -count=1 ./internal/pgapi ./internal/httpapi ./cmd/radar
+# local PostgreSQL 127.0.0.1:55432; pending no-price as_of decision
+ok  	github.com/meme-radar/radar/internal/pgapi	2.142s
+ok  	github.com/meme-radar/radar/internal/httpapi	4.690s
+ok  	github.com/meme-radar/radar/cmd/radar	1.892s
+# exit_status=0

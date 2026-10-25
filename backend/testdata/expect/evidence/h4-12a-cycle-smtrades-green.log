@@ -1,0 +1,11 @@
+# h4-12a-cycle-smtrades green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+3e6597481a1b79fb44c4029e935a65b0e09b7de7aef7585eba5b7510b6464da3  internal/compute/inflow_cycle_test.go
+# tracked diff sha256=7fc0f06e38c81c17e406edd8ceb9b1595b080bc3bbb7d4e4eb714ace06c5f849
+# command: go test -count=1 -v -run TestCycleCopiesSmTradesAfterValues ./internal/compute
+=== RUN   TestCycleCopiesSmTradesAfterValues
+--- PASS: TestCycleCopiesSmTradesAfterValues (0.29s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.754s
+
+# exit=0

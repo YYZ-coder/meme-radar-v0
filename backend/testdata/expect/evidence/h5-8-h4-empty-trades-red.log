@@ -1,0 +1,10 @@
+# h5-8-h4-empty-trades red base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumesNoTrades$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_empty_test.go f8a0e099cda9c4b33357a060fa7e22a82881a3bc1fcef9cd1307857a262f423d
+--- FAIL: TestPgTokenSmartMoneyVolumesNoTrades (0.39s)
+    smart_money_volume_empty_test.go:28: no trades with complete coverage: buy=<nil> sell=<nil>; want 0/0
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.851s
+FAIL
+
+# exit=1

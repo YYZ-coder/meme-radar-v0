@@ -1,0 +1,15 @@
+# H1-12 coarse-volume green base=c68992a8ddb60f5d5b9e4040dd1542b868228ceb+worktree
+# UTC 2026-10-24T11:52:14.261406+00:00
+# Seam: Stats.Step -> persisted candles and TokenCandles; real isolated PostgreSQL
+# Independent expectations: H1-12 task book, 150+200=350, 150+200+50=400; late B25 adds 25; no 1m B-only bar
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestCoarseCandleVolumeIncludesMinutesWithoutBars$ ./internal/compute
+# sha256 backend/internal/compute/candles_test.go dd02b0efc5535cf3fdc5af556456b4af530cef5622664c72114d9ca0b64f1672
+# diff sha256 backend/internal/compute/candles_test.go 1d95e749f8ef821f1a7651ad7e20d78aa80ce6cafdbea73f3dfeab57cf283c59
+# sha256 backend/internal/store/compute.go 959c11e68c028fe5fead51c3ffc75fa57f630f85f4b3a34caff99efb250f1266
+# diff sha256 backend/internal/store/compute.go 2ec3a5599a22137aaa9b6d1dd18f823f94a3310e7db2a16bbc88ccb5f9c32779
+=== RUN   TestCoarseCandleVolumeIncludesMinutesWithoutBars
+--- PASS: TestCoarseCandleVolumeIncludesMinutesWithoutBars (0.71s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.143s
+
+# exit_code=0

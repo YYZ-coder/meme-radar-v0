@@ -1,0 +1,24 @@
+# H3 final cloud check, 2026-10-25 Asia/Shanghai
+# Read-only transaction; credentials not printed
+# SQL
+BEGIN READ ONLY;
+SELECT name FROM schema_migrations ORDER BY name;
+SELECT to_regclass('public.sm_lists'),to_regclass('public.jobs');
+COMMIT;
+# Output
+BEGIN
+0001_ingest.sql
+0002_parse.sql
+0003_lookups.sql
+0004_infinity_lookups.sql
+0005_doppler_lookups.sql
+0006_address_display.sql
+0007_compute.sql
+0008_market_tables.sql
+0009_price_sources.sql
+0010_token_supplements.sql
+0011_window.sql
+|
+COMMIT
+
+exit=0

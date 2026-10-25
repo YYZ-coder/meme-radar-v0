@@ -1,0 +1,26 @@
+# H1 7-metric red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:19:25.021667+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenCandlesMetricAndGaps/stored_intervals_and_market_cap$ ./internal/store
+# sha256 internal/store/window_test.go aa4c37882226a743dcd7802e235e8f20d52f69eb2901522d2b49ef905253e4c1
+# test diff sha256 031cda55ab42fac38f927510e838c4090b6b8a2d42730a3e86aa3dade7995b60
+# sha256 testdata/expect/expect_window.py 2a5601aa2e207cdbc9ecc2bc900d9df037e6f12a52243d3b0e543de6a5bc34b0
+# test diff sha256 88f095b28c637edf055ccefa9a39debbc1da60a6cd7ac0757661282f56081bef
+# sha256 testdata/expect/window_cases.json 3519fa66b416d1235af7edfd048b0ce0fb23e740addc8843c968f17df35992b6
+# test diff sha256 e1873c565e87ff23e3e8cb40acd4902873ea320a1ec27bcbe00bdd4b6d65cc3c
+=== RUN   TestTokenCandlesMetricAndGaps
+=== RUN   TestTokenCandlesMetricAndGaps/stored_intervals_and_market_cap
+    window_test.go:635: 1m: store: trade candles: ERROR: invalid input syntax for type interval: "" (SQLSTATE 22007)
+    window_test.go:635: 5m: store: trade candles: ERROR: invalid input syntax for type interval: "" (SQLSTATE 22007)
+    window_test.go:635: 1h: store: trade candles: ERROR: invalid input syntax for type interval: "" (SQLSTATE 22007)
+    window_test.go:635: 1d: store: trade candles: ERROR: invalid input syntax for type interval: "" (SQLSTATE 22007)
+    window_test.go:678: usd market_cap[0]=[1 1.5 0.8 0.8]; want independent Decimal [1000000000 1500000000 800000000 800000000]
+    window_test.go:678: usd market_cap[1]=[1.2 1.2 1.2 1.2]; want independent Decimal [1200000000 1200000000 1200000000 1200000000]
+    window_test.go:678: native market_cap[0]=[0.01 0.015 0.008 0.008]; want independent Decimal [10000000 15000000 8000000 8000000]
+    window_test.go:678: native market_cap[1]=[0.012 0.012 0.012 0.012]; want independent Decimal [12000000 12000000 12000000 12000000]
+--- FAIL: TestTokenCandlesMetricAndGaps (0.24s)
+    --- FAIL: TestTokenCandlesMetricAndGaps/stored_intervals_and_market_cap (0.24s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	0.707s
+FAIL
+
+# exit_code=1

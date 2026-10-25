@@ -1,0 +1,7 @@
+=== RUN   TestInflowPerformance35000
+    inflow_performance_test.go:68: synthetic local fixture tokens=35000 trades=35000 seed=30.821427834s; exact values $1 / .01 SOL; main-pool closes via H1
+    inflow_performance_test.go:76: local solana24h rows=35000 query_decode=1.798563667s fill=0s write=3.532958ms full_transaction=1.808174833s heap_alloc_bytes=109898520
+    inflow_performance_test.go:159: actual compute child peak_rss_bytes_darwin=23494656; process logs=/Users/yuezhang/yz/projects/meme-radar-h4/.local/h4-performance/compute.log; local fixture, not deployed/cloud memory
+--- PASS: TestInflowPerformance35000 (45.70s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	46.327s

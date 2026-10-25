@@ -1,0 +1,7 @@
+# h5-8-contract-regression green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -race -count=1 -run TestPg(Holders|Holdings|HolderCursor|NativeLookup|MissingHolder|TokenSmartMoney|EveryRoute|ShapesMatch) ./internal/pgapi
+# sha256 internal/pgapi/routes_test.go c0d19b926256abe04224218ffe8ba61b5bf229b95fa8d22d1b6c15f8dc2e9af0
+# sha256 internal/pgapi/holdings_concurrent_test.go 792b1a9eb2df821e69647fcb1b88702f2762e1a150aedf5edbce4d9114b88c6a
+ok  	github.com/meme-radar/radar/internal/pgapi	5.627s
+
+# exit=0

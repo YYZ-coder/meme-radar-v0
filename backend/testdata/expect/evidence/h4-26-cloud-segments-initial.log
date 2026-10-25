@@ -1,0 +1,54 @@
+profile mode=REPEATABLE_READ_READ_ONLY chain=solana window=24h as_of=2026-10-25T02:56:00Z production_sql_unchanged=true H3_H4_H5_not_deployed=true
+server execution_ms=6358.786 planning_ms=17.493 client_explain_elapsed=35.327266708s
+transfer rows=31813 columns=40 field_value_bytes=11209053 data_row_protocol_bytes=16521824 first_row=1.157847834s last_row=8.489397875s elapsed=8.489405459s raw_copy_cpu_ns=244341000 raw_copy_alloc_bytes=48987592 raw_copy_allocs=658583
+transfer bytes count exact RawValues payload plus DataRow headers; excludes TLS/TCP framing, RowDescription and completion messages; CPU includes buffering/copying, not Numeric decode
+column=0 name=int8 oid=20 format=1 value_bytes=254504
+column=1 name=chain_id oid=63940 format=0 value_bytes=190878
+column=2 name=text oid=25 format=0 value_bytes=95439
+column=3 name=address oid=17 format=1 value_bytes=1018016
+column=4 name=coalesce oid=25 format=0 value_bytes=17536
+column=5 name=coalesce oid=25 format=0 value_bytes=38093
+column=6 name=text oid=25 format=0 value_bytes=0
+column=7 name=launch_platform oid=25 format=0 value_bytes=199544
+column=8 name=launch_at oid=1184 format=1 value_bytes=25352
+column=9 name=price_usd oid=1700 format=1 value_bytes=475018
+column=10 name=price_native oid=1700 format=1 value_bytes=493508
+column=11 name=market_cap_usd oid=1700 format=1 value_bytes=539422
+column=12 name=market_cap_native oid=1700 format=1 value_bytes=540470
+column=13 name=case oid=1700 format=1 value_bytes=0
+column=14 name=case oid=1700 format=1 value_bytes=0
+column=15 name=liquidity_usd oid=1700 format=1 value_bytes=465100
+column=16 name=liquidity_native oid=1700 format=1 value_bytes=434202
+column=17 name=case oid=20 format=1 value_bytes=0
+column=18 name=case oid=20 format=1 value_bytes=0
+column=19 name=case oid=20 format=1 value_bytes=0
+column=20 name=trades oid=20 format=1 value_bytes=254504
+column=21 name=buys oid=20 format=1 value_bytes=254504
+column=22 name=sells oid=20 format=1 value_bytes=254504
+column=23 name=case oid=25 format=0 value_bytes=222691
+column=24 name=case oid=1700 format=1 value_bytes=0
+column=25 name=case oid=1700 format=1 value_bytes=0
+column=26 name=case oid=1700 format=1 value_bytes=0
+column=27 name=case oid=1700 format=1 value_bytes=0
+column=28 name=int8 oid=20 format=1 value_bytes=0
+column=29 name=case oid=20 format=1 value_bytes=0
+column=30 name=case oid=20 format=1 value_bytes=0
+column=31 name=floor oid=20 format=1 value_bytes=25352
+column=32 name=coalesce oid=1009 format=1 value_bytes=1023368
+column=33 name=coalesce oid=3802 format=0 value_bytes=63626
+column=34 name=usd oid=1231 format=1 value_bytes=1585284
+column=35 name=native oid=1231 format=1 value_bytes=1615454
+column=36 name=case oid=1700 format=1 value_bytes=0
+column=37 name=buckets oid=1007 format=1 value_bytes=967828
+column=38 name=usd oid=1700 format=1 value_bytes=74964
+column=39 name=native oid=1700 format=1 value_bytes=79892
+benchmark=full-row-decode rows_per_op=31813 iterations=12 wall_ns_per_op=97149375 cpu_ns_per_op=140623750 bytes_per_op=104695204 allocs_per_op=2605538
+benchmark=numeric-codecs-only rows_per_op=31813 iterations=19 wall_ns_per_op=64082622 cpu_ns_per_op=73904947 bytes_per_op=31990264 allocs_per_op=1358717
+benchmark=exact-20-bucket-carry rows_per_op=31813 iterations=268 wall_ns_per_op=4391151 cpu_ns_per_op=14065208 bytes_per_op=21892304 allocs_per_op=63627
+panic: ERROR: relation "projection_version_seq" does not exist (SQLSTATE 42P01)
+
+goroutine 1 [running]:
+main.localWrite({0x105b09578, 0x359edeb303f0}, {0x359edec08000, 0x7c45, 0x7c45}, {0x0, 0xee26f66c0, 0x105bb9cc0})
+	/Users/yuezhang/yz/projects/meme-radar-h4/backend/testdata/expect/evidence/h4-audit/profile/main.go:317 +0x8d4
+main.main()
+	/Users/yuezhang/yz/projects/meme-radar-h4/backend/testdata/expect/evidence/h4-audit/profile/main.go:222 +0x1120

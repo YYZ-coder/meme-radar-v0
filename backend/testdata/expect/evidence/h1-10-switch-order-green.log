@@ -1,0 +1,11 @@
+# H1 10-switch-order green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:28:02.835010+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestGraduationSwitchClampsToPreviousTime$ ./internal/compute
+# sha256 internal/compute/market_test.go 00429e25b93c7b7fc520ba9e8fe3c798dd68c7edd09696cd25b094c0c973bd80
+# test diff sha256 345bce6a1cb57ecc212b96fa8c75fa2a8a69fb367d1d25a9cab58c4eab332805
+=== RUN   TestGraduationSwitchClampsToPreviousTime
+--- PASS: TestGraduationSwitchClampsToPreviousTime (0.10s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.542s
+
+# exit_code=0

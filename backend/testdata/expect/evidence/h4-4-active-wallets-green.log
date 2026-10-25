@@ -1,0 +1,11 @@
+# h4-4-active-wallets green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+0671a3425c7b5082e195951216bf32479cbc4d477a169d1da5d56c3b9fd27933  internal/compute/inflow_overview_test.go
+# tracked diff sha256=4a7d2797b82c4bd2c3474629b0c3fbbfe8db0d7ea0a127ad0f42d769bd04a90d
+# command: go test -count=1 -v -run TestOverviewActiveWalletsExample ./internal/compute
+=== RUN   TestOverviewActiveWalletsExample
+--- PASS: TestOverviewActiveWalletsExample (0.58s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.019s
+
+# exit=0

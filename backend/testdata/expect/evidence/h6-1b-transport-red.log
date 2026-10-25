@@ -1,0 +1,26 @@
+# H6 1b-transport red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: D156: each transport failure tries original then first gateway; canceled parent, SSRF, malformed JSON and >512KiB stop after original. Literal order and body independently specified.
+# command: go test -count=1 -run ^TestFetchFallsBackAcrossGatewaysTransport$ ./internal/metadata
+# sha256 internal/metadata/transport_test.go: 40a1e98c57167c4599f7fc4009e465f6099fe499b2cf8f7bc71c7f75a2f76bff
+2026/10/24 19:40:40 http: TLS handshake error from 127.0.0.1:53238: remote error: tls: bad certificate
+--- FAIL: TestFetchFallsBackAcrossGatewaysTransport (0.08s)
+    --- FAIL: TestFetchFallsBackAcrossGatewaysTransport/timeout (0.05s)
+        transport_test.go:62: request order=[original.example]; want [original.example first.example]
+        transport_test.go:67: fallback doc={Name: Symbol: ImageURL: Socials:map[] Description: Raw:[]} error=Get "https://original.example/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm": context deadline exceeded (Client.Timeout exceeded while awaiting headers); want gateway success
+    --- FAIL: TestFetchFallsBackAcrossGatewaysTransport/refused (0.00s)
+        transport_test.go:62: request order=[original.example]; want [original.example first.example]
+        transport_test.go:67: fallback doc={Name: Symbol: ImageURL: Socials:map[] Description: Raw:[]} error=Get "https://original.example/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm": dial tcp 127.0.0.1:53225: connect: connection refused; want gateway success
+    --- FAIL: TestFetchFallsBackAcrossGatewaysTransport/reset (0.00s)
+        transport_test.go:62: request order=[original.example]; want [original.example first.example]
+        transport_test.go:67: fallback doc={Name: Symbol: ImageURL: Socials:map[] Description: Raw:[]} error=Get "https://original.example/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm": read tcp: connection reset by peer; want gateway success
+    --- FAIL: TestFetchFallsBackAcrossGatewaysTransport/dns (0.00s)
+        transport_test.go:62: request order=[original.example]; want [original.example first.example]
+        transport_test.go:67: fallback doc={Name: Symbol: ImageURL: Socials:map[] Description: Raw:[]} error=Get "https://original.example/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm": lookup original.example: no such host; want gateway success
+    --- FAIL: TestFetchFallsBackAcrossGatewaysTransport/tls (0.02s)
+        transport_test.go:62: request order=[original.example]; want [original.example first.example]
+        transport_test.go:67: fallback doc={Name: Symbol: ImageURL: Socials:map[] Description: Raw:[]} error=Get "https://original.example/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm": tls: failed to verify certificate: x509: certificate signed by unknown authority; want gateway success
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.537s
+FAIL
+
+# exit=1

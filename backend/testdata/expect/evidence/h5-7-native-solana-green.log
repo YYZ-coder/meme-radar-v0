@@ -1,0 +1,9 @@
+# h5-7-native-solana green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersNativeBalanceSolana$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_solana_test.go ad594211e500f4692bf62abe11d0319bbab1d3abd0d19378732241d4852b2d07
+=== RUN   TestPgHoldersNativeBalanceSolana
+--- PASS: TestPgHoldersNativeBalanceSolana (0.21s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.753s
+
+# exit=0

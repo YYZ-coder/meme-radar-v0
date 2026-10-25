@@ -1,0 +1,17 @@
+# h2-1-errors green base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestBackendErrorsMapToResponses$ ./internal/httpapi
+# test_sha256 2fe89680b6400f54882134a4ca59b861ae6694d0bfce2263b6ed56b9d19eeccd internal/httpapi/backend_test.go
+=== RUN   TestBackendErrorsMapToResponses
+=== RUN   TestBackendErrorsMapToResponses/deadline
+=== RUN   TestBackendErrorsMapToResponses/wrapped_deadline
+=== RUN   TestBackendErrorsMapToResponses/internal
+=== RUN   TestBackendErrorsMapToResponses/api_error
+--- PASS: TestBackendErrorsMapToResponses (0.02s)
+    --- PASS: TestBackendErrorsMapToResponses/deadline (0.02s)
+    --- PASS: TestBackendErrorsMapToResponses/wrapped_deadline (0.00s)
+    --- PASS: TestBackendErrorsMapToResponses/internal (0.00s)
+    --- PASS: TestBackendErrorsMapToResponses/api_error (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/httpapi	0.472s
+# exit_status=0

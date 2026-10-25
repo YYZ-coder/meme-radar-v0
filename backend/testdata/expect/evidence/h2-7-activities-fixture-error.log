@@ -1,0 +1,12 @@
+# h2-7-activities red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgActivities ./internal/pgapi
+# test_sha256 19bf2988c3e8fd2b904a16c18e159bc24b883d8cf6fcc932084606bdae3b27c5 internal/pgapi/activities_test.go
+=== RUN   TestPgActivities
+    activities_test.go:30: store: apply parsed bsc 2…2: ERROR: invalid input syntax for type numeric: "" (SQLSTATE 22P02)
+--- FAIL: TestPgActivities (0.23s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.768s
+FAIL
+# exit_status=1
+# Fixture correction: the formal parse writer accepts numeric QuoteAmount, not the omitted empty string. Use a known 0 quote amount and independently expect 0 whole units. This setup failure is not TDD Red.

@@ -1,0 +1,36 @@
+# H6 online pre-deployment checks, 2026-10-24; read only
+base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed
+Doppler: 3/3 tokenURI() calls returned non-empty URIs; requests and raw results: internal/metadata/testdata/doppler_token_uri.json
+Metaplex: 2 account recordings and independent expectations: internal/metadata/testdata/metaplex_accounts.json, testdata/expect/expect_metaplex.py
+# Representative IPFS 403 (5/5 sampled URIs blocked):
+HTTP/1.1 200 Connection established
+
+HTTP/2 403 
+date: Sat, 24 Oct 2026 04:28:53 GMT
+content-type: text/plain
+content-length: 7
+cache-control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+expires: Thu, 01 Jan 1970 00:00:01 GMT
+referrer-policy: same-origin
+x-frame-options: SAMEORIGIN
+x-robots-tag: noindex, nofollow
+server: cloudflare
+cf-ray: a4f63cc4eb3cf93e-SIN
+alt-svc: h3=":443"; ma=86400
+
+blocked
+# Four.meme live source cross-check:
+{
+  "code": 0,
+  "fields": {
+    "address": "0x5d709925a8671dbd97d73d0b1f3053ec66dfffff",
+    "name": "Onevi",
+    "shortName": "ONEVI",
+    "symbol": "BNB",
+    "image": "https://static.four.meme/market/10234cg8Yq3jRu.png",
+    "descr": "Onevi",
+    "webUrl": "https://onevi.app",
+    "telegramUrl": "https://telegram.org/#Onevi",
+    "twitterUrl": "https://x.com/useonevi"
+  }
+}

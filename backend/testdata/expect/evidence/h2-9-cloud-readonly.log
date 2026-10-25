@@ -1,0 +1,69 @@
+{
+  "checked_at_utc": "2026-10-24T11:50:18.014355+00:00",
+  "boundary": "cloud SELECT under forced read-only session; external Coinbase spot queried independently; API not deployed",
+  "database": {
+    "checked_at": "2026-10-24T19:50:17.717362+08:00",
+    "read_only": "on",
+    "native_prices": [
+      {
+        "symbol": "BNB",
+        "minute": "2026-10-24T19:49:00+08:00",
+        "price_usd": "732.05",
+        "updated_at": "2026-10-24T19:49:55.214717+08:00"
+      },
+      {
+        "symbol": "ETH",
+        "minute": "2026-10-24T19:49:00+08:00",
+        "price_usd": "2366.36",
+        "updated_at": "2026-10-24T19:49:55.214717+08:00"
+      },
+      {
+        "symbol": "SOL",
+        "minute": "2026-10-24T19:49:00+08:00",
+        "price_usd": "101.42",
+        "updated_at": "2026-10-24T19:49:55.214717+08:00"
+      }
+    ],
+    "missing_decimals": [
+      {
+        "chain": "solana",
+        "missing": 0,
+        "tokens": 47891
+      },
+      {
+        "chain": "base",
+        "missing": 0,
+        "tokens": 3303
+      },
+      {
+        "chain": "bsc",
+        "missing": 0,
+        "tokens": 3552
+      }
+    ]
+  },
+  "coinbase_checked_at": "2026-10-24T11:49:43.829036+00:00",
+  "comparisons": [
+    {
+      "symbol": "BNB",
+      "db_usd": "732.05",
+      "coinbase_usd": "731.065",
+      "absolute_difference_pct": "0.1347349414894708404861400833",
+      "within_0_5_pct": true
+    },
+    {
+      "symbol": "ETH",
+      "db_usd": "2366.36",
+      "coinbase_usd": "2363.225",
+      "absolute_difference_pct": "0.1326577029271440510319584466",
+      "within_0_5_pct": true
+    },
+    {
+      "symbol": "SOL",
+      "db_usd": "101.42",
+      "coinbase_usd": "101.3",
+      "absolute_difference_pct": "0.1184600197433366238894373149",
+      "within_0_5_pct": true
+    }
+  ]
+}

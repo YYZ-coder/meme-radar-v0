@@ -1,0 +1,40 @@
+rule_files:
+  - rules.yml
+evaluation_interval: 1m
+tests:
+  - name: projection age over sixty seconds must persist five minutes and clears on recovery
+    interval: 1m
+    input_series:
+      - series: 'radar_projection_age_seconds{chain="bsc",window="1h"}'
+        values: '61+0x6 0 0'
+      - series: 'radar_projection_age_seconds{chain="base",window="24h"}'
+        values: '60+0x8'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: ProjectionStale
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: ProjectionStale
+        exp_alerts:
+          - exp_labels: {severity: warning, chain: bsc, window: 1h}
+            exp_annotations: {summary: 'bsc 1h inflow projection is stale'}
+      - eval_time: 7m
+        alertname: ProjectionStale
+        exp_alerts: []
+  - name: missing first head has infinite age and recovers after first publication
+    interval: 1m
+    input_series:
+      - series: 'radar_projection_age_seconds{chain="solana",window="24h"}'
+        values: 'Inf Inf Inf Inf Inf Inf 30 45'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: ProjectionStale
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: ProjectionStale
+        exp_alerts:
+          - exp_labels: {severity: warning, chain: solana, window: 24h}
+            exp_annotations: {summary: 'solana 24h inflow projection is stale'}
+      - eval_time: 6m
+        alertname: ProjectionStale
+        exp_alerts: []

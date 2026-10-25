@@ -1,0 +1,7 @@
+# h5-8-contract-final green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -race -count=1 -run ^TestPg(EveryRouteMatchesContract|ShapesMatchMock)$ ./internal/pgapi
+# sha256 internal/pgapi/routes_test.go 6e7a5da343df7ce9124a0e3308a84f508ec391d43458ace6cbd02c793fc0b080
+# sha256 internal/pgapi/shapes_test.go fd8d8b0a53825ee9a09b843ca54f7b84894052d3a10d0e550aecfbfe1eb2b248
+ok  	github.com/meme-radar/radar/internal/pgapi	3.729s
+
+# exit=0

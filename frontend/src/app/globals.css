@@ -977,6 +977,16 @@ a:hover {
   font: 8px var(--mono);
   margin-top: 8px;
 }
+.token-table td small.observed-counts {
+  margin-top: 5px;
+  font-size: 9px;
+  color: var(--text);
+}
+.token-table td small.parsed-coverage {
+  margin-top: 3px;
+  font-size: 9px;
+  color: #d9ba78;
+}
 .token-table td strong {
   font-weight: 500;
 }
@@ -2764,6 +2774,11 @@ a:hover {
   padding: 2px 4px;
   white-space: nowrap;
 }
+.position-buy-status {
+  margin: 6px 0 0;
+  font-size: 8px;
+  color: var(--muted);
+}
 .position-buy-labels {
   display: flex;
   justify-content: space-between;
@@ -2792,8 +2807,15 @@ a:hover {
 }
 .position-buy-labels dd {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   font: 11px var(--mono);
   color: var(--green);
+}
+.position-buy-labels dd small {
+  font-size: 8px;
+  color: var(--muted);
 }
 .position-buy-labels .small-position dt:before {
   background: #a4a2e5;
@@ -3249,8 +3271,8 @@ a:hover {
   color: var(--dim);
   font-size: 10px;
 }
-.position-buy-bar.pending span {
-  background: #2c3427 !important;
+.position-buy-bar.pending {
+  background: #2c3427;
 }
 .content-grid.no-sidebar {
   grid-template-columns: minmax(0, 1fr);
@@ -3269,8 +3291,12 @@ a:hover {
 }
 @media (max-width: 760px) {
   .toolbar-options {
+    position: relative;
     flex-wrap: wrap;
     min-width: 0;
+  }
+  .multi-select {
+    position: static;
   }
   .select-trigger {
     min-width: 0;
@@ -3283,9 +3309,9 @@ a:hover {
     grid-template-columns: minmax(0, 1fr);
   }
   .select-panel {
-    left: 0;
-    right: auto;
-    width: min(250px, calc(100vw - 90px));
+    left: auto;
+    right: 0;
+    width: min(250px, 100%);
   }
 }
 
@@ -3584,6 +3610,16 @@ a:hover {
 .coverage-note.partial {
   color: #c7a96b;
 }
+.chart-coverage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+.chart-note {
+  padding: 14px;
+  text-align: center;
+}
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -3664,6 +3700,17 @@ a:hover {
   }
 }
 @media (max-width: 760px) {
+  .token-tabs .market-nav {
+    height: auto;
+  }
+  .token-tabs .view-tabs {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 0;
+  }
+  .token-tabs .view-tabs button {
+    min-height: 42px;
+  }
   .token-header {
     padding: 16px;
   }

@@ -1,0 +1,6 @@
+# h5-8-h4-unknown-zero green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumes(UnknownAndZero|24h)$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_unknown_test.go 1cf03d883b99ef19c850f8b63d52894bb7419f94533d767a00cb6787b7c882e3
+ok  	github.com/meme-radar/radar/internal/pgapi	1.529s
+
+# exit=0

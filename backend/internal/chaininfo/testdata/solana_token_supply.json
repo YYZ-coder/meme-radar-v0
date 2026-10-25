@@ -1,0 +1,59 @@
+[
+ {
+  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "response": {
+   "jsonrpc": "2.0",
+   "result": {
+    "context": {
+     "apiVersion": "4.3.2",
+     "slot": 460402134
+    },
+    "value": {
+     "amount": "7849020959490626",
+     "decimals": 6,
+     "uiAmount": 7849020959.490626,
+     "uiAmountString": "7849020959.490626"
+    }
+   },
+   "id": 1
+  }
+ },
+ {
+  "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+  "response": {
+   "jsonrpc": "2.0",
+   "result": {
+    "context": {
+     "apiVersion": "4.3.2",
+     "slot": 460402139
+    },
+    "value": {
+     "amount": "3839903212998380",
+     "decimals": 6,
+     "uiAmount": 3839903212.99838,
+     "uiAmountString": "3839903212.99838"
+    }
+   },
+   "id": 1
+  }
+ },
+ {
+  "mint": "So11111111111111111111111111111111111111112",
+  "response": {
+   "jsonrpc": "2.0",
+   "result": {
+    "context": {
+     "apiVersion": "4.3.2",
+     "slot": 460402146
+    },
+    "value": {
+     "amount": "0",
+     "decimals": 9,
+     "uiAmount": 0.0,
+     "uiAmountString": "0"
+    }
+   },
+   "id": 1
+  }
+ }
+]

@@ -1,0 +1,72 @@
+2026-10-24T10:39:15.624Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:16.735Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:16.737Z pw:webserver Starting WebServer process ../backend/bin/radar api --store=mock --addr=127.0.0.1:31620...
+2026-10-24T10:39:16.740Z pw:webserver Process started
+2026-10-24T10:39:16.740Z pw:webserver Waiting for availability...
+2026-10-24T10:39:16.740Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+[WebServer] {"time":"2026-10-24T18:39:16.845786+08:00","level":"INFO","msg":"listening","addr":"127.0.0.1:31620","store":"mock"}
+2026-10-24T10:39:17.258Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:17.258Z pw:webserver Waiting 100ms
+2026-10-24T10:39:17.360Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:18.125Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:18.125Z pw:webserver Waiting 250ms
+2026-10-24T10:39:18.377Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:18.970Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:18.970Z pw:webserver Waiting 500ms
+2026-10-24T10:39:19.470Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:21.017Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:21.017Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:22.018Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:22.565Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:22.566Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:23.567Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:24.119Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:24.120Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:25.120Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:25.640Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:25.640Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:26.639Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:27.207Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:27.210Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:28.210Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:28.947Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:28.948Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:29.949Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:30.491Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:30.492Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:31.493Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:32.005Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:32.006Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:33.007Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:33.531Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:33.532Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:34.534Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:35.109Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:35.109Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:36.111Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:36.675Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:36.675Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:37.677Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:38.293Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:38.293Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:39.293Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:39.838Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:39.839Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:40.840Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:41.358Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:41.358Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:42.369Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:42.939Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:42.941Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:43.942Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:44.526Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:44.528Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:45.529Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:39:46.111Z pw:webserver HTTP Status: 502
+2026-10-24T10:39:46.111Z pw:webserver Waiting 1000ms
+2026-10-24T10:39:46.741Z pw:webserver Terminating the WebServer
+2026-10-24T10:39:46.751Z pw:webserver Terminated the WebServer
+Error: Timed out waiting 30000ms from config.webServer.
+2026-10-24T10:39:46.756Z pw:webserver Terminating the WebServer
+2026-10-24T10:39:46.756Z pw:webserver Terminated the WebServer
+

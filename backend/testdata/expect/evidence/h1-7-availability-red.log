@@ -1,0 +1,20 @@
+# H1 7-availability red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:21:59.758882+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenCandlesAvailabilityAndHistory$ ./internal/store
+# sha256 internal/store/window_test.go dca4186718cba7ac53049d7843fa499cded1b7ed35c5b75f8407718137836db6
+# test diff sha256 87a4f3f56f62f6a4b2138dd8375cda668a752528db1e851d74d2eddb169aecd6
+# sha256 internal/store/window.go 6a70248765f4e3127bb9ad6c01cecb5514ac3b3536843835f0bf17313bbd1c45
+# test diff sha256 0eff67bb0a20cede3e10cd655536439c912fb0a341eeb6298348720806b1b596
+=== RUN   TestTokenCandlesAvailabilityAndHistory
+    window_test.go:747: gaps=[]; want only consecutive main-pool unpriced buckets [[2026-10-23 10:02:00 +0000 UTC 2026-10-23 10:04:00 +0000 UTC] [2026-10-23 10:05:00 +0000 UTC 2026-10-23 10:06:00 +0000 UTC]]
+    window_test.go:750: switches=[]; want one A>B at +270s
+    window_test.go:773: N empty={Bars:[] Complete:true Switches:[] Gaps:[] EmptyReason:}; want reason no_main_pool and no bars
+    window_test.go:773: U empty={Bars:[] Complete:true Switches:[] Gaps:[] EmptyReason:}; want reason no_price and no bars
+    window_test.go:773: M empty={Bars:[] Complete:true Switches:[] Gaps:[] EmptyReason:}; want reason no_trades and no bars
+    window_test.go:783: unknown-supply set={Bars:[{T:2026-10-23 10:00:00 +0000 UTC O:<nil> H:<nil> L:<nil> C:<nil> V:0x34d82939f320 Closed:true}] Complete:true Switches:[] Gaps:[] EmptyReason:}; want one NULL market-cap bar, no_price
+--- FAIL: TestTokenCandlesAvailabilityAndHistory (0.35s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	0.983s
+FAIL
+
+# exit_code=1

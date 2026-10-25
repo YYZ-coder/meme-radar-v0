@@ -1,0 +1,7 @@
+# H6 6c-enrich green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: radar enrich command + real PG token_metadata boundary; config supplies gateway and RPS, Clanker requires no HTTP/RPC
+# command: go test -count=1 -run TestEnrichRunsMetadataStepWithConfiguredGateway|TestParseEnrichFlags ./cmd/radar
+# sha256 cmd/radar/enrich_metadata_test.go: 971d07e34982837291490984ea63386ec23349c0b600d24aaed63bb8d67ba746
+ok  	github.com/meme-radar/radar/cmd/radar	0.635s
+
+# exit=0

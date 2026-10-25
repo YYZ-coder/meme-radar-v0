@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-10-24T11:49:43.829036+00:00",
+  "kind": "read-only external price spot check; no API deployment",
+  "items": [
+    {
+      "symbol": "SOL",
+      "source": "https://api.coinbase.com/v2/prices/SOL-USD/spot",
+      "response": {
+        "data": {
+          "amount": "101.3",
+          "base": "SOL",
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "symbol": "ETH",
+      "source": "https://api.coinbase.com/v2/prices/ETH-USD/spot",
+      "response": {
+        "data": {
+          "amount": "2363.225",
+          "base": "ETH",
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "symbol": "BNB",
+      "source": "https://api.coinbase.com/v2/prices/BNB-USD/spot",
+      "response": {
+        "data": {
+          "amount": "731.065",
+          "base": "BNB",
+          "currency": "USD"
+        }
+      }
+    }
+  ]
+}

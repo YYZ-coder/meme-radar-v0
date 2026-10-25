@@ -1,0 +1,9 @@
+# H2-8/H2-9 prerequisite verified before work
+# H1 implementation=809c199, merge=2b47c5b, user baseline=8ac9aa7
+92d20d0 Settle native ATH and missing coverage watermark in H2
+61a9ca1 Balance pass only claims main-parsed blocks in H5
+3bc9ef8 Omit raw metadata that jsonb cannot hold in H6
+4a8af8a Answer 503 for tokens without decimals in H2
+a465911 Fall back on gateway timeouts and cool down failing hosts in H6
+# pending dependency merge target: 92d20d0b3438ad257f62b0a97eee20e9a86b18f1
+# window.go and 0011_window.sql match the merged H1 source; no H1 window/candle implementation copied into H2

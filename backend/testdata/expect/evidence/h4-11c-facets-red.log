@@ -1,0 +1,13 @@
+# h4-11c-facets red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+d3593012743bb9666785e2d62be23d8396acb4606af4a4bc74875190186f82ea  internal/pgapi/inflow_facets_test.go
+# tracked diff sha256=61745134cd3e9ad393e46d9f30d7b8202cdbc0f14787762122878bba45153d6e
+# command: go test -count=1 -v -run TestPgFacets ./internal/pgapi
+=== RUN   TestPgFacets
+    inflow_facets_test.go:17: GET /api/v1/smart-money/inflow/facets?chain=bsc&window=5m = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"5f4ebf56c6b4857d29723fad37fffce0"}}
+--- FAIL: TestPgFacets (0.39s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.047s
+FAIL
+
+# exit=1

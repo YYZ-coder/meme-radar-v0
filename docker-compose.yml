@@ -1,57 +1,183 @@
+# Backend (Go mock API) and frontend (Next.js) as separate services.
+#   make up   → http://127.0.0.1:3000/smart-money/inflow (admin token: mock-admin)
+# Ingest (profile "ingest", one container per chain) writes full blocks to the
+# PostgreSQL named by RADAR_DATABASE_URL in .env (see .env.example); parse-solana
+# decodes them. make ingest-up / ingest-down / ingest-logs manage all four.
+# The project name is fixed so this never touches containers from the old
+# "meme-radar-v0" project (e.g. its PostgreSQL).
+name: meme-radar-app
+
 services:
-  postgres:
-    image: postgres:17
+  backend:
+    build:
+      context: ./backend
+      args:
+        GOPROXY: ${GOPROXY:-https://proxy.golang.org,direct}
     environment:
-      POSTGRES_USER: radar
-      POSTGRES_PASSWORD: radar
-      POSTGRES_DB: radar
+      RADAR_ADMIN_TOKEN: ${RADAR_ADMIN_TOKEN:-mock-admin}
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "127.0.0.1:${RADAR_API_PORT:-8080}:8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        RADAR_API_ORIGIN: http://backend:8080
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
+    environment:
+      RADAR_API_ORIGIN: http://backend:8080
+    ports:
+      - "127.0.0.1:${RADAR_WEB_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Ingest roles share the backend image (flags: backend/README.md). They
+  # restart on failure and resume from stream_cursors / stream_gaps.
+  ingest-solana: &ingest
+    image: meme-radar-app-backend
+    build:
+      context: ./backend
+      args:
+        GOPROXY: ${GOPROXY:-https://proxy.golang.org,direct}
+    profiles: [ingest]
+    entrypoint: ["radar", "ingest", "--chain=solana"]
+    env_file: .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U radar"]
+      disable: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+
+  # PostgreSQL API: migrations on startup; read-only business queries.
+  api:
+    <<: *ingest
+    entrypoint: ["radar", "api", "--store=pg", "--addr=0.0.0.0:8081"]
+    ports:
+      - "127.0.0.1:8081:8081"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/healthz"]
       interval: 5s
-      timeout: 5s
+      timeout: 2s
+      start_period: 3s
       retries: 10
 
-  # Log stack (docs/engineering/18-observability.md §5): docker compose --profile observability up -d
+  ingest-base:
+    <<: *ingest
+    entrypoint: ["radar", "ingest", "--chain=base"]
+
+  ingest-bsc:
+    <<: *ingest
+    entrypoint: ["radar", "ingest", "--chain=bsc"]
+
+  # Parse role: decodes stored Solana blocks (Pump.fun, PumpSwap) into
+  # tokens, pools, trades and liquidity_events; progress in chain_blocks.
+  parse-solana:
+    <<: *ingest
+    entrypoint: ["radar", "parse", "--chain=solana"]
+
+  # BSC parse role: Four.meme curves and PancakeSwap V2/V3/Infinity CL.
+  parse-bsc:
+    <<: *ingest
+    entrypoint: ["radar", "parse", "--chain=bsc"]
+
+  # Base parse role: Clanker v4 launches and their Uniswap v4 pools.
+  parse-base:
+    <<: *ingest
+    entrypoint: ["radar", "parse", "--chain=base"]
+
+  # Backfill roles (D150): fill gaps within each chain's backfill window
+  # (EVM 7 days, Solana 24 hours slowly on the free tier), newest first.
+  backfill-solana:
+    <<: *ingest
+    entrypoint: ["radar", "backfill", "--chain=solana"]
+
+  backfill-base:
+    <<: *ingest
+    entrypoint: ["radar", "backfill", "--chain=base"]
+
+  backfill-bsc:
+    <<: *ingest
+    entrypoint: ["radar", "backfill", "--chain=bsc"]
+
+  # Enrich role (line A, D150): supply and decimals of traded tokens whose
+  # creation event is outside the stored blocks.
+  enrich:
+    <<: *ingest
+    entrypoint: ["radar", "enrich"]
+
+  # Compute role (single instance): native prices, USD values, pool liquidity,
+  # main pools, token market state, minute stats, candles, coverage.
+  compute:
+    <<: *ingest
+    entrypoint: ["radar", "compute"]
+
+  # Observability (profile "observability", docs/engineering/08-observability.md):
+  # Prometheus scrapes every role's /metrics, Alloy ships container logs to
+  # Loki, Grafana shows both at http://127.0.0.1:3301 (admin / GRAFANA_ADMIN_PASSWORD).
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: [observability]
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=15d", "--web.enable-lifecycle"]
+    volumes:
+      - ./ops/observability/prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  # Emails firing alerts (SMTP settings from .env, see .env.example).
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    profiles: [observability]
+    env_file: .env
+    entrypoint: ["/bin/sh", "/etc/alertmanager/start.sh"]
+    volumes:
+      - ./ops/observability/alertmanager:/etc/alertmanager:ro
+      - alertmanager-data:/alertmanager
+    restart: unless-stopped
+
   loki:
-    image: grafana/loki:3.5.0
+    image: grafana/loki:3.2.1
     profiles: [observability]
     command: ["-config.file=/etc/loki/config.yaml"]
-    ports:
-      - "3100:3100"
     volumes:
-      - ./ops/loki/config.yaml:/etc/loki/config.yaml:ro
-      - loki_data:/loki
+      - ./ops/observability/loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    restart: unless-stopped
 
   alloy:
-    image: grafana/alloy:v1.9.1
+    image: grafana/alloy:v1.4.3
     profiles: [observability]
     command: ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
     volumes:
-      - ./ops/alloy/config.alloy:/etc/alloy/config.alloy:ro
-      - ./.local/logs:/var/log/radar:ro
+      - ./ops/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy-data:/var/lib/alloy/data
     depends_on: [loki]
+    restart: unless-stopped
 
   grafana:
-    image: grafana/grafana:12.0.2
+    image: grafana/grafana:11.3.1
     profiles: [observability]
-    ports:
-      - "${GRAFANA_PORT:-3300}:3000"
     environment:
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-radar-dev}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/radar-overview.json
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3301}:3000"
     volumes:
-      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./ops/grafana/dashboards:/var/lib/grafana/dashboards:ro
-      - grafana_data:/var/lib/grafana
-    depends_on: [loki]
+      - ./ops/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on: [prometheus, loki]
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
-  loki_data:
-  grafana_data:
+  prometheus-data:
+  alertmanager-data:
+  loki-data:
+  alloy-data:
+  grafana-data:

@@ -1,14 +1,14 @@
-// Inflow snapshot engine: filter + sort once, cache the ID list under query_id (TTL 10 min),
-// then page through current values without reordering (TECHNICAL_PLAN §3.4, Demo 08).
+// Freeze complete sorted rows and as_of for each bounded query snapshot (22 §4.2).
 import type { InflowPage, InflowRow, InflowSortKey, Window } from "@/lib/api/types";
-import { inflowRow, tokens, findToken, type MockToken } from "./data";
+import { inflowRow, tokens, type MockToken } from "./data";
 import { hash } from "./random";
 
 const TTL = 10 * 60_000;
 const MAX_IDS = 2000;
 
 type Snapshot = {
-  ids: string[];
+  rows: InflowRow[];
+  inputVersion: number;
   listVersion: string;
   window: Window;
   native: boolean;
@@ -17,6 +17,11 @@ type Snapshot = {
 };
 
 const cache = new Map<string, Snapshot>();
+export const inputVersionRef = { current: 0 };
+export function resetSnapshots() {
+  cache.clear();
+  inputVersionRef.current = 0;
+}
 
 export class HttpError extends Error {
   constructor(
@@ -130,8 +135,10 @@ export function newSnapshot(params: URLSearchParams, now: number): string {
 
   for (const [id, snap] of cache) if (now - snap.createdAt > TTL) cache.delete(id);
   const queryId = `q_${hash(`${params.toString()}:${now}:${Math.random()}`).toString(16)}`;
+  while (cache.size >= 128) cache.delete(cache.keys().next().value!);
   cache.set(queryId, {
-    ids: rows.slice(0, MAX_IDS).map((r) => r.id),
+    rows: structuredClone(rows.slice(0, MAX_IDS).map((r) => r.row)),
+    inputVersion: inputVersionRef.current,
     listVersion: String(listVersionRef.current),
     window,
     native,
@@ -141,28 +148,41 @@ export function newSnapshot(params: URLSearchParams, now: number): string {
   return queryId;
 }
 
-export function page(queryId: string, offset: number, limit: number, now: number): InflowPage {
+function snapshot(queryId: string, now: number): Snapshot {
   const snap = cache.get(queryId);
-  if (!snap || now - snap.createdAt > TTL) {
+  if (!snap || now - snap.createdAt >= TTL || snap.inputVersion !== inputVersionRef.current) {
     cache.delete(queryId);
-    throw new HttpError(410, "query_expired", "query_id expired; re-query");
+    throw new HttpError(410, "query_expired", "query snapshot expired or input revised; re-query");
   }
-  const ids = snap.ids.slice(offset, offset + limit);
-  const items = ids.flatMap((id) => {
-    const [chain, address] = id.split(":");
-    const token = findToken(chain, address);
-    return token ? [inflowRow(token, snap.window, snap.native, now)] : [];
-  });
+  cache.delete(queryId);
+  cache.set(queryId, snap);
+  return snap;
+}
+export function validateBatchSnapshot(
+  queryId: string,
+  version: string,
+  window: Window,
+  native: boolean,
+  now: number
+) {
+  const snap = snapshot(queryId, now);
+  if (snap.listVersion !== version || version !== String(listVersionRef.current))
+    throw new HttpError(410, "query_expired", "list changed; pause refresh and re-query");
+  if (snap.window !== window || snap.native !== native)
+    throw new HttpError(400, "invalid_param", "snapshot window/currency mismatch");
+}
+export function page(queryId: string, offset: number, limit: number, now: number): InflowPage {
+  const snap = snapshot(queryId, now);
   const next = offset + limit;
   return {
     query_id: queryId,
     list_version: snap.listVersion,
-    as_of: new Date(now).toISOString(),
+    as_of: new Date(snap.createdAt).toISOString(),
     window: snap.window,
-    total: snap.ids.length,
+    total: snap.rows.length,
     truncated: snap.truncated,
     offset,
-    next_offset: next < snap.ids.length ? next : null,
-    items,
+    next_offset: next < snap.rows.length ? next : null,
+    items: structuredClone(snap.rows.slice(offset, offset + limit)),
   };
 }

@@ -1,0 +1,27 @@
+# h3-5-remove-exclude-restore red base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 7a8e8c78af3aeb5f6c2ca0dcfa9277cbbfe0f509aeac670aa868716dd0e7b10c backend/internal/compute/lists_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 31a3ea3224d7ffcb7900504bae4109ccc364d54f0cbd5110d650f575dab13c48 backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 8bf862b616e18ef709de897c07300aeb8d8ddc408c8bc59a430f4eec610c26a6 backend/internal/pgapi/placeholders_test.go
+# SHA256 c727d40af5f2b431fbe19f637c50b81a5278fc4a409e13e78f7247368a3656df backend/internal/store/lists_test.go
+# Tracked test diff SHA256 ba03ae983819c17448069e05031717a960d43263a495bc14855a494e83332156
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestRemoveExcludeRestore|TestPgEveryRouteMatchesContract)$ ./internal/pgapi
+--- FAIL: TestRemoveExcludeRestore (0.24s)
+    admin_test.go:189: POST /api/v1/admin/smart-money/exclusions = 503, want 202: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"9e94c0df560e1e331b9a01f3051d3470"}}
+--- FAIL: TestPgEveryRouteMatchesContract (0.58s)
+    --- FAIL: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/exclusions (0.00s)
+        routes_test.go:126: GET /api/v1/admin/smart-money/exclusions=503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"2335c3be5b900315ea0a538b3e4d898b"}}
+    --- FAIL: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/exclusions (0.00s)
+        routes_test.go:126: POST /api/v1/admin/smart-money/exclusions=503, want 202: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"0d9c4b06e930e116d2ec7e566eb3503c"}}
+    --- FAIL: TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061 (0.00s)
+        routes_test.go:126: DELETE /api/v1/admin/smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061=503, want 400: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"bc13b007208de7a115557b8b9ff6d9f5"}}
+    --- FAIL: TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/members/bsc/0x0000000000000000000000000000000000000061 (0.00s)
+        routes_test.go:126: DELETE /api/v1/admin/smart-money/members/bsc/0x0000000000000000000000000000000000000061=503, want 400: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"7ec2120ae63b4e41a59652cbda51652f"}}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.290s
+FAIL
+
+exit=1

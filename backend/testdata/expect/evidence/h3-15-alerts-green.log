@@ -1,0 +1,15 @@
+# H3 alerts green; real promtool and unchanged H2 rule tests
+# Command: docker run --rm --network none -v /Users/yuezhang/yz/projects/meme-radar-h3/ops/observability/prometheus:/etc/prometheus:ro --workdir /etc/prometheus --entrypoint /bin/promtool prom/prometheus:v2.55.1 check rules rules.yml
+Checking rules.yml
+  SUCCESS: 10 rules found
+
+
+exit=0
+# Command: docker run --rm --network none -v /Users/yuezhang/yz/projects/meme-radar-h3/ops/observability/prometheus:/etc/prometheus:ro --workdir /etc/prometheus --entrypoint /bin/promtool prom/prometheus:v2.55.1 test rules h3_list_alerts_test.yml h2_api_alerts_test.yml
+  SUCCESS
+
+  SUCCESS
+
+
+exit=0
+# Test SHA256 0f371cac91ba179c53d949623296e36017575b928ed199c5918db69d025bdad6

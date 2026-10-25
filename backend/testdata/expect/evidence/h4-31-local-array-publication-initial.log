@@ -1,0 +1,7 @@
+local_same_actual_rows=31630 as_of=2026-10-25T03:08:00Z exact_cached_cloud_input=true shared_production_array_expression=true staging_load_excluded=true
+panic: ERROR: null value in column "symbol" of relation "inflow_rows" violates not-null constraint (SQLSTATE 23502)
+
+goroutine 1 [running]:
+main.main()
+	/Users/yuezhang/yz/projects/meme-radar-h4/backend/testdata/expect/evidence/h4-audit/local-array/main.go:167 +0x1638
+exit status 2

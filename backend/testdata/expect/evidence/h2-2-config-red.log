@@ -1,0 +1,21 @@
+# h2-2-config red base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestParseConfigAcceptsPgStore$ ./cmd/radar
+# test_sha256 21f2584df4bebb1f27e45b11af0af5951efa334a2fa9158819fbd7340b38c8dc cmd/radar/main_pg_test.go
+=== RUN   TestParseConfigAcceptsPgStore
+=== RUN   TestParseConfigAcceptsPgStore/pg
+    main_pg_test.go:14: --store="pg" is not available yet; use --store=mock
+=== RUN   TestParseConfigAcceptsPgStore/missing_url
+    main_pg_test.go:23: missing URL error = --store="pg" is not available yet; use --store=mock, want RADAR_DATABASE_URL required
+=== RUN   TestParseConfigAcceptsPgStore/explicit_admin
+    main_pg_test.go:29: --store="pg" is not available yet; use --store=mock
+=== RUN   TestParseConfigAcceptsPgStore/mock_unchanged
+--- FAIL: TestParseConfigAcceptsPgStore (0.00s)
+    --- FAIL: TestParseConfigAcceptsPgStore/pg (0.00s)
+    --- FAIL: TestParseConfigAcceptsPgStore/missing_url (0.00s)
+    --- FAIL: TestParseConfigAcceptsPgStore/explicit_admin (0.00s)
+    --- PASS: TestParseConfigAcceptsPgStore/mock_unchanged (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/cmd/radar	1.270s
+FAIL
+# exit_status=1

@@ -1,0 +1,35 @@
+{
+  "mode": "read-only Fetcher/ChainSource; no Store or enrich role",
+  "pump": [
+    {
+      "image_url": "https://gmgn.ai/external-res-va/c9d8812b35aeeecfcdccb62f6abf7f83_v2.webp",
+      "mint": "EaQmGzp3DcVhzApmxEx4YXn1wziGBzVCPGjTBVCapump",
+      "raw_sha256_matches_cid": true,
+      "socials": {
+        "twitter": "https://x.com/toly/status/2113737743973192015"
+      },
+      "source_uri": "ipfs://bafkreih4eo3gyvds4fzuwi62bx6vx7gjke6ve443uqmtn47vt4xbfsfrcy",
+      "status": "ok"
+    },
+    {
+      "image_url": "https://ipfs.io/ipfs/bafybeic6koqmyfif55p2jzu3gz53fusu52eerepmlhpnqzcncsb7iywlxa",
+      "mint": "DnNnnVinn4QfiGgMoHE1riKFuBWdT4zY5nRwztxTpump",
+      "raw_sha256_matches_cid": true,
+      "socials": {},
+      "source_uri": "ipfs://bafkreifl6cglg6sk4a7gmchpyakkk6vw7bgtzvggihemj662ucwxlylpkm",
+      "status": "ok"
+    },
+    {
+      "image_url": "https://ipfs.io/ipfs/bafkreigzv5vh72ubgrwbw2g4vwxjzpjr6rxshtk56td4rtc45em6nhe7za",
+      "mint": "TbU8rWELwCNuFu5wuW2uxgRfzYNfhe1CwgUBGA1tcUh",
+      "raw_sha256_matches_cid": true,
+      "socials": {
+        "twitter": "https://x.com/smolkimchi",
+        "website": "https://smolkimchi.fun"
+      },
+      "source_uri": "ipfs://bafkreiepwba35vkrvm3oih5chdlub4od3tukh3xti2bjs5jlttylgn245y",
+      "status": "ok"
+    }
+  ],
+  "recorded_at": "2026-10-24T10:36:12Z"
+}

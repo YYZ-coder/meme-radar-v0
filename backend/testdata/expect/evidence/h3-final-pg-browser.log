@@ -1,0 +1,23 @@
+# Final validation after exclusion creation-order fix
+# base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# cwd=/Users/yuezhang/yz/projects/meme-radar-h3/backend
+# Local test PostgreSQL; H3 ports 31310/31320
+# Command: go test -race -count=1 -v -run ^TestH3PgFrontendSmoke$ ./internal/pgapi
+=== RUN   TestH3PgFrontendSmoke
+    admin_browser_test.go:115: [WebServer] (node:39111) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+        
+        Running 1 test using 1 worker
+        
+        (node:39139) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+        (Use `node --trace-warnings ...` to show where the warning was created)
+          ✓  1 [chromium] › .local/h3-pg-playwright-1463789238/h3-admin.spec.ts:2:5 › local PG import, activate, exclude and restore (8.5s)
+        
+          1 passed (10.1s)
+        
+        artifacts: /Users/yuezhang/yz/projects/meme-radar-h3/.local/h3-pg-ui
+--- PASS: TestH3PgFrontendSmoke (11.01s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	12.410s
+
+exit=0

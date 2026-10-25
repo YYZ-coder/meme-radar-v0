@@ -1,0 +1,20 @@
+# H1 8-cycle red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:26:06.969605+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestATHRunsAfterStatsOnFullCycles$ ./internal/compute
+# sha256 internal/compute/ath_test.go f0ec9d766e6ef58fcec1ea63be04cab26f0f4f6fa16fb52a4dd5660aa2d50b54
+# test diff sha256 1e9796ac1e759f3e5728c9ea4c7237bad50f037e2763ba13f3bcf83cbc8d52f3
+# sha256 internal/compute/cycle.go 747976fcb6c15c8fb4389d67761fa043e5908a7f7c367234da0668c686d7de66
+# test diff sha256 b0be225bc93b8f31678328814a645c2b3c4da14ae07e60fddc819072757438c7
+=== RUN   TestATHRunsAfterStatsOnFullCycles
+    ath_test.go:116: first full cycle ATH=NULL NULL; want 3 3000000000 after its Stats step
+    ath_test.go:119: ATH duration samples=0; want 1
+    ath_test.go:129: incremental ATH=NULL NULL; want previous 3 3000000000
+    ath_test.go:132: ATH samples after incremental=0; want unchanged 1
+    ath_test.go:138: next full cycle ATH=NULL NULL; want 4 4000000000
+    ath_test.go:141: ATH samples after full=0; want 2
+--- FAIL: TestATHRunsAfterStatsOnFullCycles (0.19s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.635s
+FAIL
+
+# exit_code=1

@@ -1,0 +1,14 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestParserRegistersStatusAtStartup ./internal/parser
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/parser/health_test.go=4166544e129f7bfdceaf87df27e91245d8896326729d16320a5668bf6931a69d
+test_diff=h7-2b-parser-startup-red-health_test.diff sha256=f5a10ce1acec16d014a76641264bf165ce71f04114c70ab0c31e98492404d972
+=== RUN   TestParserRegistersStatusAtStartup
+2026/10/24 22:51:58 INFO parse started chain=solana version=8 reset_blocks=0
+    health_test.go:38: startup must persist parser status before decoding: no rows in result set
+--- FAIL: TestParserRegistersStatusAtStartup (0.51s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parser	1.044s
+FAIL
+
+exit_code=1

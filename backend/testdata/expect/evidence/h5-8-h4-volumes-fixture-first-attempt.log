@@ -1,0 +1,11 @@
+# Fixture correction, not behavioral Red: quote_prices accepts registered sources; changed fixture to binance without changing amounts or assertions.
+# h5-8-h4-volumes red base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumes24h$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volumes_test.go da2ecc876089541ea72e35fad631e1a67124b665befb9bae7514511ad00b6691
+--- FAIL: TestPgTokenSmartMoneyVolumes24h (0.37s)
+    smart_money_volumes_test.go:68: store: save quote prices: ERROR: new row for relation "quote_prices" violates check constraint "quote_prices_source_check" (SQLSTATE 23514)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.699s
+FAIL
+
+# exit=1

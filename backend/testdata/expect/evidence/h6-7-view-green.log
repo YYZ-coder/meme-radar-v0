@@ -1,0 +1,7 @@
+# H6 7-view green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: token_info frozen column order and real-PG values; literal 0010 column order, creation-event supply precedence unchanged, OpenAPI shared display schemas
+# command: go test -count=1 -run ^TestTokenInfoExposesMetadata$ ./internal/metadata
+# sha256 internal/metadata/view_test.go: 586c7bf6c345ca4347ba08e8c6b241c0ec770be7a2e23e66e155e01de894132c
+ok  	github.com/meme-radar/radar/internal/metadata	0.675s
+
+# exit=0

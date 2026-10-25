@@ -1,0 +1,87 @@
+--- a/backend/internal/store/inflow.go (after SQL bucket Green, before publication switch)
++++ b/backend/internal/store/inflow.go
+@@ -248,6 +248,9 @@
+ }
+ 
+ // ProjectionBuild describes a published inflow version, or an unchanged head.
++// QueryTime includes the INSERT SELECT with exact bucket filling; WriteTime is
++// the activation fence, old-version retirement, head switch and commit. FillTime
++// is zero because no monetary observations are decoded or filled in Go.
+ type ProjectionBuild struct {
+ 	Version                        int64
+ 	AsOf                           time.Time
+@@ -310,22 +313,18 @@
+ 	}
+ 	seconds := []int64{int64(width / time.Second)}
+ 	started := time.Now()
+-	rows, err := tx.Query(ctx, inflowSelectSQL(width >= time.Hour), chain, asOf.Add(-width), asOf, seconds, out.Version, list, window)
+-	if err != nil {
+-		return out, fmt.Errorf("store: query inflow: %w", err)
+-	}
+-	values, fillTime, err := collectInflowRows(rows, width >= time.Hour)
+-	out.QueryTime = time.Since(started) - fillTime
+-	out.FillTime = fillTime
+-	if err != nil {
+-		return out, fmt.Errorf("store: collect inflow: %w", err)
+-	}
++	quoted := make([]string, len(inflowColumns))
++	for i, name := range inflowColumns {
++		quoted[i] = pgx.Identifier{name}.Sanitize()
++	}
++	query := "INSERT INTO inflow_rows (" + strings.Join(quoted, ",") + ") " + inflowPublishSelectSQL(inflowSelectSQL(width >= time.Hour), width >= time.Hour)
++	tag, err := tx.Exec(ctx, query, chain, asOf.Add(-width), asOf, seconds, out.Version, list, window)
++	out.QueryTime = time.Since(started)
++	if err != nil {
++		return out, fmt.Errorf("store: insert inflow: %w", err)
++	}
++	out.Rows = tag.RowsAffected()
+ 	started = time.Now()
+-	out.Rows, err = tx.CopyFrom(ctx, pgx.Identifier{"inflow_rows"}, inflowColumns, pgx.CopyFromRows(values))
+-	out.WriteTime = time.Since(started)
+-	if err != nil {
+-		return out, fmt.Errorf("store: copy inflow: %w", err)
+-	}
+ 	// Acquire the short activation fence only after the expensive read/build.
+ 	// A list changed since this repeatable-read snapshot aborts publication.
+ 	var active int64
+@@ -349,6 +348,7 @@
+ 	if err = tx.Commit(ctx); err != nil {
+ 		return out, err
+ 	}
++	out.WriteTime = time.Since(started)
+ 	out.Rebuilt = true
+ 	return out, nil
+ }
+@@ -438,8 +438,8 @@
+ 	"trades", "buys", "sells", "observed_trades", "observed_buys", "observed_sells", "coverage", "volume_usd", "volume_native", "net_inflow_usd", "net_inflow_native",
+ 	"sm_holders", "sm_trades", "holders", "age_seconds", "dexes", "socials", "sparkline", "sparkline_native", "dev_holding_pct"}
+ 
+-// collectInflowRows closes the query before CopyFrom starts on the same
+-// transaction. Every monetary value remains a PostgreSQL exact numeric.
++// collectInflowRows retains the original exact Go path for regression and
++// read-only audits. Publication uses the shared server-side array expression.
+ func collectInflowRows(rows pgx.Rows, sparse bool) ([][]any, time.Duration, error) {
+ 	defer rows.Close()
+ 	var out [][]any
+@@ -807,3 +807,21 @@
+ 	}
+ 	return "ARRAY[" + strings.Join(elements, ",") + "]"
+ }
++
++// inflowPublishSelectSQL is shared by the publisher and read-only audit. Long
++// series use twenty scalar array elements, without a SQL row grid or sorting.
++func inflowPublishSelectSQL(source string, long bool) string {
++	aliases := make([]string, len(inflowColumns)+3)
++	fields := make([]string, len(inflowColumns))
++	for i := range aliases {
++		aliases[i] = fmt.Sprintf("c%d", i)
++	}
++	for i := range fields {
++		fields[i] = "raw." + aliases[i]
++	}
++	if long {
++		fields[34] = inflowBucketSQL("raw.c38", "raw.c37", "raw.c34")
++		fields[35] = inflowBucketSQL("raw.c39", "raw.c37", "raw.c35")
++	}
++	return "SELECT " + strings.Join(fields, ",") + " FROM (" + source + ") raw(" + strings.Join(aliases, ",") + ")"
++}

@@ -1,0 +1,12 @@
+# Regression supplement: partial behavior already implemented in H1-6; no target Red claimed.
+# H1 7-partial regression base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:22:47.287789+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenCandlesPartialCoverage$ ./internal/store
+# sha256 internal/store/window_test.go dca4186718cba7ac53049d7843fa499cded1b7ed35c5b75f8407718137836db6
+# test diff sha256 87a4f3f56f62f6a4b2138dd8375cda668a752528db1e851d74d2eddb169aecd6
+=== RUN   TestTokenCandlesPartialCoverage
+--- PASS: TestTokenCandlesPartialCoverage (0.50s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.769s
+
+# exit_code=0

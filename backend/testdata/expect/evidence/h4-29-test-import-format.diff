@@ -1,0 +1,23 @@
+--- before
++++ after
+@@ -1,14 +1,14 @@
+ package store
+ 
+ import (
+-	"fmt"
+-	"reflect"
++ "fmt"
++ "reflect"
++ "testing"
+ 
+-	"github.com/jackc/pgx/v5"
+-	"github.com/meme-radar/radar/internal/testdb"
+-	"testing"
++ "github.com/jackc/pgx/v5"
++ "github.com/jackc/pgx/v5/pgtype"
+ 
+-	"github.com/jackc/pgx/v5/pgtype"
++ "github.com/meme-radar/radar/internal/testdb"
+ )
+ 
+ // H4-29: the four expected 20-point series are copied verbatim from the hand-written

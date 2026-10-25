@@ -1,0 +1,9 @@
+# h2-7-activities green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgActivities ./internal/pgapi
+# test_sha256 bccb9486adb8b72ac8ef86b510a3094fb0662c4bf8cfc63808b09d66af716f90 internal/pgapi/activities_test.go
+=== RUN   TestPgActivities
+--- PASS: TestPgActivities (0.26s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.776s
+# exit_status=0

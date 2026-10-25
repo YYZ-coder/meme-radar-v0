@@ -1,0 +1,30 @@
+# h2-7b-decimals red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgMissingDecimalsReturns503 ./internal/pgapi
+# test_sha256 3088b8bde28e39e84f9f7b0ef6ac5fa8b5b44f4b82db46a5c105312ed2513fb2 internal/pgapi/decimals_test.go
+=== RUN   TestPgMissingDecimalsReturns503
+=== RUN   TestPgMissingDecimalsReturns503/#00
+    decimals_test.go:31: missing precision={Error:{Code:api_unavailable Message:data source is not ready Field:<nil> TraceID:544683fea089394c2c6b9b50b46f62e7}}
+=== RUN   TestPgMissingDecimalsReturns503//activities
+    decimals_test.go:31: missing precision={Error:{Code:api_unavailable Message:data source is not ready Field:<nil> TraceID:2c266986096ecdbf3239ad8561df9eb1}}
+=== RUN   TestPgMissingDecimalsReturns503//liquidity-events
+    decimals_test.go:31: missing precision={Error:{Code:api_unavailable Message:data source is not ready Field:<nil> TraceID:93022bb430e124f0dae379080ec4ff6b}}
+=== RUN   TestPgMissingDecimalsReturns503//holders
+    decimals_test.go:31: missing precision={Error:{Code:api_unavailable Message:data source is not ready Field:<nil> TraceID:9b1207aa8937e504ceb3054ebcea36e0}}
+=== RUN   TestPgMissingDecimalsReturns503//candles?interval=1m&metric=market_cap
+    decimals_test.go:31: missing precision={Error:{Code:api_unavailable Message:data source is not ready Field:<nil> TraceID:03856498fa535c80c29aa31cc20f186a}}
+=== RUN   TestPgMissingDecimalsReturns503/price_candles_remain_readable
+    decimals_test.go:37: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000051/candles?interval=1m&metric=price = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"e26d849a6bc27250c30b141b4db285f0"}}
+=== RUN   TestPgMissingDecimalsReturns503/pools_remain_readable
+--- FAIL: TestPgMissingDecimalsReturns503 (0.24s)
+    --- FAIL: TestPgMissingDecimalsReturns503/#00 (0.02s)
+    --- FAIL: TestPgMissingDecimalsReturns503//activities (0.00s)
+    --- FAIL: TestPgMissingDecimalsReturns503//liquidity-events (0.00s)
+    --- FAIL: TestPgMissingDecimalsReturns503//holders (0.00s)
+    --- FAIL: TestPgMissingDecimalsReturns503//candles?interval=1m&metric=market_cap (0.00s)
+    --- FAIL: TestPgMissingDecimalsReturns503/price_candles_remain_readable (0.00s)
+    --- PASS: TestPgMissingDecimalsReturns503/pools_remain_readable (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.875s
+FAIL
+# exit_status=1

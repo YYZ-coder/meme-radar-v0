@@ -1,0 +1,11 @@
+# H3-1 import preview red base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Seam: HTTP import create/get; independent expectation: admin_import_test sample, statuses invalid/valid/valid/duplicate, totals 4/2/1/1/0, TTL 30m
+# Test SHA256 4aa1478a14747e6d0a9b2014e45025104ecfd147bac8b7198d93d857bdc8ba48 backend/internal/pgapi/admin_test.go
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^TestPgImportPreview$ ./internal/pgapi
+--- FAIL: TestPgImportPreview (0.28s)
+    admin_test.go:73: POST /api/v1/admin/smart-money/imports = 503, want 201: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"c1afc6d64ec970806b1f5d1fe5fc1e6f"}}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.036s
+FAIL
+
+exit=1

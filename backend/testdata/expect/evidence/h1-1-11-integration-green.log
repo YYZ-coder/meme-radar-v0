@@ -1,0 +1,123 @@
+# H1 1-11-integration green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:23:24.941980+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run Test(ChainAsOfAndCoverage|TokenWindows|TradeCandlesFromTrades|TokenCandles|CandlesUseMainPoolPerTrade|GraduationSwitch|MigrationFixesGraduation) ./internal/...
+# sha256 internal/store/window_test.go dca4186718cba7ac53049d7843fa499cded1b7ed35c5b75f8407718137836db6
+# test diff sha256 87a4f3f56f62f6a4b2138dd8375cda668a752528db1e851d74d2eddb169aecd6
+# sha256 internal/compute/market_test.go 512ce29a52b54cc793261b1a549cad951d7b98ebbe4769446b2fd9ddc4d979e5
+# test diff sha256 1b907a3789722940c1c853c8f9bb4ef2452147f1a1fe2436465271783eabf9f7
+# sha256 internal/compute/candles_test.go 603a1595b6cabf634b365375e1cde464df34dd4c06421f5e30539fd0df76e282
+# test diff sha256 89713208772176bb96abc2e50abc7adc166b4e93a6283138c1ddfbf60207a45d
+# sha256 migrations/0011_window.sql 12be0a0d115b4d5dc650290b5b111fdfc55a9916b4ccca70b21e88a3428c537e
+# test diff sha256 28a4ceb06cc976f8a2b10dcb9030555214422cfe3023c5aa6a424195dc683043
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/chaininfo	0.556s [no tests to run]
+=== RUN   TestCandlesUseMainPoolPerTrade
+--- PASS: TestCandlesUseMainPoolPerTrade (0.17s)
+=== RUN   TestGraduationSwitchUsesChainTime
+=== RUN   TestGraduationSwitchUsesChainTime/pool_creation
+=== RUN   TestGraduationSwitchUsesChainTime/first_trade
+=== RUN   TestGraduationSwitchUsesChainTime/discovery_fallback
+=== RUN   TestGraduationSwitchUsesChainTime/rebuild_already_computed
+--- PASS: TestGraduationSwitchUsesChainTime (0.53s)
+    --- PASS: TestGraduationSwitchUsesChainTime/pool_creation (0.13s)
+    --- PASS: TestGraduationSwitchUsesChainTime/first_trade (0.11s)
+    --- PASS: TestGraduationSwitchUsesChainTime/discovery_fallback (0.12s)
+    --- PASS: TestGraduationSwitchUsesChainTime/rebuild_already_computed (0.17s)
+=== RUN   TestGraduationSwitchClampsToPreviousTime
+--- PASS: TestGraduationSwitchClampsToPreviousTime (0.17s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.406s
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/config	0.465s [no tests to run]
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/enrich	0.473s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/evm	0.381s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/httpapi	0.354s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest	0.849s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	0.369s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	0.369s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	0.868s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/metrics	0.866s [no tests to run]
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/clanker	0.854s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/doppler	0.370s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	0.910s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/pancake	0.376s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/pump	0.347s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	0.399s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/prices	0.943s [no tests to run]
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/meme-radar/radar/internal/solana	0.396s [no tests to run]
+=== RUN   TestChainAsOfAndCoverage
+--- PASS: TestChainAsOfAndCoverage (0.15s)
+=== RUN   TestTokenWindowsSumMinuteStats
+--- PASS: TestTokenWindowsSumMinuteStats (0.37s)
+=== RUN   TestTokenWindowsCountDistinctWallets
+--- PASS: TestTokenWindowsCountDistinctWallets (0.17s)
+=== RUN   TestTokenWindowsPriceChange
+=== RUN   TestTokenWindowsPriceChange/historical
+=== RUN   TestTokenWindowsPriceChange/first_inside
+=== RUN   TestTokenWindowsPriceChange/historical_pool_switch
+=== RUN   TestTokenWindowsPriceChange/zero_base
+=== RUN   TestTokenWindowsPriceChange/no_current_or_base
+--- PASS: TestTokenWindowsPriceChange (0.90s)
+    --- PASS: TestTokenWindowsPriceChange/historical (0.17s)
+    --- PASS: TestTokenWindowsPriceChange/first_inside (0.17s)
+    --- PASS: TestTokenWindowsPriceChange/historical_pool_switch (0.17s)
+    --- PASS: TestTokenWindowsPriceChange/zero_base (0.18s)
+    --- PASS: TestTokenWindowsPriceChange/no_current_or_base (0.17s)
+=== RUN   TestTokenWindowsPartialCoverage
+--- PASS: TestTokenWindowsPartialCoverage (0.37s)
+=== RUN   TestMigrationFixesGraduationSwitchTimes
+--- PASS: TestMigrationFixesGraduationSwitchTimes (0.18s)
+=== RUN   TestTradeCandlesFromTrades
+--- PASS: TestTradeCandlesFromTrades (0.13s)
+=== RUN   TestTokenCandlesMetricAndGaps
+=== RUN   TestTokenCandlesMetricAndGaps/stored_intervals_and_market_cap
+--- PASS: TestTokenCandlesMetricAndGaps (0.16s)
+    --- PASS: TestTokenCandlesMetricAndGaps/stored_intervals_and_market_cap (0.16s)
+=== RUN   TestTokenCandlesAvailabilityAndHistory
+--- PASS: TestTokenCandlesAvailabilityAndHistory (0.20s)
+=== RUN   TestTokenCandlesPartialCoverage
+--- PASS: TestTokenCandlesPartialCoverage (0.28s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	3.144s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+
+# exit_code=0

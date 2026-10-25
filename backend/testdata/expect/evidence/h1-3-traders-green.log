@@ -1,0 +1,11 @@
+# H1 3-traders green base=b846349b78e2aab6bcd32513d17c65d07c63a76e+worktree
+# UTC 2026-10-23T14:47:09.024148+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenWindowsCountDistinctWallets$ ./internal/store
+# sha256 internal/store/window_test.go 262e0e6feca5cb2be22fc4ff0446c83dd10d27c976fbd1bb8dd4c415fdfbdd23
+# test diff sha256 2b21b7a21ba5c6250886ab044139473715d212e5b6d5aaeac5c805e043ccde57
+=== RUN   TestTokenWindowsCountDistinctWallets
+--- PASS: TestTokenWindowsCountDistinctWallets (0.27s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.410s
+
+# exit_code=0

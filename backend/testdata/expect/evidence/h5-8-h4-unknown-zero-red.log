@@ -1,0 +1,15 @@
+# h5-8-h4-unknown-zero red base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumesUnknownAndZero$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_unknown_test.go 1cf03d883b99ef19c850f8b63d52894bb7419f94533d767a00cb6787b7c882e3
+--- FAIL: TestPgTokenSmartMoneyVolumesUnknownAndZero (0.78s)
+    --- FAIL: TestPgTokenSmartMoneyVolumesUnknownAndZero/no_buys (0.33s)
+        smart_money_volume_unknown_test.go:59: buy amount=NULL; want 0
+    --- FAIL: TestPgTokenSmartMoneyVolumesUnknownAndZero/unpriced_buy_plus_priced_buy (0.23s)
+        smart_money_volume_unknown_test.go:59: buy amount=2; want NULL
+    --- FAIL: TestPgTokenSmartMoneyVolumesUnknownAndZero/unpriced_sell_plus_priced_sell (0.22s)
+        smart_money_volume_unknown_test.go:59: sell amount=4.25; want NULL
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.252s
+FAIL
+
+# exit=1

@@ -1,0 +1,15 @@
+# h4-37-workmem green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+05aaf95e097c18410a69f4c002cb910e4f2e9fd446414c2bcf8dcde401a2c0b3  internal/store/inflow_workmem_test.go
+# tracked diff sha256=670a5ac50e957f5f2d8ef8b202c7ac359bb652badf8a91600c6b41f1b94e927a
+# command: go test -count=1 -v -run ^TestInflowWorkMemIsTransactionLocal$ ./internal/store
+=== RUN   TestInflowWorkMemIsTransactionLocal
+=== RUN   TestInflowWorkMemIsTransactionLocal/commit
+=== RUN   TestInflowWorkMemIsTransactionLocal/rollback
+--- PASS: TestInflowWorkMemIsTransactionLocal (0.45s)
+    --- PASS: TestInflowWorkMemIsTransactionLocal/commit (0.29s)
+    --- PASS: TestInflowWorkMemIsTransactionLocal/rollback (0.16s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.973s
+
+# exit=0

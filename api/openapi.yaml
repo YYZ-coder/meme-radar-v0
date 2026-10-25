@@ -1,24 +1,25 @@
 openapi: "3.0.3"
 info:
   title: Meme Radar API
-  version: "1.0.0-m1"
+  version: "2.0.0"
   description: |
-    M1 正式契约（资金流入、Token 详情、全局、管理后台）。端点说明见 docs/engineering/07-api.md。
+    Meme Radar 后端接口契约（v2，按现有前端页面重写）。设计说明见 docs/engineering/01-api.md，
+    表结构见 docs/engineering/02-data-model.md。响应字段与前端 zod 校验（frontend/src/lib/api/schemas.ts）逐字段一致。
 
     通用规则：
     - 公开接口前缀 `/api/v1`；`/healthz` 不带前缀。
-    - 金额、价格、数量一律为十进制字符串（`Decimal`），前端只做展示不做运算。
-    - 未知值为 `null`，前端显示 `--`；已知为 0 时返回 `"0"`。
-    - 地址：Solana 为 base58，EVM 为 EIP-55 校验和 0x 地址。
-    - 时间为 RFC 3339 UTC 字符串；K 线时间戳为 Unix 秒。
-    - 错误统一为 `ErrorResponse`，`error.code` 取值见 `ErrorCode`（目录见 docs/engineering/18-observability.md）。
-    - 每个响应带 `X-Trace-Id`（32 位十六进制）；请求可带合法的 `X-Trace-Id` 或 `traceparent` 以沿用同一 trace，错误体 `error.trace_id` 与响应头一致。
-    - 管理接口需 `Authorization: Bearer <RADAR_ADMIN_TOKEN>`（D106），缺失或错误返回 403。
-    - 前端从本文件用 openapi-typescript 生成类型，并在边界用 zod 校验。
-
+    - 金额、价格、数量一律为十进制字符串（`Decimal`），前端只格式化不运算；比例由后端给出。
+    - 未知为 `null`（前端显示 `--`），已知 0 返回 `"0"`；不得用 0 代替未知。
+    - `coverage`：`complete` 表示所请求窗口完全落在该链连续已采集区间内；否则为 `partial`，
+      完整统计字段为 `null`，只有 `observed*` 字段给出已看到的下界。
+    - 地址：Solana 为 base58，EVM 为 EIP-55 校验和地址；Uniswap v4 池用 32 字节 PoolId。
+    - 时间为 RFC 3339 UTC；K 线时间戳为 Unix 秒。
+    - 错误统一为 `ErrorResponse`；每个响应带 `X-Trace-Id`（32 位十六进制），请求可带 `X-Trace-Id` 或 `traceparent` 沿用。
+    - 管理接口需 `Authorization: Bearer <RADAR_ADMIN_TOKEN>`，缺失或错误返回 403。
+    - 前端用 openapi-typescript 从本文件生成类型（frontend/src/lib/api/schema.gen.ts）。
 servers:
   - url: http://localhost:8080
-    description: Local Go API
+    description: 本地 Go API
 
 security: []
 
@@ -42,12 +43,12 @@ paths:
       summary: 健康检查
       responses:
         "200":
-          description: 进程就绪且数据库可达
+          description: OK
           content:
             application/json:
               schema: { $ref: "#/components/schemas/HealthResponse" }
         "503":
-          description: 数据库不可达
+          description: 依赖不可用
           content:
             application/json:
               schema: { $ref: "#/components/schemas/HealthResponse" }
@@ -57,20 +58,20 @@ paths:
       operationId: getNativePrices
       tags: [market]
       summary: SOL / ETH / BNB 美元价（底部栏）
-      description: 价格来自 quote_asset_prices（D54），超过 5 分钟标 stale，超过 30 分钟返回 null。
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema: { $ref: "#/components/schemas/NativePricesResponse" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/search:
     get:
       operationId: search
       tags: [market]
       summary: 全局搜索 Token 与钱包
-      description: 合约/钱包地址精确匹配；名称与符号模糊匹配（pg_trgm），同名不合并。
       parameters:
         - name: q
           in: query
@@ -87,12 +88,16 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/SearchResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/smart-money/overview:
     get:
       operationId: getSmartMoneyOverview
       tags: [inflow]
       summary: 资金流入页顶部概览卡片
+      description: |
+        按链与窗口读取当前激活名单的聪明钱汇总；大仓为单笔买入 > 5,000 美元，其余已知金额为小仓。窗口未完整覆盖时完整字段为 null。
       parameters:
         - $ref: "#/components/parameters/ChainFilter"
         - $ref: "#/components/parameters/Window"
@@ -103,12 +108,16 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/OverviewResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/smart-money/inflow/facets:
     get:
       operationId: getInflowFacets
       tags: [inflow]
       summary: DEX 与发射平台候选（工具栏下拉）
+      description: |
+        当前窗口内有成交的 DEX 与发射平台候选及其成交额；窗口未完整覆盖时 volume_usd/token_count 为 null，observed_token_count 为已看到的下界。
       parameters:
         - $ref: "#/components/parameters/ChainFilter"
         - $ref: "#/components/parameters/Window"
@@ -119,20 +128,22 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/FacetsResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/smart-money/inflow:
     get:
       operationId: listInflow
       tags: [inflow]
-      summary: 资金流入列表（快照排序＋按需取值）
+      summary: 资金流入列表（固定快照分页）
       description: |
-        首次请求（不带 query_id）按筛选与排序取前 2,000 个 Token ID 存入进程内 LRU（TTL 10 分钟），
-        返回 `query_id` 与第一批。翻页只传 `query_id` + `offset`，其余参数被忽略，顺序不变、数值为当前值。
-        排序值相同按 Token ID 升序；排序列为 null 时无论升降序都排最后；设置了某字段的 min/max 时该字段为 null 的 Token 被排除。
+        首次请求（不带 query_id）在一致的投影版本上筛选、排序，冻结前 2,000 行完整值与 list_version，
+        存入 API 进程内有界 LRU（TTL 10 分钟），返回 query_id 与第一批。翻页只读 query_id/offset/limit，切片原快照。
+        排序值相同按 (chain, address) 升序；排序列为 null 时恒排最后；设置某字段 min/max 时该字段为 null 的行被排除。
+        query_id 过期、不在本实例或投影已失效时返回 410，前端按 URL 条件重新查询。
       parameters:
         - name: query_id
           in: query
-          description: 翻页锚点；带上时只读 offset。
           schema: { type: string }
         - name: offset
           in: query
@@ -151,15 +162,13 @@ paths:
           schema: { type: string, enum: [asc, desc], default: desc }
         - name: dex
           in: query
-          description: 逗号分隔的 DEX id（来自 facets），与 platform 取交集。
           schema: { type: string }
         - name: platform
           in: query
-          description: 逗号分隔的发射平台 id。
           schema: { type: string }
         - { name: min_market_cap, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
         - { name: max_market_cap, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
-        - { name: min_price_change, in: query, description: 百分比数值，如 "-20" 表示 -20%, schema: { $ref: "#/components/schemas/Decimal" } }
+        - { name: min_price_change, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
         - { name: max_price_change, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
         - { name: min_liquidity, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
         - { name: max_liquidity, in: query, schema: { $ref: "#/components/schemas/Decimal" } }
@@ -175,15 +184,13 @@ paths:
         - { name: max_sm_trades, in: query, schema: { type: integer, minimum: 0 } }
         - { name: min_holders, in: query, schema: { type: integer, minimum: 0 } }
         - { name: max_holders, in: query, schema: { type: integer, minimum: 0 } }
-        - { name: min_age, in: query, description: 币龄下限（秒）, schema: { type: integer, minimum: 0 } }
-        - { name: max_age, in: query, description: 币龄上限（秒）, schema: { type: integer, minimum: 0 } }
+        - { name: min_age, in: query, schema: { type: integer, minimum: 0 } }
+        - { name: max_age, in: query, schema: { type: integer, minimum: 0 } }
         - name: dev_status
           in: query
-          description: 开发者已清仓 / 未清仓（M3 起有数据，M1 传入时按 null 排除）。
           schema: { type: string, enum: [sold, holding] }
         - name: socials
           in: query
-          description: 逗号分隔，要求同时具备：twitter,telegram,github,website。
           schema: { type: string }
       responses:
         "200":
@@ -198,6 +205,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
         "429": { $ref: "#/components/responses/RateLimited" }
+        "500": { $ref: "#/components/responses/InternalError" }
         "503": { $ref: "#/components/responses/Busy" }
 
   /api/v1/tokens/batch:
@@ -205,7 +213,9 @@ paths:
       operationId: batchTokens
       tags: [inflow]
       summary: 可见行 10 秒刷新（不重排）
-      description: 新查询限流不计入。不存在或不再收录的 Token 不出现在 items 中，前端保留旧值并标记过期。
+      description: |
+        可见行每 10 秒刷新数值，不改变顺序。带 query_id 时校验窗口、计价与 list_version；名单已换版或快照失效返回 410，
+        前端暂停刷新、保留旧分页并提示重查。已不在投影中的 Token 不出现在 items 中。观察列表调用不带 query_id，读当前投影。
       requestBody:
         required: true
         content:
@@ -217,7 +227,14 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/BatchResponse" }
+        "410":
+          description: 快照已失效或名单已换版；暂停刷新并提示重新查询
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}:
     parameters:
@@ -237,6 +254,8 @@ paths:
               schema: { $ref: "#/components/schemas/TokenDetail" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/candles:
     parameters:
@@ -245,8 +264,9 @@ paths:
     get:
       operationId: getCandles
       tags: [token]
-      summary: K 线（主池，D55/D105）
-      description: 只接受 6 个周期，其他返回 400。1s/30s 超过 24 小时的区间由 pool_trades 现算（D89）。单次最多 1,000 根。
+      summary: K 线（按主池，1s/30s 由成交现算）
+      description: |
+        基于主池成交生成；主池切换处在 pool_switches 标注。美元价缺失的区间写入 gaps；未收盘或窗口未完整覆盖的柱放在 observed_items。
       parameters:
         - name: interval
           in: query
@@ -258,11 +278,9 @@ paths:
         - $ref: "#/components/parameters/Currency"
         - name: from
           in: query
-          description: Unix 秒（含）
           schema: { type: integer }
         - name: to
           in: query
-          description: Unix 秒（不含），默认当前
           schema: { type: integer }
         - name: limit
           in: query
@@ -275,6 +293,8 @@ paths:
               schema: { $ref: "#/components/schemas/CandlesResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/activities:
     parameters:
@@ -284,17 +304,17 @@ paths:
       operationId: listActivities
       tags: [token]
       summary: 活动流（成交、加减池）
+      description: |
+        按链上位置倒序的成交与加减池记录，游标分页。label 过滤基于当前激活名单与地址标签；未归因成交只出现在 all。
       parameters:
         - name: kind
           in: query
           schema: { type: string, enum: [all, trade, liquidity], default: all }
         - name: label
           in: query
-          description: 地址类型筛选；M1 只有 all 与 smart_money，其余标签 M3 起生效。未归因成交只出现在 all 中。
           schema: { $ref: "#/components/schemas/ActivityLabelFilter" }
         - name: from
           in: query
-          description: Unix 秒（含），K 线打点用
           schema: { type: integer }
         - name: to
           in: query
@@ -309,6 +329,8 @@ paths:
               schema: { $ref: "#/components/schemas/ActivitiesResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/holders:
     parameters:
@@ -317,7 +339,9 @@ paths:
     get:
       operationId: listHolders
       tags: [token]
-      summary: 持有者（D107：仅采集范围内创建的 Token 完整覆盖）
+      summary: 持有者（带覆盖范围）
+      description: |
+        当前余额排名。余额来自已采集范围内的转账/成交增量；Token 创建早于采集起点时 coverage.status 为 partial。
       parameters:
         - name: label
           in: query
@@ -330,7 +354,10 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/HoldersResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/pools:
     parameters:
@@ -346,7 +373,10 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/PoolsResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/liquidity-events:
     parameters:
@@ -365,7 +395,10 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/LiquidityEventsResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/tokens/{chain}/{address}/smart-money:
     parameters:
@@ -381,7 +414,10 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/TokenSmartMoneyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/imports:
     post:
@@ -402,23 +438,26 @@ paths:
                   format: binary
       responses:
         "201":
-          description: 校验报告
+          description: 已创建
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ImportReport" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "413":
-          description: 文件超过 5MB 或 10,000 行
+          description: 文件超过上传上限
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/imports/{id}/apply:
     post:
       operationId: applySmartMoneyImport
       tags: [admin]
-      summary: 确认导入，生成新名单版本（D92）
+      summary: 确认导入，异步准备新名单版本
       security: [{ adminToken: [] }]
       parameters:
         - name: id
@@ -426,18 +465,25 @@ paths:
           required: true
           schema: { type: string }
       responses:
-        "200":
-          description: OK
+        "202":
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, enum: [2] }
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "409":
-          description: 报告已应用或已过期
+          description: 导入已过期或已应用
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/members:
     get:
@@ -455,7 +501,6 @@ paths:
           schema: { type: string }
         - name: q
           in: query
-          description: 地址前缀或名称
           schema: { type: string }
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
@@ -465,25 +510,40 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/MembersResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "410": { $ref: "#/components/responses/ListCursorExpired" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/members/{chain}/{address}:
     parameters:
       - $ref: "#/components/parameters/ChainPath"
       - $ref: "#/components/parameters/AddressPath"
     delete:
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
       operationId: removeSmartMoneyMember
       tags: [admin]
       summary: 移除导入来源的地址，生成新名单版本
       security: [{ adminToken: [] }]
       responses:
-        "200":
-          description: OK
+        "202":
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, enum: [2] }
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/exclusions:
     get:
@@ -501,11 +561,18 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ExclusionsResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "410": { $ref: "#/components/responses/ListCursorExpired" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
     post:
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
       operationId: addSmartMoneyExclusion
       tags: [admin]
-      summary: 排除地址（自动识别不再纳入），生成新名单版本
+      summary: 排除全部聪明钱统计，保留管理记录；异步生成新名单版本
       security: [{ adminToken: [] }]
       requestBody:
         required: true
@@ -513,37 +580,134 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/ExclusionRequest" }
       responses:
-        "200":
-          description: OK
+        "202":
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, enum: [2] }
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ListVersionChange" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/smart-money/exclusions/{chain}/{address}:
     parameters:
       - $ref: "#/components/parameters/ChainPath"
       - $ref: "#/components/parameters/AddressPath"
     delete:
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
       operationId: removeSmartMoneyExclusion
       tags: [admin]
       summary: 恢复地址
+      security: [{ adminToken: [] }]
+      responses:
+        "202":
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, enum: [2] }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListVersionChange" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+  /api/v1/admin/smart-money/imports/{id}:
+    get:
+      operationId: getSmartMoneyImport
+      tags: [admin]
+      summary: 恢复导入预览与已应用版本关联
+      security: [{ adminToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportReport" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+  /api/v1/admin/smart-money/list-builds/{version}:
+    parameters:
+      - name: version
+        in: path
+        required: true
+        schema: { $ref: "#/components/schemas/ListVersion" }
+    get:
+      operationId: getSmartMoneyListBuild
+      tags: [admin]
+      summary: 查询名单准备、失败、阻塞与激活状态
       security: [{ adminToken: [] }]
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ListVersionChange" }
+              schema: { $ref: "#/components/schemas/ListBuildStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+  /api/v1/admin/smart-money/list-builds/{version}/retry:
+    post:
+      operationId: retrySmartMoneyListBuild
+      tags: [admin]
+      summary: 重试相同成员版本；不创建版本、不重新激活已完成版本
+      security: [{ adminToken: [] }]
+      parameters:
+        - name: version
+          in: path
+          required: true
+          schema: { $ref: "#/components/schemas/ListVersion" }
+      responses:
+        "202":
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, enum: [2] }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListBuildStatus" }
+        "200":
+          description: 该版本已就绪或已激活，无需重试
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListBuildStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
   /api/v1/admin/health:
     get:
       operationId: getAdminHealth
       tags: [admin]
-      summary: 运行质量：采集、解析、失败任务、预算
+      summary: 运行质量：采集进度、解码模块、失败任务、数据源预算
+      description: |
+        各链数据流游标与积压、各解码模块进度与失败、当月数据源用量。数据库不可用时返回 503。
       security: [{ adminToken: [] }]
       responses:
         "200":
@@ -551,13 +715,24 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AdminHealth" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "503":
+          description: 数据库不可用
+          headers:
+            X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+            Retry-After:
+              schema: { type: integer, minimum: 1 }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "500": { $ref: "#/components/responses/InternalError" }
 
   /api/v1/admin/parse-failures/{id}/retry:
     post:
       operationId: retryParseFailure
       tags: [admin]
-      summary: 重试失败的解析任务
+      summary: 重试失败的解码任务
       security: [{ adminToken: [] }]
       parameters:
         - name: id
@@ -566,25 +741,31 @@ paths:
           schema: { type: string }
       responses:
         "202":
-          description: 已重新排队
+          description: 已接受，后台异步准备；用 list-builds/{version} 查询状态
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ParseFailure" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+        "503": { $ref: "#/components/responses/Unavailable" }
 
 components:
   securitySchemes:
     adminToken:
       type: http
       scheme: bearer
-      description: M1 使用环境变量 RADAR_ADMIN_TOKEN（D106）；M4 改为钱包签名会话。
 
   parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
     ChainFilter:
       name: chain
       in: query
-      description: 不传表示全部链
       schema: { $ref: "#/components/schemas/Chain" }
     ChainPath:
       name: chain
@@ -603,12 +784,10 @@ components:
     Currency:
       name: currency
       in: query
-      description: 计价，usd 或该链原生币（D53）
       schema: { type: string, enum: [usd, native], default: usd }
     Cursor:
       name: cursor
       in: query
-      description: 上一页返回的 next_cursor
       schema: { type: string }
     Limit:
       name: limit
@@ -617,28 +796,34 @@ components:
 
   headers:
     XTraceId:
-      description: 本次请求的 trace id（32 位十六进制）
       schema: { type: string, pattern: '^[0-9a-f]{32}$' }
 
   responses:
     BadRequest:
+      description: 参数不合法；error.field 指出字段
       headers:
         X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
-      description: 参数不合法；error.field 指出字段
       content:
         application/json:
           schema: { $ref: "#/components/schemas/ErrorResponse" }
     NotFound:
+      description: 不存在
       headers:
         X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
-      description: 不存在
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Unauthorized:
+      description: 管理接口未配置 RADAR_ADMIN_TOKEN，拒绝所有管理请求
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
       content:
         application/json:
           schema: { $ref: "#/components/schemas/ErrorResponse" }
     Forbidden:
+      description: 管理凭证缺失或错误
       headers:
         X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
-      description: 管理凭证缺失或错误
       content:
         application/json:
           schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -652,11 +837,35 @@ components:
         application/json:
           schema: { $ref: "#/components/schemas/ErrorResponse" }
     Busy:
-      description: 数据库查询超过 2 秒；前端保留已加载行并提示重试
+      description: 查询超过 2 秒或投影正在切换；前端保留已加载行并提示重试
       headers:
         X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
         Retry-After:
           schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+    ListCursorExpired:
+      description: 游标无效、被修改或与当前筛选不匹配
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    InternalError:
+      description: 内部错误；不含数据库或凭证细节
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Unavailable:
+      description: 所需投影尚未就绪（error.code=api_unavailable）
+      headers:
+        X-Trace-Id: { $ref: "#/components/headers/XTraceId" }
+        Retry-After:
+          schema: { type: integer, minimum: 1 }
       content:
         application/json:
           schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -681,13 +890,17 @@ components:
 
     Address:
       type: string
-      description: Solana base58（32 字节）或 EVM 0x 校验和地址（20 字节）
       minLength: 32
       maxLength: 44
 
+    PoolIdentifier:
+      oneOf:
+        - $ref: "#/components/schemas/Address"
+        - type: string
+          pattern: '^0x[0-9a-fA-F]{64}$'
+
     TxHash:
       type: string
-      description: Solana base58 签名或 EVM 0x 交易 hash
 
     Decimal:
       type: string
@@ -701,7 +914,6 @@ components:
 
     Currency:
       type: string
-      description: USD 或原生币符号
       enum: [USD, SOL, ETH, BNB]
 
     Timestamp:
@@ -710,11 +922,9 @@ components:
 
     ListVersion:
       type: string
-      description: 聪明钱名单版本（不透明字符串，D30/D92）
 
     ErrorCode:
       type: string
-      description: 业务错误码（与 backend/internal/obs 目录一致，测试强制同步）
       enum:
         - invalid_param
         - invalid_range
@@ -749,7 +959,6 @@ components:
             trace_id:
               type: string
               pattern: '^[0-9a-f]{32}$'
-              description: 与响应头 X-Trace-Id 相同，用于在日志中定位
 
     HealthResponse:
       type: object
@@ -769,7 +978,7 @@ components:
         symbol: { type: string, enum: [SOL, ETH, BNB] }
         price_usd: { $ref: "#/components/schemas/NullableDecimal" }
         change_24h_pct: { $ref: "#/components/schemas/NullableDecimal" }
-        stale: { type: boolean, description: 最近价格超过 5 分钟 }
+        stale: { type: boolean}
         as_of: { $ref: "#/components/schemas/Timestamp" }
 
     NativePricesResponse:
@@ -799,13 +1008,11 @@ components:
         image_url:
           type: string
           nullable: true
-          description: 经后端代理的图标地址；为空时前端按地址生成像素头像
         launch_platform: { type: string, nullable: true }
         launch_at:
           type: string
           format: date-time
           nullable: true
-          description: 经核验的 Launch 时间（D27）
 
     SearchToken:
       allOf:
@@ -851,57 +1058,75 @@ components:
         - buy_volume_usd
         - sell_volume_usd
         - buy_share_pct
+        - large_buy_volume_usd
+        - small_buy_volume_usd
+        - large_buy_share_pct
+        - small_buy_share_pct
         - inflow_bars
+        - coverage
       properties:
         as_of: { $ref: "#/components/schemas/Timestamp" }
         list_version: { $ref: "#/components/schemas/ListVersion" }
         window: { $ref: "#/components/schemas/Window" }
+        coverage:
+          type: string
+          enum: [partial, complete]
         net_inflow_usd:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 窗口内聪明钱买入额 − 卖出额（全部收录 Token）
         net_inflow_change_pct:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 与上一个等长窗口相比的变化百分比；上一窗口为 0 或未知时为 null
         active_wallets:
           type: integer
           nullable: true
-          description: 窗口内有成交的去重聪明钱地址数
         tracked_tokens:
           type: integer
-          description: 列表收录的 Token 数（窗口内至少 1 笔成交）
+          minimum: 0
+          nullable: true
         new_tokens:
           type: integer
           nullable: true
-          description: 窗口内新发行且被收录的 Token 数
         buy_volume_usd:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 窗口内聪明钱买入额
         sell_volume_usd:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 窗口内聪明钱卖出额
         buy_share_pct:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 买入额 ÷（买入额＋卖出额）×100，“市场脉搏”卡片
+        large_buy_volume_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+        small_buy_volume_usd:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+        large_buy_share_pct:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+        small_buy_share_pct:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
         inflow_bars:
           type: array
-          description: 窗口等分 16 桶的聪明钱净流入，用于卡片柱图
           maxItems: 16
           items: { $ref: "#/components/schemas/NullableDecimal" }
 
     Facet:
       type: object
-      required: [id, name, volume_usd, token_count]
+      required: [id, name, volume_usd, token_count, observed_token_count]
       properties:
         id: { type: string, example: pumpswap }
         name: { type: string, example: PumpSwap }
         chain: { $ref: "#/components/schemas/Chain" }
         volume_usd: { $ref: "#/components/schemas/NullableDecimal" }
-        token_count: { type: integer }
+        token_count:
+          type: integer
+          nullable: true
+        observed_token_count:
+          type: integer
+          format: int64
+          minimum: 0
 
     FacetsResponse:
       type: object
-      required: [dexes, platforms]
+      required: [dexes, platforms, coverage]
       properties:
+        coverage:
+          type: string
+          enum: [partial, complete]
         dexes:
           type: array
           items: { $ref: "#/components/schemas/Facet" }
@@ -915,8 +1140,8 @@ components:
       default: sm_trades
 
     InflowRow:
+      description: 资金流入一行。trades/buys/sells/volume/net_inflow 等完整统计在 coverage=partial 时为 null；observed 为已看到成交的下界计数。
       type: object
-      description: 列表行；同一 Token 多池只出现一次，金额为全部池合计（D53/D56）。
       required:
         - token
         - currency
@@ -927,6 +1152,8 @@ components:
         - trades
         - buys
         - sells
+        - observed
+        - coverage
         - volume
         - net_inflow
         - sm_holders
@@ -946,10 +1173,19 @@ components:
         trades: { type: integer, nullable: true }
         buys: { type: integer, nullable: true }
         sells: { type: integer, nullable: true }
+        observed:
+          type: object
+          required: [trades, buys, sells]
+          properties:
+            trades: { type: integer, format: int64, minimum: 0 }
+            buys: { type: integer, format: int64, minimum: 0 }
+            sells: { type: integer, format: int64, minimum: 0 }
+        coverage:
+          type: string
+          enum: [partial, complete]
         volume: { $ref: "#/components/schemas/NullableDecimal" }
         net_inflow:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 聪明钱买入额 − 卖出额
         sm_holders: { type: integer, nullable: true }
         sm_trades: { type: integer, nullable: true }
         holders: { type: integer, nullable: true }
@@ -960,7 +1196,6 @@ components:
         socials: { $ref: "#/components/schemas/Socials" }
         sparkline:
           type: array
-          description: 窗口等分 20 桶收盘价；无成交的桶为 null
           maxItems: 20
           items: { $ref: "#/components/schemas/NullableDecimal" }
 
@@ -970,14 +1205,14 @@ components:
       properties:
         query_id: { type: string }
         list_version: { $ref: "#/components/schemas/ListVersion" }
-        as_of: { $ref: "#/components/schemas/Timestamp" }
+        as_of:
+          allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+        chain_as_of: { $ref: "#/components/schemas/ChainTimes" }
         window: { $ref: "#/components/schemas/Window" }
         total:
           type: integer
-          description: 本次快照的 Token 数（≤2,000）
         truncated:
           type: boolean
-          description: 实际匹配超过 2,000 个，只缓存前 2,000 个
         offset: { type: integer }
         next_offset:
           type: integer
@@ -1002,6 +1237,7 @@ components:
           type: string
           enum: [usd, native]
           default: usd
+        query_id: { type: string}
         list_version: { $ref: "#/components/schemas/ListVersion" }
         tokens:
           type: array
@@ -1011,16 +1247,27 @@ components:
 
     BatchResponse:
       type: object
-      required: [as_of, items]
+      required: [as_of, list_version, items]
       properties:
-        as_of: { $ref: "#/components/schemas/Timestamp" }
+        as_of:
+          allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+        chain_as_of: { $ref: "#/components/schemas/ChainTimes" }
+        list_version: { $ref: "#/components/schemas/ListVersion" }
         items:
           type: array
           items: { $ref: "#/components/schemas/InflowRow" }
 
+    ChainTimes:
+      description: 各链投影实际截止时间；全部链视图下各链可能不同。
+      type: object
+      additionalProperties: false
+      properties:
+        solana: { $ref: "#/components/schemas/Timestamp" }
+        base: { $ref: "#/components/schemas/Timestamp" }
+        bsc: { $ref: "#/components/schemas/Timestamp" }
+
     WindowSummary:
       type: object
-      description: 全部钱包口径（token-metrics §3）
       required: [window, volume, net_inflow, traders, buys, sells, buy_volume, sell_volume, price_change_pct]
       properties:
         window: { $ref: "#/components/schemas/SummaryWindow" }
@@ -1034,27 +1281,29 @@ components:
         price_change_pct: { $ref: "#/components/schemas/NullableDecimal" }
 
     HolderCoverage:
+      description: full：Token 在采集起点之后创建，余额从创建起完整重放；partial：创建更早，只含采集后变化；unknown：尚未处理。
       type: object
       required: [status, since, as_of]
       properties:
         status:
           type: string
           enum: [full, partial, unknown]
-          description: full＝创建于采集下界 L 之后（D107）；partial＝更早创建，余额不完整
         since:
           type: string
           format: date-time
           nullable: true
-          description: 覆盖起点（采集下界 L 或创建时间）
         as_of: { $ref: "#/components/schemas/Timestamp" }
 
     PoolRef:
       type: object
       required: [address, dex, quote_symbol]
       properties:
-        address: { $ref: "#/components/schemas/Address" }
+        address: { $ref: "#/components/schemas/PoolIdentifier" }
         dex: { type: string, example: PumpSwap }
-        quote_symbol: { type: string, example: SOL }
+        quote_symbol:
+          type: string
+          nullable: true
+          example: SOL
 
     TokenDetail:
       type: object
@@ -1086,7 +1335,6 @@ components:
         decimals: { type: integer }
         total_supply:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 已按 decimals 换算的总供应量
         socials: { $ref: "#/components/schemas/Socials" }
         creator:
           type: object
@@ -1111,50 +1359,83 @@ components:
           type: string
           format: date-time
           nullable: true
-          description: 历史最高市值的统计起点（早于采集下界时为 L）
         holder_coverage: { $ref: "#/components/schemas/HolderCoverage" }
         windows:
           type: array
           items: { $ref: "#/components/schemas/WindowSummary" }
         same_name:
           type: array
-          description: 同名候选，只做提示不合并
           items: { $ref: "#/components/schemas/SearchToken" }
 
     Candle:
       type: object
       required: [t, o, h, l, c, v]
       properties:
-        t: { type: integer, description: 桶起点 Unix 秒 }
+        t: { type: integer}
         o: { $ref: "#/components/schemas/Decimal" }
         h: { $ref: "#/components/schemas/Decimal" }
         l: { $ref: "#/components/schemas/Decimal" }
         c: { $ref: "#/components/schemas/Decimal" }
         v:
           allOf: [{ $ref: "#/components/schemas/Decimal" }]
-          description: 成交额（currency 计价）
+
+    ObservedCandle:
+      type: object
+      required: [t, o, h, l, c, v, closed]
+      properties:
+        t: { type: integer}
+        o: { $ref: "#/components/schemas/Decimal" }
+        h: { $ref: "#/components/schemas/Decimal" }
+        l: { $ref: "#/components/schemas/Decimal" }
+        c: { $ref: "#/components/schemas/Decimal" }
+        v: { $ref: "#/components/schemas/NullableDecimal" }
+        closed: { type: boolean }
+
+    CandleGap:
+      type: object
+      required: [from, to, reason]
+      properties:
+        from: { type: integer}
+        to: { type: integer}
+        reason: { type: string, enum: [price_unavailable] }
 
     PoolSwitch:
       type: object
       required: [t, from_pool, to_pool, reason]
       properties:
         t: { type: integer }
-        from_pool: { type: string, nullable: true }
-        to_pool: { type: string }
+        from_pool:
+          nullable: true
+          allOf: [{ $ref: "#/components/schemas/PoolIdentifier" }]
+        to_pool: { $ref: "#/components/schemas/PoolIdentifier" }
         reason:
           type: string
           enum: [liquidity, graduation]
 
     CandlesResponse:
       type: object
-      required: [interval, metric, currency, items, pool_switches]
+      required: [interval, metric, currency, as_of, coverage, empty_reason, items, observed_items, gaps, pool_switches]
       properties:
         interval: { $ref: "#/components/schemas/CandleInterval" }
         metric: { type: string, enum: [price, market_cap] }
         currency: { $ref: "#/components/schemas/Currency" }
+        as_of: { $ref: "#/components/schemas/Timestamp" }
+        coverage:
+          type: string
+          enum: [complete, partial]
+        empty_reason:
+          type: string
+          nullable: true
+          enum: [no_main_pool, no_price, no_trades, null]
         items:
           type: array
           items: { $ref: "#/components/schemas/Candle" }
+        observed_items:
+          type: array
+          items: { $ref: "#/components/schemas/ObservedCandle" }
+        gaps:
+          type: array
+          items: { $ref: "#/components/schemas/CandleGap" }
         pool_switches:
           type: array
           items: { $ref: "#/components/schemas/PoolSwitch" }
@@ -1179,7 +1460,6 @@ components:
         display_name:
           type: string
           nullable: true
-          description: 名单中的名称（如 KOL 名）
 
     Activity:
       type: object
@@ -1201,7 +1481,6 @@ components:
       properties:
         id:
           type: string
-          description: 链上位置 block_num:tx_index:item_index（D78）
         time: { $ref: "#/components/schemas/Timestamp" }
         kind:
           type: string
@@ -1210,30 +1489,42 @@ components:
           type: object
           nullable: true
           allOf: [{ $ref: "#/components/schemas/WalletRef" }]
-          description: 归因未证明时为 null（D25）
         attribution:
           type: string
           nullable: true
           enum: [confirmed, inferred, ambiguous, null]
         token_amount: { $ref: "#/components/schemas/Decimal" }
-        quote_amount: { $ref: "#/components/schemas/Decimal" }
-        quote_symbol: { type: string }
+        quote_amount:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+        quote_symbol:
+          type: string
+          nullable: true
         value_usd: { $ref: "#/components/schemas/NullableDecimal" }
         price_usd: { $ref: "#/components/schemas/NullableDecimal" }
         market_cap_usd: { $ref: "#/components/schemas/NullableDecimal" }
         tx_hash: { $ref: "#/components/schemas/TxHash" }
-        pool: { $ref: "#/components/schemas/Address" }
+        pool: { $ref: "#/components/schemas/PoolIdentifier" }
         dex: { type: string }
 
     LabelCounts:
+      description: 最近 24 小时各地址类型的成交数；窗口未完整覆盖时为 null。
       type: object
-      additionalProperties: { type: integer }
-      description: 每个地址类型筛选项的数量（M1 只有 all、smart_money）
+      required: [all, smart_money]
+      properties:
+        all: { type: integer, format: int64, minimum: 0, nullable: true }
+        smart_money: { type: integer, format: int64, minimum: 0, nullable: true }
+      additionalProperties: { type: integer, format: int64, minimum: 0, nullable: true }
 
     ActivitiesResponse:
       type: object
-      required: [items, next_cursor, label_counts]
+      required: [items, next_cursor, label_counts, coverage, label_counts_coverage]
       properties:
+        coverage:
+          type: string
+          enum: [partial, complete]
+        label_counts_coverage:
+          type: string
+          enum: [partial, complete]
         items:
           type: array
           items: { $ref: "#/components/schemas/Activity" }
@@ -1259,15 +1550,12 @@ components:
         share_pct: { $ref: "#/components/schemas/NullableDecimal" }
         native_balance:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: 原生币余额（按需查 RPC，D79），未查到为 null
         avg_buy_price_usd: { $ref: "#/components/schemas/NullableDecimal" }
         avg_sell_price_usd: { $ref: "#/components/schemas/NullableDecimal" }
         realized_pnl_usd:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: M2 起提供，M1 为 null
         unrealized_pnl_usd:
           allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
-          description: M2 起提供，M1 为 null
 
     HoldersResponse:
       type: object
@@ -1294,10 +1582,12 @@ components:
         - status
         - is_main
       properties:
-        address: { $ref: "#/components/schemas/Address" }
+        address: { $ref: "#/components/schemas/PoolIdentifier" }
         dex: { type: string, example: Uniswap }
         protocol: { type: string, example: uniswap_v4 }
-        quote_symbol: { type: string }
+        quote_symbol:
+          type: string
+          nullable: true
         liquidity_usd: { $ref: "#/components/schemas/NullableDecimal" }
         reserve_token: { $ref: "#/components/schemas/NullableDecimal" }
         reserve_quote: { $ref: "#/components/schemas/NullableDecimal" }
@@ -1325,21 +1615,25 @@ components:
           type: string
           enum: [add, remove]
         token_amount: { $ref: "#/components/schemas/Decimal" }
-        quote_amount: { $ref: "#/components/schemas/Decimal" }
-        quote_symbol: { type: string }
+        quote_amount:
+          allOf: [{ $ref: "#/components/schemas/NullableDecimal" }]
+        quote_symbol: { type: string, nullable: true }
         value_usd: { $ref: "#/components/schemas/NullableDecimal" }
         wallet:
           type: object
           nullable: true
           allOf: [{ $ref: "#/components/schemas/WalletRef" }]
         tx_hash: { $ref: "#/components/schemas/TxHash" }
-        pool: { $ref: "#/components/schemas/Address" }
+        pool: { $ref: "#/components/schemas/PoolIdentifier" }
         dex: { type: string }
 
     LiquidityEventsResponse:
       type: object
-      required: [items, next_cursor]
+      required: [items, next_cursor, coverage]
       properties:
+        coverage:
+          type: string
+          enum: [partial, complete]
         items:
           type: array
           items: { $ref: "#/components/schemas/LiquidityEvent" }
@@ -1369,7 +1663,6 @@ components:
     ImportRowStatus:
       type: string
       enum: [valid, invalid, duplicate, existing]
-      description: duplicate＝文件内重复；existing＝已在名单中，确认后合并来源与标签
 
     ImportRow:
       type: object
@@ -1389,13 +1682,15 @@ components:
 
     ImportReport:
       type: object
-      required: [id, file_name, created_at, expires_at, applied, totals, rows]
+      required: [id, file_name, created_at, expires_at, applied, applied_list_version, rows_archived, totals, rows]
       properties:
         id: { type: string }
         file_name: { type: string }
         created_at: { $ref: "#/components/schemas/Timestamp" }
         expires_at: { $ref: "#/components/schemas/Timestamp" }
         applied: { type: boolean }
+        applied_list_version: { type: string, nullable: true }
+        rows_archived: { type: boolean }
         totals:
           type: object
           required: [rows, valid, invalid, duplicate, existing]
@@ -1407,15 +1702,47 @@ components:
             existing: { type: integer }
         rows:
           type: array
-          description: 逐行结果（最多返回前 500 行；错误行全部返回）
           items: { $ref: "#/components/schemas/ImportRow" }
 
-    ListVersionChange:
+    ListStatus:
+      type: string
+      enum: [building, active, retired]
+    ListBuildState:
+      type: string
+      enum: [queued, running, ready, activated, failed]
+    ListChangeCounts:
       type: object
-      required: [list_version, previous_version, added, merged, removed, total_members]
+      required: [added, merged, removed, total_members]
+      properties:
+        added: { type: integer, minimum: 0 }
+        merged: { type: integer, minimum: 0 }
+        removed: { type: integer, minimum: 0 }
+        total_members: { type: integer, minimum: 0 }
+    ListBuildStatus:
+      description: 名单版本异步准备状态：准备期间旧版本继续生效，就绪后整体切换。
+      type: object
+      required: [list_version, previous_version, active_version, status, build_status, blocking_version, created_at, activated_at, error_code, change_counts]
       properties:
         list_version: { $ref: "#/components/schemas/ListVersion" }
         previous_version: { $ref: "#/components/schemas/ListVersion" }
+        active_version: { $ref: "#/components/schemas/ListVersion" }
+        status: { $ref: "#/components/schemas/ListStatus" }
+        build_status: { $ref: "#/components/schemas/ListBuildState" }
+        blocking_version: { type: string, nullable: true }
+        created_at: { $ref: "#/components/schemas/Timestamp" }
+        activated_at: { type: string, format: date-time, nullable: true }
+        error_code: { type: string, nullable: true, enum: [invalid_param, invalid_range, unauthorized, forbidden, not_found, import_closed, query_expired, file_too_large, too_many_rows, invalid_file, secret_detected, rate_limited, busy, api_unavailable, internal, null] }
+        change_counts: { $ref: "#/components/schemas/ListChangeCounts" }
+
+    ListVersionChange:
+      type: object
+      required: [list_version, previous_version, active_version, status, build_status, added, merged, removed, total_members]
+      properties:
+        list_version: { $ref: "#/components/schemas/ListVersion" }
+        previous_version: { $ref: "#/components/schemas/ListVersion" }
+        active_version: { $ref: "#/components/schemas/ListVersion" }
+        status: { $ref: "#/components/schemas/ListStatus" }
+        build_status: { $ref: "#/components/schemas/ListBuildState" }
         added: { type: integer }
         merged: { type: integer }
         removed: { type: integer }
@@ -1470,23 +1797,25 @@ components:
 
     ExclusionsResponse:
       type: object
-      required: [items, next_cursor]
+      required: [list_version, items, next_cursor]
       properties:
+        list_version: { $ref: "#/components/schemas/ListVersion" }
         items:
           type: array
           items: { $ref: "#/components/schemas/Exclusion" }
         next_cursor: { type: string, nullable: true }
 
     ChainHealth:
+      description: anchor 为数据流起点；lower_bound/history_position 为回补下界与进度；forward_position 为前向连续完成位置。
       type: object
       required: [chain, head, anchor, lower_bound, forward_position, history_position, backlog_blocks, lag_seconds, gaps_open, gaps_by_reason, last_error, budget_paused]
       properties:
         chain: { $ref: "#/components/schemas/Chain" }
-        head: { type: integer, nullable: true, description: 最近观察到的链头 }
-        anchor: { type: integer, description: 启动锚点 A（D74） }
-        lower_bound: { type: integer, description: 历史下界 L（D73） }
-        forward_position: { type: integer, nullable: true, description: 前向连续完成位置 }
-        history_position: { type: integer, nullable: true, description: 历史回溯连续完成位置 }
+        head: { type: integer, nullable: true}
+        anchor: { type: integer}
+        lower_bound: { type: integer}
+        forward_position: { type: integer, nullable: true}
+        history_position: { type: integer, nullable: true}
         backlog_blocks: { type: integer, nullable: true }
         lag_seconds: { type: integer, nullable: true }
         gaps_open: { type: integer }
@@ -1506,6 +1835,7 @@ components:
         budget_paused: { type: boolean }
 
     ParserHealth:
+      description: 按协议解码模块统计进度、隔离与未识别指令数。
       type: object
       required: [chain, module, version, position, lag_blocks, quarantined, failures, unknown_discriminators]
       properties:
@@ -1525,7 +1855,7 @@ components:
         id: { type: string }
         chain: { $ref: "#/components/schemas/Chain" }
         module: { type: string }
-        position: { type: string, description: 链上位置 }
+        position: { type: string}
         error: { type: string }
         attempts: { type: integer }
         status:
@@ -1534,18 +1864,17 @@ components:
         last_attempt_at: { $ref: "#/components/schemas/Timestamp" }
 
     Budget:
+      description: 当月数据源用量估算；到上限时暂停回补与新增付费请求。
       type: object
       required: [month, spent_usd, limit_usd, state]
       properties:
         month: { type: string, example: "2026-10" }
         spent_usd:
           allOf: [{ $ref: "#/components/schemas/Decimal" }]
-          description: 按请求数估算（D104）
         limit_usd: { $ref: "#/components/schemas/Decimal" }
         state:
           type: string
           enum: [normal, warn, history_paused, paused]
-          description: 70% 提醒、80% 停历史回溯与补证、100% 停前向（D104）
 
     AdminHealth:
       type: object

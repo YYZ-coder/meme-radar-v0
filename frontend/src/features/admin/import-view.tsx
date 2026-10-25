@@ -1,14 +1,16 @@
 "use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { Icon } from "@/components/icon";
 import { ErrorState } from "@/components/ui/state";
-import { importReportSchema, listVersionChangeSchema } from "@/lib/api/schemas";
+import { importReportSchema } from "@/lib/api/schemas";
 import type { ImportReport } from "@/lib/api/types";
 import { shortAddress } from "@/lib/format/address";
 import { formatClock } from "@/lib/format/time";
 import { useAdmin } from "./admin-context";
+import { ListBuildNotice } from "./list-build-notice";
+import { applyImportRecover, importReport as storedReport, pendingBuild } from "./list-build-state";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -16,9 +18,17 @@ export function ImportView() {
   const t = useTranslations("admin");
   const { call } = useAdmin();
   const client = useQueryClient();
+  const storedReportId = storedReport.useValue();
+  const recovered = useQuery({
+    queryKey: ["admin", "import-report", storedReportId],
+    queryFn: ({ signal }) =>
+      call(`/admin/smart-money/imports/${storedReportId}`, importReportSchema, { signal }),
+    enabled: storedReportId !== null,
+  });
   const [file, setFile] = useState<File | null>(null);
   const [localError, setLocalError] = useState("");
-  const [report, setReport] = useState<ImportReport | null>(null);
+  const [localReport, setReport] = useState<ImportReport | null>(null);
+  const report = localReport ?? recovered.data ?? null;
 
   const upload = useMutation({
     mutationFn: (f: File) => {
@@ -26,14 +36,27 @@ export function ImportView() {
       form.set("file", f);
       return call("/admin/smart-money/imports", importReportSchema, { method: "POST", body: form });
     },
-    onSuccess: (r) => setReport(r),
+    onSuccess: (r) => {
+      storedReport.set(r.id);
+      setReport(r);
+    },
   });
   const apply = useMutation({
-    mutationFn: (id: string) =>
-      call(`/admin/smart-money/imports/${id}/apply`, listVersionChangeSchema, { method: "POST" }),
-    onSuccess: () => {
-      void client.invalidateQueries({ queryKey: ["admin"] });
-      setReport((r) => (r ? { ...r, applied: true } : r));
+    mutationFn: (id: string) => applyImportRecover(call, id),
+    onSuccess: (result, id) => {
+      pendingBuild.set(result.list_version);
+      const applied = (r: ImportReport) => ({
+        ...r,
+        applied: true,
+        applied_list_version: result.list_version,
+      });
+      setReport((r) => {
+        const current = r ?? recovered.data;
+        return current?.id === id ? applied(current) : r;
+      });
+      client.setQueryData<ImportReport>(["admin", "import-report", id], (r) =>
+        r ? applied(r) : r
+      );
     },
   });
 
@@ -46,6 +69,7 @@ export function ImportView() {
     }
     setLocalError("");
     setReport(null);
+    storedReport.set(null);
     apply.reset();
     upload.mutate(file);
   }
@@ -53,6 +77,7 @@ export function ImportView() {
   const importable = report ? report.totals.valid + report.totals.existing : 0;
   return (
     <div className="admin-import">
+      <ListBuildNotice version={report?.applied_list_version} />
       <form className="import-form" onSubmit={submit}>
         <h3 className="admin-heading">{t("importTitle")}</h3>
         <p className="muted small-note">{t("importHint")}</p>
@@ -77,8 +102,13 @@ export function ImportView() {
           </p>
         ) : null}
       </form>
-      {upload.isError ? (
-        <ErrorState title={t("error", { message: upload.error.message })} error={upload.error} />
+      {upload.isError ? <ErrorState title={t("requestFailed")} error={upload.error} /> : null}
+      {recovered.isError ? (
+        <ErrorState
+          title={t("requestFailed")}
+          error={recovered.error}
+          onRetry={() => void recovered.refetch()}
+        />
       ) : null}
       {report ? (
         <section className="import-report" aria-label={t("report", { file: report.file_name })}>
@@ -136,18 +166,8 @@ export function ImportView() {
             </table>
           </div>
           <div className="admin-toolbar">
-            {apply.isSuccess ? (
-              <p className="positive" role="status">
-                {t("applied", {
-                  added: apply.data.added,
-                  merged: apply.data.merged,
-                  version: apply.data.list_version,
-                })}
-              </p>
-            ) : apply.isError ? (
-              <p className="negative" role="alert">
-                {t("error", { message: apply.error.message })}
-              </p>
+            {apply.isError ? (
+              <ErrorState title={t("requestFailed")} error={apply.error} />
             ) : (
               <span />
             )}

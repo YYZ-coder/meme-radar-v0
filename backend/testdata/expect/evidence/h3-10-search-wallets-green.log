@@ -1,0 +1,14 @@
+# h3-10-search-wallets green base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 66b08993418edb0544c721bd4b26f3a9c809d4d701512d0c8b4a484a6115293f backend/internal/compute/lists_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 21ac496920f20b98d52c3770397f2e6528da4376d1e78e94f3d8a081f94eccbd backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 737bd6e80300a2e6e6304e13328c63b153e4bc89ce83787327119137623d64cf backend/internal/pgapi/placeholders_test.go
+# SHA256 e0e0ac9e0c890309f2222dc1181a5baefb94d241662b169b852910c3c8cd0829 backend/internal/store/lists_test.go
+# Tracked test diff SHA256 d5cf20a17eee9c7a94d8cf2c9838152b1a804f5fb2f0446c08d23053058be3c0
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestPgSearchFindsListedWallets|TestPgSearch|TestPgEveryRouteMatchesContract|TestPgPlaceholdersMatchContract)$ ./internal/pgapi
+ok  	github.com/meme-radar/radar/internal/pgapi	1.999s
+
+exit=0

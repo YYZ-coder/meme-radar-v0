@@ -71,7 +71,8 @@ export async function apiFetch<S extends z.ZodType>(
       ...rest,
       headers: finalHeaders,
     });
-  } catch {
+  } catch (cause) {
+    if (init.signal?.aborted) throw cause;
     const err = new ApiError(0, "network", "network error", null, null, sentTrace);
     console.error("api network error", { path, trace_id: sentTrace });
     throw err;

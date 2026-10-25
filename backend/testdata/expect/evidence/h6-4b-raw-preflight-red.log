@@ -1,0 +1,28 @@
+# H6 4b-raw-preflight red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: H6-4b real PG: hand-written escaped NUL/surrogate and normal JSON; two ok+NULL raw+warning, clean display fields, normal row intact, counter+2. JSON string escape cases independently distinguish literal backslash/valid pair.
+# command: go test -count=1 -run ^(TestMetadataOmitsRawThatJSONBRejects|TestParseMetadataRawPreservation)$ ./internal/metadata
+# sha256 internal/metadata/raw_test.go: d63a0bf63866fc7ab9a09e1de755955adbce4839846de0fbcad9963ef9e2468f
+--- FAIL: TestMetadataOmitsRawThatJSONBRejects (0.23s)
+    raw_test.go:33: one unrepresentable raw must not abort batch: store: save metadata: ERROR: unsupported Unicode escape sequence (SQLSTATE 22P05)
+    raw_test.go:37: row 0 missing: no rows in result set
+    raw_test.go:37: row 1 missing: no rows in result set
+    raw_test.go:37: row 2 missing: no rows in result set
+    raw_test.go:44: raw_omitted delta=0; want 2 (one per omitted row)
+--- FAIL: TestParseMetadataRawPreservation (0.00s)
+    --- FAIL: TestParseMetadataRawPreservation/escaped_nul (0.00s)
+        raw_test.go:58: raw="{\"unknown\":\"\\u0000\"}"; keep want false
+    --- FAIL: TestParseMetadataRawPreservation/nul_key (0.00s)
+        raw_test.go:58: raw="{\"\\u0000\":1}"; keep want false
+    --- FAIL: TestParseMetadataRawPreservation/high_surrogate (0.00s)
+        raw_test.go:58: raw="{\"unknown\":\"\\ud800\"}"; keep want false
+    --- FAIL: TestParseMetadataRawPreservation/low_surrogate (0.00s)
+        raw_test.go:58: raw="{\"unknown\":\"\\udc00\"}"; keep want false
+    --- FAIL: TestParseMetadataRawPreservation/bad_pair (0.00s)
+        raw_test.go:58: raw="{\"unknown\":\"\\ud800\\u0041\"}"; keep want false
+    --- FAIL: TestParseMetadataRawPreservation/escaped_quotes (0.00s)
+        raw_test.go:58: raw="{\"unknown\":\"\\\"\\\\\\ud800\"}"; keep want false
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.713s
+FAIL
+
+# exit=1

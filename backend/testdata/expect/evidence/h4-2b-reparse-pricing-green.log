@@ -1,0 +1,17 @@
+# h4-2b-reparse-pricing green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+87bd6e77eaf8a1496f82b2d9d8b1061ca3c729ac4d991cd57bfc2f3877239a81  internal/compute/smtrades_test.go
+# tracked diff sha256=db3f46d490b444796c9069444592e3554e58630b49ada79a777599f25f394c2f
+# command: go test -count=1 -v -run TestSmTrades|TestFillValuesMarksSmTradesDirty|TestValuesStep ./internal/compute
+=== RUN   TestSmTradesCopyMemberTrades
+--- PASS: TestSmTradesCopyMemberTrades (0.20s)
+=== RUN   TestFillValuesMarksSmTradesDirty
+--- PASS: TestFillValuesMarksSmTradesDirty (0.12s)
+=== RUN   TestSmTradesFollowReparseAndPricing
+--- PASS: TestSmTradesFollowReparseAndPricing (0.15s)
+=== RUN   TestValuesStepPricesTradesAndLiquidity
+--- PASS: TestValuesStepPricesTradesAndLiquidity (0.11s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.052s
+
+# exit=0

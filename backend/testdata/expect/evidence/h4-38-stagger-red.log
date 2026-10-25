@@ -1,0 +1,14 @@
+# h4-38-stagger red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+2c2464dcd5e365098373fdadf4fde2a09d040c057e9d9982b6f2088a431166b1  internal/compute/inflow_loop_test.go
+0e2530694325d22966ae90b6f176147dac7b552d98f27135b838fc9052131fcf  internal/compute/inflow.go
+# tracked diff sha256=670a5ac50e957f5f2d8ef8b202c7ac359bb652badf8a91600c6b41f1b94e927a
+# command: go test -count=1 -v -run ^TestInflowLoopUsesIndependentWindowSchedulesAndStops$ ./internal/compute
+=== RUN   TestInflowLoopUsesIndependentWindowSchedulesAndStops
+    inflow_loop_test.go:80: publication cutoffs=map[base/1h:[0s 15s] base/1m:[0s 5s 10s 15s] base/24h:[0s 15s] base/4h:[0s 15s] base/5m:[0s 5s 10s 15s] bsc/1h:[0s 15s] bsc/1m:[0s 5s 10s 15s] bsc/24h:[0s 15s] bsc/4h:[0s 15s] bsc/5m:[0s 5s 10s 15s]]; want staggered D153 schedules map[base/1h:[2.5s 17.5s] base/1m:[500ms 5.5s 10.5s 15.5s] base/24h:[4.5s 19.5s] base/4h:[3.5s 18.5s] base/5m:[1.5s 6.5s 11.5s 16.5s] bsc/1h:[2s 17s] bsc/1m:[0s 5s 10s 15s] bsc/24h:[4s 19s] bsc/4h:[3s 18s] bsc/5m:[1s 6s 11s 16s]]
+--- FAIL: TestInflowLoopUsesIndependentWindowSchedulesAndStops (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.546s
+FAIL
+
+# exit=1

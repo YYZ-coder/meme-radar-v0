@@ -1,0 +1,3 @@
+# read-only unstaged/untracked worktree secret scan; matches same secret categories as scripts/check-secrets.sh, no staging
+scanned_files=131
+PASS no configured secret or private-key/AWS-key pattern found

@@ -1,0 +1,11 @@
+# h5-8-h4-volumes red base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumes24h$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volumes_test.go b5d8a2226c06c6a2403901b962cbda67817983a6726e3de4bd8c1497635d93b5
+--- FAIL: TestPgTokenSmartMoneyVolumes24h (0.35s)
+    smart_money_volumes_test.go:76: buy_volume_usd=<nil>; want 14.345678901234567891
+    smart_money_volumes_test.go:79: sell_volume_usd=<nil>; want 4.25
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.836s
+FAIL
+
+# exit=1

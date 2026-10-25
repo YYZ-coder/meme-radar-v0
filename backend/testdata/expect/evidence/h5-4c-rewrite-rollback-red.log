@@ -1,0 +1,13 @@
+# h5-4c-rewrite-rollback red base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestRewriteAndRollbackClearBalances -v ./internal/store
+# sha256 internal/store/balances_rollback_test.go a97b8862e98e2fa40c555d579f71c02efa88991e4a6ab0ab371b7aead6c1a5a1
+=== RUN   TestRewriteAndRollbackClearBalances
+    balances_rollback_test.go:36: rewrite retained balance_version=1;want NULL
+    balances_rollback_test.go:36: rewrite retained balance_parsed_at=2026-10-24 11:32:37.012212+00;want NULL
+    balances_rollback_test.go:44: reparsed block eligible=[],<nil>;want one
+--- FAIL: TestRewriteAndRollbackClearBalances (0.16s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	0.598s
+FAIL
+
+# exit=1

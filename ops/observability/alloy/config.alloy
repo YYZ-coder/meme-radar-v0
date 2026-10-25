@@ -1,0 +1,40 @@
+// Ships the JSON logs of this project's containers (meme-radar-app-*) to Loki
+// with labels service, level, chain and role.
+discovery.docker "radar" {
+  host = "unix:///var/run/docker.sock"
+  filter {
+    name   = "label"
+    values = ["com.docker.compose.project=meme-radar-app"]
+  }
+}
+
+discovery.relabel "radar" {
+  targets = discovery.docker.radar.targets
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+}
+
+loki.source.docker "radar" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.relabel.radar.output
+  forward_to    = [loki.process.radar.receiver]
+  relabel_rules = discovery.relabel.radar.rules
+}
+
+loki.process "radar" {
+  stage.json {
+    expressions = { level = "level", chain = "chain", role = "role" }
+  }
+  stage.labels {
+    values = { level = "", chain = "", role = "" }
+  }
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

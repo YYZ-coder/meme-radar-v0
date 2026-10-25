@@ -1,0 +1,59 @@
+# h2-10-placeholders red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgPlaceholdersMatchContract ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 1d721db2a295e8dd058e98c0e2ec68edaad97bcb9db9d1a690b9dd811ee5d464 internal/pgapi/placeholders_test.go
+=== RUN   TestPgPlaceholdersMatchContract
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/overview
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow/facets
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow
+    placeholders_test.go:85: GET /api/v1/smart-money/inflow?window=5m=503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"21933fd15a3e960cd78ea4c47f105c04"}}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/tokens/batch
+    placeholders_test.go:85: POST /api/v1/tokens/batch=503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"2c5e0033c9b0a010d12c81f71bdad135"}}
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/holders
+    placeholders_test.go:85: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/holders=503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"f806a6ecc6b84c4aa0da2c88fabde6d5"}}
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/smart-money
+    placeholders_test.go:85: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/smart-money=503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"b8eaad327c742c1881c265fa0eebf8e7"}}
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/health
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/parse-failures/{id}/retry
+    placeholders_test.go:85: POST /api/v1/admin/parse-failures/{id}/retry → 503 violates contract: status 503 not declared
+        body: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"2278c58231a040d3330c130bde04298e"}}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/imports/{id}
+    placeholders_test.go:85: GET /api/v1/admin/smart-money/imports/{id} → 503 violates contract: status 503 not declared
+        body: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"40439fde8dede3469b380f2bf38db480"}}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports/{id}/apply
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/list-builds/{version}
+    placeholders_test.go:85: GET /api/v1/admin/smart-money/list-builds/{version} → 503 violates contract: status 503 not declared
+        body: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"041f697e7ccae2add47224823812ca07"}}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/list-builds/{version}/retry
+    placeholders_test.go:85: POST /api/v1/admin/smart-money/list-builds/{version}/retry → 503 violates contract: status 503 not declared
+        body: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"64ad6483637c44d587ca76f0aba894a6"}}
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/members
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/exclusions/{chain}/{address}
+=== RUN   TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/members/{chain}/{address}
+--- FAIL: TestPgPlaceholdersMatchContract (0.26s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/overview (0.01s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow/facets (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/POST_/api/v1/tokens/batch (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/holders (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/smart-money (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/health (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/parse-failures/{id}/retry (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/imports/{id} (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports/{id}/apply (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/list-builds/{version} (0.00s)
+    --- FAIL: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/list-builds/{version}/retry (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/members (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/exclusions/{chain}/{address} (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/members/{chain}/{address} (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.673s
+FAIL
+# exit_status=1

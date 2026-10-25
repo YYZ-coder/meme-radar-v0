@@ -1,0 +1,10 @@
+# h5-8-h4-coverage red base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumesNeedCoverage$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_coverage_test.go 2f335825cc3d2e6829d75ae8a1e05149c96780f8e43786df7bda2062af0e3994
+--- FAIL: TestPgTokenSmartMoneyVolumesNeedCoverage (0.68s)
+    smart_money_volume_coverage_test.go:28: 24h with unparsed interior block must be NULL, got {Wallet:{Address:0x0000000000000000000000000000000000000011 Labels:[smart_money] DisplayName:0x7e7503431c60} Balance:0x7e7503431c70 SharePct:<nil> BuyVolumeUSD:0x7e7503431c80 SellVolumeUSD:0x7e7503431c90 LastTradeAt:0x7e7503431ca0}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.341s
+FAIL
+
+# exit=1

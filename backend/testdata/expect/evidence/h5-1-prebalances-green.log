@@ -1,0 +1,9 @@
+# h5-1-prebalances green base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestParseTxReadsPreTokenBalances -v ./internal/solana
+# sha256 internal/solana/prebalances_test.go 124dad484dc00d0612304fb208e699271a2580daa7a5f48b3ee0e5865475b437
+=== RUN   TestParseTxReadsPreTokenBalances
+--- PASS: TestParseTxReadsPreTokenBalances (0.02s)
+PASS
+ok  	github.com/meme-radar/radar/internal/solana	0.387s
+
+# exit=0

@@ -42,6 +42,7 @@ export type TokenSmartMoneyResponse = S["TokenSmartMoneyResponse"];
 export type ImportReport = S["ImportReport"];
 export type ImportRow = S["ImportRow"];
 export type ListVersionChange = S["ListVersionChange"];
+export type ListBuildStatus = S["ListBuildStatus"];
 export type MembersResponse = S["MembersResponse"];
 export type Member = S["Member"];
 export type ExclusionRequest = S["ExclusionRequest"];

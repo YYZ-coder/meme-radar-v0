@@ -1,0 +1,29 @@
+# H6 1-uri red; base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary / independent expectation: NormalizeURI; literals from H6 §2-5
+# command: go test -count=1 -run ^TestNormalizeURI$ ./internal/metadata
+# sha256 internal/metadata/uri_test.go: dac6b404cb8f7265e466965c6211d7aca0440ed7aae0e402868897d8929f1478
+--- FAIL: TestNormalizeURI (0.00s)
+    --- FAIL: TestNormalizeURI/ipfs://QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr (0.00s)
+        uri_test.go:30: NormalizeURI = "ipfs://QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr", <nil>; want "https://ipfs.io/ipfs/QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr"
+    --- FAIL: TestNormalizeURI/ipfs://ipfs/QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr/metadata.json (0.00s)
+        uri_test.go:30: NormalizeURI = "ipfs://ipfs/QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr/metadata.json", <nil>; want "https://ipfs.io/ipfs/QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr/metadata.json"
+    --- FAIL: TestNormalizeURI/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm (0.00s)
+        uri_test.go:30: NormalizeURI = "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm", <nil>; want "https://ipfs.io/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    --- FAIL: TestNormalizeURI/http://localhost:3000/a (0.00s)
+        uri_test.go:25: accepted unsafe URI "http://localhost:3000/a" as "http://localhost:3000/a"
+    --- FAIL: TestNormalizeURI/http://LOCALHOST./a (0.00s)
+        uri_test.go:25: accepted unsafe URI "http://LOCALHOST./a" as "http://LOCALHOST./a"
+    --- FAIL: TestNormalizeURI/file:///etc/passwd (0.00s)
+        uri_test.go:25: accepted unsafe URI "file:///etc/passwd" as "file:///etc/passwd"
+    --- FAIL: TestNormalizeURI/javascript:alert(1) (0.00s)
+        uri_test.go:25: accepted unsafe URI "javascript:alert(1)" as "javascript:alert(1)"
+    --- FAIL: TestNormalizeURI/https:///nohost (0.00s)
+        uri_test.go:25: accepted unsafe URI "https:///nohost" as "https:///nohost"
+    --- FAIL: TestNormalizeURI/https://user:pass@example.org/a (0.00s)
+        uri_test.go:25: accepted unsafe URI "https://user:pass@example.org/a" as "https://user:pass@example.org/a"
+    uri_test.go:36: custom gateway: "ipfs://QmezC5igZgKXgZ4nDRd2c1jsJ4DSTz3egw9WX1PyFbomVr" <nil>
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.776s
+FAIL
+
+# exit=1

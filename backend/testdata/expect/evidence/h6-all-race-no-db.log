@@ -1,0 +1,29 @@
+ok  	github.com/meme-radar/radar/cmd/radar	1.383s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	1.250s
+ok  	github.com/meme-radar/radar/internal/compute	1.168s
+ok  	github.com/meme-radar/radar/internal/config	1.244s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	1.191s
+ok  	github.com/meme-radar/radar/internal/evm	1.167s
+ok  	github.com/meme-radar/radar/internal/httpapi	2.052s
+ok  	github.com/meme-radar/radar/internal/ingest	1.147s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	1.817s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.130s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	1.488s
+ok  	github.com/meme-radar/radar/internal/metadata	1.238s
+ok  	github.com/meme-radar/radar/internal/metrics	1.145s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.164s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.472s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.169s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.221s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.083s
+ok  	github.com/meme-radar/radar/internal/parser	1.136s
+ok  	github.com/meme-radar/radar/internal/prices	1.123s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.086s
+ok  	github.com/meme-radar/radar/internal/store	1.099s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]

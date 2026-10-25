@@ -1,0 +1,18 @@
+# h4-7-rows red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+e075def8c25aa96610875c3d44c611b19686d808fbfd026cd6c0b35129a80af4  internal/compute/inflow_rows_test.go
+# tracked diff sha256=d5ecad248c3602e16aa6b1b45fe45b187c34673ce15abd5ae891d742dd1b95d4
+# command: go test -count=1 -v -run TestInflowRowsFromFacts ./internal/compute
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+    inflow_rows_test.go:79: published rows=0, want only the 1 traded token
+=== RUN   TestInflowRowsFromFacts/partial
+    inflow_rows_test.go:79: published rows=0, want only the 1 traded token
+--- FAIL: TestInflowRowsFromFacts (0.75s)
+    --- FAIL: TestInflowRowsFromFacts/complete (0.28s)
+    --- FAIL: TestInflowRowsFromFacts/partial (0.47s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.379s
+FAIL
+
+# exit=1

@@ -1,0 +1,11 @@
+# h5-6-holder-state red base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -run TestHolderCoverageState -v ./internal/compute
+# sha256 internal/compute/holder_state_test.go 98be53a41806798bedd61351e9161862555dada144e3ec737b211289b7c9ae28
+=== RUN   TestHolderCoverageState
+    holder_state_test.go:44: SELECT holders||'|'||coverage||'|'||coalesce(to_char(since AT TIME ZONE 'UTC','HH24:MI:SS'),'NULL') FROM token_holder_state WHERE chain='bsc' AND token_address=$1: no rows in result set
+--- FAIL: TestHolderCoverageState (0.20s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.654s
+FAIL
+
+# exit=1

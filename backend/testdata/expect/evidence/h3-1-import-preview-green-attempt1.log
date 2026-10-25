@@ -1,0 +1,12 @@
+# H3-1 green; command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestPgImportPreview|TestPgEveryRouteMatchesContract|TestPgPlaceholdersMatchContract)$ ./internal/pgapi
+--- FAIL: TestPgPlaceholdersMatchContract (0.23s)
+    --- FAIL: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/imports/{id} (0.00s)
+        placeholders_test.go:85: GET /api/v1/admin/smart-money/imports/im_test=404, want 503: {"error":{"code":"not_found","message":"list resource not found","field":null,"trace_id":"041b683cfb704094faed3055731ba600"}}
+--- FAIL: TestPgEveryRouteMatchesContract (0.50s)
+    --- FAIL: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/imports/im_test (0.00s)
+        routes_test.go:126: GET /api/v1/admin/smart-money/imports/im_test=404, want 503: {"error":{"code":"not_found","message":"list resource not found","field":null,"trace_id":"1b3c6f169bfc191493e546eeb6c52fcb"}}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.486s
+FAIL
+
+exit=1

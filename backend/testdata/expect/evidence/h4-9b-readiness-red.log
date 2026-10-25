@@ -1,0 +1,13 @@
+# h4-9b-readiness red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+c99b9a7efaad31f619676690237094fe6111778d354379537a98b8f89bdc9016  internal/compute/inflow_readiness_test.go
+# tracked diff sha256=fe86938a0e26e21983681aa3af73eee6ae75c62b2511f3f8d23cd0e9c91ef2f6
+# command: go test -count=1 -v -run TestProjectionWaitsForStatsAndSmTrades ./internal/compute
+=== RUN   TestProjectionWaitsForStatsAndSmTrades
+    inflow_readiness_test.go:27: initial stats lag published a head: {Version:1 AsOf:2026-10-23 19:00:00 +0000 UTC Rows:0 Rebuilt:true}; want no head
+--- FAIL: TestProjectionWaitsForStatsAndSmTrades (0.21s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.011s
+FAIL
+
+# exit=1

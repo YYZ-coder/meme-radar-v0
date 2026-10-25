@@ -1,0 +1,12 @@
+# H6 qa-updated-targeted regression; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Full affected packages after new slices; old scheduler now injects logical time matching its existing five-attempt schedule (assertions unchanged).
+# command: go test -count=1 ./internal/metadata ./internal/config ./cmd/radar
+# sha256 internal/metadata/raw_test.go: 2c7a0652a2f14b02d387674a9306681122baa00404be8927792408fb77d4665b
+# sha256 internal/metadata/persistence_test.go: e1da0df11a206eb789ab476b7814a97d1238473376a73f7ce72b3247d9206a53
+# sha256 internal/metadata/cooldown_test.go: f740755715d1f1b5210a7822543e0a6e906428e0eea3b491296d9911508e1474
+# sha256 internal/metadata/transport_test.go: 9d84600413d1a6fe186b646ec6f60dd133dd8c317ff864e3dcd9e115c7eff3a6
+ok  	github.com/meme-radar/radar/internal/metadata	2.000s
+ok  	github.com/meme-radar/radar/internal/config	0.421s
+ok  	github.com/meme-radar/radar/cmd/radar	0.788s
+
+# exit=0

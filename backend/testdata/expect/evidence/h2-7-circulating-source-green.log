@@ -1,0 +1,13 @@
+# h2-7-circulating-source green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgActivities ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 ccf6e33223ed9dfe3bc66227835658342c2ea6c81ea9d28d8ea2806181fdb9eb internal/pgapi/activities_supply_test.go
+# test_sha256 b2b562bc07dddbf1e496ba60c81c67abcede7f6069d3443e3e7779d79b1156cd internal/pgapi/activities_test.go
+=== RUN   TestPgActivitiesUsesProjectedSupply
+--- PASS: TestPgActivitiesUsesProjectedSupply (0.26s)
+=== RUN   TestPgActivities
+--- PASS: TestPgActivities (0.20s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.905s
+# exit_status=0

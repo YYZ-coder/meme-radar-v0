@@ -1,0 +1,11 @@
+# h4-9c-copy-rollback-regression green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+7e21c4ef9f3dd499b1050f155ae3b3715f3017457f2b4090bcd0dec23a2beee0  internal/compute/inflow_atomic_test.go
+# tracked diff sha256=61745134cd3e9ad393e46d9f30d7b8202cdbc0f14787762122878bba45153d6e
+# command: go test -count=1 -v -run TestInflowCopyFailureRollsBackWholeVersion ./internal/compute
+=== RUN   TestInflowCopyFailureRollsBackWholeVersion
+--- PASS: TestInflowCopyFailureRollsBackWholeVersion (0.29s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.747s
+
+# exit=0

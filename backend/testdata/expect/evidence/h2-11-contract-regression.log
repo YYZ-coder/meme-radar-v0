@@ -1,0 +1,158 @@
+# h2-11-contract regression base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgEveryRouteMatchesContract ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 08f27bf8c6738b862c00f25a2d90efd8f1e247cff916497188260a85e27e55b3 internal/pgapi/routes_test.go
+=== RUN   TestPgEveryRouteMatchesContract
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/overview?window=5m
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/inflow/facets?window=5m
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/inflow?window=5m
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/tokens/batch
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/holders
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/smart-money
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/admin/health
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/admin/parse-failures/1/retry
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/imports
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/imports/im_test
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/imports/im_test/apply
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/list-builds/1
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/list-builds/1/retry
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/members
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061
+=== RUN   TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/members/bsc/0x0000000000000000000000000000000000000061
+=== RUN   TestPgEveryRouteMatchesContract/GET_/healthz
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/market/natives
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/search?q=DEMO
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/activities
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/pools
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/liquidity-events
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061?currency=native
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/activities
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/pools
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/liquidity-events
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump?currency=native
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=30s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=30s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=5m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=5m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1h&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1h&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1d&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1d&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/activities
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/pools
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/liquidity-events
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222?currency=native
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=30s&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=30s&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=5m&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=5m&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1h&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1h&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1d&currency=usd&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1d&currency=native&limit=2
+=== RUN   TestPgEveryRouteMatchesContract/second_page_/activities
+=== RUN   TestPgEveryRouteMatchesContract/second_page_/liquidity-events
+--- PASS: TestPgEveryRouteMatchesContract (0.39s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/overview?window=5m (0.01s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/inflow/facets?window=5m (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/smart-money/inflow?window=5m (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/tokens/batch (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/holders (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/smart-money (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/health (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/parse-failures/1/retry (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/imports (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/imports/im_test (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/imports/im_test/apply (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/list-builds/1 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/list-builds/1/retry (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/members (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/exclusions/bsc/0x0000000000000000000000000000000000000061 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/DELETE_/api/v1/admin/smart-money/members/bsc/0x0000000000000000000000000000000000000061 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/healthz (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/market/natives (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/search?q=DEMO (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061 (0.01s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/activities (0.01s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/pools (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/liquidity-events (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061?currency=native (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=30s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=5m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1h&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/bsc/0x0000000000000000000000000000000000000061/candles?interval=1d&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/activities (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/pools (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/liquidity-events (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump?currency=native (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=30s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=30s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=5m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=5m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1h&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1h&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1d&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1d&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/activities (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/pools (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/liquidity-events (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222?currency=native (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=30s&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=30s&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=5m&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=5m&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1h&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1h&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1d&currency=usd&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/GET_/api/v1/tokens/base/0x7d4bfd446d4b81d5ede62529f9c8db6fdd81e222/candles?interval=1d&currency=native&limit=2 (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/second_page_/activities (0.00s)
+    --- PASS: TestPgEveryRouteMatchesContract/second_page_/liquidity-events (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.805s
+# exit_status=0

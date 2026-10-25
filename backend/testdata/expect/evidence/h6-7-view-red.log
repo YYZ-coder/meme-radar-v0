@@ -1,0 +1,11 @@
+# H6 7-view red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: token_info frozen column order and real-PG values; literal 0010 column order, creation-event supply precedence unchanged, OpenAPI shared display schemas
+# command: go test -count=1 -run ^TestTokenInfoExposesMetadata$ ./internal/metadata
+# sha256 internal/metadata/view_test.go: 586c7bf6c345ca4347ba08e8c6b241c0ec770be7a2e23e66e155e01de894132c
+--- FAIL: TestTokenInfoExposesMetadata (0.14s)
+    view_test.go:27: token_info columns=[chain address symbol name decimals total_supply creator launch_platform launch_at created_block metadata_uri metadata_status first_seen_at updated_at supply supply_decimals supply_source]; want [chain address symbol name decimals total_supply creator launch_platform launch_at created_block metadata_uri metadata_status first_seen_at updated_at supply supply_decimals supply_source image_url socials]
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.763s
+FAIL
+
+# exit=1

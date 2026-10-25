@@ -1,0 +1,16 @@
+# h5-8-h4-pg-regression first-attempt base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volumes_test.go b5d8a2226c06c6a2403901b962cbda67817983a6726e3de4bd8c1497635d93b5
+# sha256 internal/pgapi/inflow_holdings_test.go b706977032e034b55be7ffc36a5894be0d5bcb703425c66a6355e692c853c8b1
+2026/10/25 15:10:18 INFO parse retry blocks reset role=parse chain=bsc blocks=[7]
+2026/10/25 15:10:18 INFO parse retry blocks reset role=parse chain=bsc blocks=[7]
+--- FAIL: TestPgTokenSmartMoneyLastTradeAt (0.19s)
+    smart_money_last_trade_test.go:89: H4 volumes must remain NULL: {Wallet:{Address:0x0000000000000000000000000000000000000011 Labels:[smart_money] DisplayName:0xbd08e503950} Balance:0xbd08e503960 SharePct:<nil> BuyVolumeUSD:<nil> SellVolumeUSD:0xbd08e503970 LastTradeAt:0xbd08e503980}
+    smart_money_last_trade_test.go:89: H4 volumes must remain NULL: {Wallet:{Address:0x0000000000000000000000000000000000000013 Labels:[smart_money] DisplayName:0xbd08e5039a0} Balance:0xbd08e5039b0 SharePct:<nil> BuyVolumeUSD:0xbd08e5039c0 SellVolumeUSD:0xbd08e5039d0 LastTradeAt:0xbd08e5039e0}
+    smart_money_last_trade_test.go:89: H4 volumes must remain NULL: {Wallet:{Address:0x0000000000000000000000000000000000000014 Labels:[smart_money] DisplayName:0xbd08e503a00} Balance:0xbd08e503a10 SharePct:<nil> BuyVolumeUSD:0xbd08e503a20 SellVolumeUSD:0xbd08e503a30 LastTradeAt:<nil>}
+    smart_money_last_trade_test.go:89: H4 volumes must remain NULL: {Wallet:{Address:0x0000000000000000000000000000000000000015 Labels:[smart_money] DisplayName:0xbd08e503a50} Balance:0xbd08e503a60 SharePct:<nil> BuyVolumeUSD:0xbd08e503a70 SellVolumeUSD:0xbd08e503a80 LastTradeAt:<nil>}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	13.286s
+FAIL
+
+# exit=1

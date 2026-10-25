@@ -1,0 +1,16 @@
+# h5-4b-batch-read green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancePass|TestBalanceRun -v ./internal/parser
+# sha256 internal/parser/balances_test.go b003c4624eb8035a5e4f60ae6414988faa6ec36f9e6175a0f278a164eeca172b
+# sha256 internal/parser/balances_refresh_test.go d37a8cb2d7c2422411c3c412c48bb27d7c4f6c793b3650013a965aec495ef024
+=== RUN   TestBalancePassYieldsAboveMainBacklogThreshold
+--- PASS: TestBalancePassYieldsAboveMainBacklogThreshold (0.32s)
+=== RUN   TestBalancePassRefreshesTrackedTokensEveryBatch
+--- PASS: TestBalancePassRefreshesTrackedTokensEveryBatch (0.18s)
+=== RUN   TestBalanceRunResumesAndReportsProgress
+--- PASS: TestBalanceRunResumesAndReportsProgress (0.16s)
+=== RUN   TestBalancePassParsesOnlyBalances
+--- PASS: TestBalancePassParsesOnlyBalances (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	1.268s
+
+# exit=0

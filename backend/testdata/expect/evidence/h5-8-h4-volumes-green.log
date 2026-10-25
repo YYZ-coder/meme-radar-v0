@@ -1,0 +1,6 @@
+# h5-8-h4-volumes green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumes24h$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volumes_test.go b5d8a2226c06c6a2403901b962cbda67817983a6726e3de4bd8c1497635d93b5
+ok  	github.com/meme-radar/radar/internal/pgapi	0.851s
+
+# exit=0

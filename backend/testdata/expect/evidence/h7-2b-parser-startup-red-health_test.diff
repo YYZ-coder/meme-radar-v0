@@ -1,0 +1,47 @@
+--- HEAD/internal/parser/health_test.go
++++ worktree/internal/parser/health_test.go
+@@ -0,0 +1,44 @@
++package parser_test
++
++import (
++	"context"
++	"reflect"
++	"testing"
++	"time"
++
++	"github.com/meme-radar/radar/internal/parser"
++)
++
++func TestParserRegistersStatusAtStartup(t *testing.T) {
++	st, c := setup(t)
++	commit(t, st, 7, []byte(`{}`))
++	for _, tc := range []struct {
++		version  int
++		decoders []string
++	}{{8, []string{"pump_fun", "pumpswap"}}, {9, []string{"pump_fun"}}} {
++		ctx, cancel := context.WithCancel(context.Background())
++		before := time.Now().UTC()
++		p := parser.New(parser.Config{Chain: "solana", Store: st, Version: tc.version, Decoders: tc.decoders, Batch: 1, Decode: func(context.Context, []byte) (parser.Decoded, error) { cancel(); return parser.Decoded{}, nil }})
++		done := make(chan error, 1)
++		go func() { done <- p.Run(ctx) }()
++		select {
++		case err := <-done:
++			if err != nil {
++				t.Fatal(err)
++			}
++		case <-time.After(5 * time.Second):
++			cancel()
++			t.Fatal("parser did not stop")
++		}
++		cancel()
++		var version int
++		var decoders []string
++		var started time.Time
++		if err := c.QueryRow(context.Background(), `SELECT version,decoders,started_at FROM parser_status WHERE chain='solana'`).Scan(&version, &decoders, &started); err != nil {
++			t.Fatalf("startup must persist parser status before decoding: %v", err)
++		}
++		if version != tc.version || !reflect.DeepEqual(decoders, tc.decoders) || started.Before(before.Add(-time.Microsecond)) || started.After(time.Now().UTC()) {
++			t.Fatalf("startup status=%d/%v/%s; want version %d and enabled modules %v at this startup", version, decoders, started, tc.version, tc.decoders)
++		}
++	}
++}

@@ -1,0 +1,9 @@
+# h5-7-native-evm green base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersNativeBalanceEVM$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_native_test.go be98ade20bb11cdd4731c381de049cd67bb784da7bce84833a1e50076512141f
+=== RUN   TestPgHoldersNativeBalanceEVM
+--- PASS: TestPgHoldersNativeBalanceEVM (0.31s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.918s
+
+# exit=0

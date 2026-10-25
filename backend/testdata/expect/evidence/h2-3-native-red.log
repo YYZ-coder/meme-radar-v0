@@ -1,0 +1,12 @@
+# h2-3-native red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgNativePrices$ ./internal/pgapi
+# test_sha256 686384a015fce094c3d9ec24b208876d216d7ee2a12fd245d998ef63c92010b6 internal/pgapi/native_test.go
+# test_sha256 e5914df0454343f698cc3642fc2f19a92fafc35c0448833ba6592999b00c0efe internal/pgapi/fixture_test.go
+=== RUN   TestPgNativePrices
+    native_test.go:34: GET /api/v1/market/natives = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"123d2ef7558b0a2164a21f8618445042"}}
+--- FAIL: TestPgNativePrices (0.13s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.800s
+FAIL
+# exit_status=1

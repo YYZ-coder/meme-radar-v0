@@ -1,0 +1,168 @@
+{
+  "scale": 20,
+  "price_cases": [
+    {
+      "name": "historical",
+      "initial_pool": "A",
+      "trades": [
+        {
+          "second": -120,
+          "pool": "A",
+          "quote_atomic": "10000000",
+          "price_native": "0.01"
+        },
+        {
+          "second": 120,
+          "pool": "A",
+          "quote_atomic": "15000000",
+          "price_native": "0.015"
+        },
+        {
+          "second": 240,
+          "pool": "A",
+          "quote_atomic": "20000000",
+          "price_native": "0.02"
+        }
+      ],
+      "current": "2",
+      "bases": [
+        "1",
+        "1.5"
+      ]
+    },
+    {
+      "name": "first_inside",
+      "initial_pool": "A",
+      "trades": [
+        {
+          "second": 120,
+          "pool": "A",
+          "quote_atomic": "15000000",
+          "price_native": "0.015"
+        },
+        {
+          "second": 240,
+          "pool": "A",
+          "quote_atomic": "20000000",
+          "price_native": "0.02"
+        }
+      ],
+      "current": "2",
+      "bases": [
+        "1.5",
+        "1.5"
+      ]
+    },
+    {
+      "name": "historical_pool_switch",
+      "initial_pool": "B",
+      "switch_second": 60,
+      "trades": [
+        {
+          "second": -120,
+          "pool": "B",
+          "quote_atomic": "10000000",
+          "price_native": "0.01"
+        },
+        {
+          "second": -60,
+          "pool": "A",
+          "quote_atomic": "90000000",
+          "price_native": "0.09"
+        },
+        {
+          "second": 120,
+          "pool": "A",
+          "quote_atomic": "15000000",
+          "price_native": "0.015"
+        },
+        {
+          "second": 240,
+          "pool": "A",
+          "quote_atomic": "20000000",
+          "price_native": "0.02"
+        }
+      ],
+      "current": "2",
+      "bases": [
+        "1",
+        "1.5"
+      ]
+    },
+    {
+      "name": "zero_base",
+      "initial_pool": "A",
+      "trades": [
+        {
+          "second": -120,
+          "pool": "A",
+          "quote_atomic": "0",
+          "price_native": "0"
+        },
+        {
+          "second": 120,
+          "pool": "A",
+          "quote_atomic": "15000000",
+          "price_native": "0.015"
+        },
+        {
+          "second": 240,
+          "pool": "A",
+          "quote_atomic": "20000000",
+          "price_native": "0.02"
+        }
+      ],
+      "current": "2",
+      "bases": [
+        "0",
+        "1.5"
+      ],
+      "native_current": "0.02",
+      "native_bases": [
+        "0.015",
+        "0.015"
+      ]
+    },
+    {
+      "name": "no_current_or_base",
+      "initial_pool": "A",
+      "trades": [],
+      "current": null,
+      "bases": [
+        null,
+        null
+      ]
+    }
+  ],
+  "candle_case": {
+    "supply": "1000000000",
+    "usd_ohlc": [
+      [
+        "1",
+        "1.5",
+        "0.8",
+        "0.8"
+      ],
+      [
+        "1.2",
+        "1.2",
+        "1.2",
+        "1.2"
+      ]
+    ],
+    "native_ohlc": [
+      [
+        "0.01",
+        "0.015",
+        "0.008",
+        "0.008"
+      ],
+      [
+        "0.012",
+        "0.012",
+        "0.012",
+        "0.012"
+      ]
+    ]
+  }
+}

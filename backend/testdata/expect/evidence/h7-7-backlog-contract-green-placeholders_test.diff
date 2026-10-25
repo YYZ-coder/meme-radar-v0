@@ -1,0 +1,11 @@
+--- HEAD/internal/pgapi/placeholders_test.go
++++ worktree/internal/pgapi/placeholders_test.go
+@@ -62,8 +62,6 @@
+ 		{"POST", "/api/v1/tokens/batch", "/api/v1/tokens/batch", `{"window":"5m","currency":"usd","tokens":[{"chain":"bsc","address":"0x0000000000000000000000000000000000000061"}]}`, 200},
+ 		{"GET", "/api/v1/tokens/{chain}/{address}/holders", token + "/holders", "", 200},
+ 		{"GET", "/api/v1/tokens/{chain}/{address}/smart-money", token + "/smart-money", "", 200},
+-		{"GET", p + "health", p + "health", "", 503},
+-		{"POST", p + "parse-failures/{id}/retry", p + "parse-failures/1/retry", "", 503},
+ 		{"POST", p + "smart-money/imports", p + "smart-money/imports", "", 503},
+ 		{"GET", p + "smart-money/imports/{id}", p + "smart-money/imports/im_test", "", 503},
+ 		{"POST", p + "smart-money/imports/{id}/apply", p + "smart-money/imports/im_test/apply", "", 503},

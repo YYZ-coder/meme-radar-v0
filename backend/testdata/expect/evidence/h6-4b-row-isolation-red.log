@@ -1,0 +1,21 @@
+# H6 4b-row-isolation red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: User H6-4b overrides batch atomicity: real PG independently returns22P05/22P02, local trigger supplies22025; discard only offending raw, retry row once, report23514 while 5/6 rows persist; counter+3 and NUL-free fields.
+# command: go test -count=1 -run ^(TestMetadataWriteRetriesOnlyTheRejectedRawAndIsolatesRows|TestMetadataBatchIsIsolatedAndPendingWorkIsReplayable)$ ./internal/metadata
+# sha256 internal/metadata/persistence_test.go: 73fb05189a9615ae5eeda101fac8f682aca7f83157932ba40ecf704964cb8dda
+# sha256 internal/metadata/additional_test.go: 114040a4324d31cb035f1874dab8e80ea5694653d20d24517cc114e494d87558
+--- FAIL: TestMetadataBatchIsIsolatedAndPendingWorkIsReplayable (0.17s)
+    additional_test.go:34: usable row must survive sibling failure: rows=0; want 1
+--- FAIL: TestMetadataWriteRetriesOnlyTheRejectedRawAndIsolatesRows (0.09s)
+    persistence_test.go:37: only bad status should remain an error, got store: encode metadata: json: error calling MarshalJSON for type json.RawMessage: invalid character 'n' looking for beginning of object key string
+    persistence_test.go:40: saved rows=0; want five usable rows across rejected raw and invalid-status row
+    persistence_test.go:45: row 0 not persisted: no rows in result set
+    persistence_test.go:45: row 1 not persisted: no rows in result set
+    persistence_test.go:45: row 2 not persisted: no rows in result set
+    persistence_test.go:45: row 3 not persisted: no rows in result set
+    persistence_test.go:45: row 5 not persisted: no rows in result set
+    persistence_test.go:50: raw_omitted delta=0; want 3
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.787s
+FAIL
+
+# exit=1

@@ -1,0 +1,19 @@
+# h5-6-backfill-throughput green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -count=1 -timeout=4m -run TestBalanceBackfillBenchmarkReadOnly -v ./internal/parser
+# sha256 internal/parser/balances_benchmark_test.go 3342221ce681b2b73e9c19bda6f658269007400e687a65d514c2cda933ca2ed2
+=== RUN   TestBalanceBackfillBenchmarkReadOnly
+    balances_benchmark_test.go:44: H5 measured_utc=2026-10-24T11:57:48Z
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/solana
+    balances_benchmark_test.go:146: H5_MEASURE chain=solana blocks=52583 eligible=52580 samples=10 compressed_bytes=3997652 tracked=48080 cloud_read=2.107543792s local_balance_pass=476.566417ms local_compute=270.715416ms cloud_rtt=16.426708ms default_batch=50 projected=4h13m21.557946771s
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/base
+    balances_benchmark_test.go:146: H5_MEASURE chain=base blocks=158848 eligible=158842 samples=10 compressed_bytes=1100292 tracked=3337 cloud_read=562.026584ms local_balance_pass=87.37725ms local_compute=27.786291ms cloud_rtt=16.426708ms default_batch=50 projected=3h8m51.086434176s
+=== RUN   TestBalanceBackfillBenchmarkReadOnly/bsc
+    balances_benchmark_test.go:146: H5_MEASURE chain=bsc blocks=142142 eligible=142142 samples=10 compressed_bytes=531453 tracked=3552 cloud_read=191.683125ms local_balance_pass=31.86125ms local_compute=19.617125ms cloud_rtt=16.426708ms default_batch=50 projected=1h6m10.02961355s
+--- PASS: TestBalanceBackfillBenchmarkReadOnly (6.89s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/solana (4.81s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/base (1.07s)
+    --- PASS: TestBalanceBackfillBenchmarkReadOnly/bsc (0.62s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	8.613s
+
+# exit=0

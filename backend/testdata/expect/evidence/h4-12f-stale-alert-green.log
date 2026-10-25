@@ -1,0 +1,11 @@
+# base=449bb0a33352cf63ac9fe3e568e53a2def58ff04
+# test sha256=5a6ebde22f2180090713802599ab97bf4e1b746cb331e05af088e021cb7aa62c
+# command=docker run --rm --network none -v /Users/yuezhang/yz/projects/meme-radar-h4/ops/observability/prometheus:/etc/prometheus:ro --entrypoint=/bin/promtool prom/prometheus:v2.55.1 test rules /etc/prometheus/h4_inflow_alerts_test.yml /etc/prometheus/h3_list_alerts_test.yml /etc/prometheus/h2_api_alerts_test.yml
+  SUCCESS
+
+  SUCCESS
+
+  SUCCESS
+
+
+# exit=0

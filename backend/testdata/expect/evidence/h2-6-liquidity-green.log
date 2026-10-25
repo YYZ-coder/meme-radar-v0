@@ -1,0 +1,9 @@
+# h2-6-liquidity green base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgLiquidityEventsPaginate ./internal/pgapi
+# test_sha256 1e7ec7ef3626051f1493904e379f08cc02db341f3b5fae82ab458e29fbbab3c4 internal/pgapi/liquidity_test.go
+=== RUN   TestPgLiquidityEventsPaginate
+--- PASS: TestPgLiquidityEventsPaginate (0.39s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.800s
+# exit_status=0

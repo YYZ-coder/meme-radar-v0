@@ -1,0 +1,15 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestRetryFailureLifecycle|TestRetryFailureQueuesOnce ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=79f8b8bbd2794389976244e7421f07b57351dffab8ae832e25e5d2166091b31d
+test_diff=h7-9-retry-lifecycle-green-admin_health_test.diff sha256=bfa04b55b1806f6b95d57f51ed2c906442816060800bee7fb7123982ce9c0024
+=== RUN   TestRetryFailureQueuesOnce
+--- PASS: TestRetryFailureQueuesOnce (0.19s)
+=== RUN   TestRetryFailureLifecycle
+2026/10/24 23:10:51 INFO parse retry blocks reset role=parse chain=bsc blocks=[7]
+2026/10/24 23:10:51 INFO parse retry blocks reset role=parse chain=bsc blocks=[7]
+--- PASS: TestRetryFailureLifecycle (0.10s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.784s
+
+exit_code=0

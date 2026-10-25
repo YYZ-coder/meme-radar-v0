@@ -1,0 +1,15 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestParserReparsesRetriedBlocks ./internal/parser
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/parser/health_test.go=e60953d77da31340075f5960d5079f432111d8801b6ac0b8acf99c99e2ce341c
+test_diff=h7-5-parser-retry-red-health_test.diff sha256=bb46d4fca89c5ee665f80bd06a73e159b4767c0a694c6fd7e6a4ef92b123b1d2
+=== RUN   TestParserReparsesRetriedBlocks
+    health_test.go:106: SELECT count(*)::text FROM decode_failures WHERE chain='solana'=2; want 0
+    health_test.go:106: SELECT count(*)::text FROM parse_retries WHERE chain='solana' AND done_at IS NOT NULL=0; want 2
+    health_test.go:106: SELECT count(*)::text FROM tokens WHERE chain='solana' AND symbol='RECOVERED'=0; want 1
+--- FAIL: TestParserReparsesRetriedBlocks (0.15s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parser	0.588s
+FAIL
+
+exit_code=1

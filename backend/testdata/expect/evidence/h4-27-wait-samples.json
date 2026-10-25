@@ -1,0 +1,471 @@
+[
+  {
+    "at_ms": 0,
+    "query_ms": 51,
+    "state": "idle in transaction",
+    "wait_type": "Client",
+    "event": "ClientRead"
+  },
+  {
+    "at_ms": 152,
+    "query_ms": 35,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 289,
+    "query_ms": 30,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 420,
+    "query_ms": 35,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 556,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 689,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 822,
+    "query_ms": 67,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 989,
+    "query_ms": 35,
+    "state": "active",
+    "wait_type": "IO",
+    "event": "BuffileRead"
+  },
+  {
+    "at_ms": 1126,
+    "query_ms": 74,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 1301,
+    "query_ms": 79,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 1482,
+    "query_ms": 33,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 1616,
+    "query_ms": 37,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 1755,
+    "query_ms": 113,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 1969,
+    "query_ms": 40,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 2111,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 2243,
+    "query_ms": 42,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 2387,
+    "query_ms": 257,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 2745,
+    "query_ms": 59,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 2906,
+    "query_ms": 34,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3041,
+    "query_ms": 30,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3172,
+    "query_ms": 53,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 3326,
+    "query_ms": 127,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3554,
+    "query_ms": 30,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3685,
+    "query_ms": 29,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3815,
+    "query_ms": 30,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 3946,
+    "query_ms": 46,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 4093,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 4227,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 4358,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 4489,
+    "query_ms": 38,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 4628,
+    "query_ms": 29,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 4758,
+    "query_ms": 45,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 4904,
+    "query_ms": 111,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5116,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5248,
+    "query_ms": 39,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5388,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5522,
+    "query_ms": 47,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5670,
+    "query_ms": 29,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5801,
+    "query_ms": 34,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 5936,
+    "query_ms": 35,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6072,
+    "query_ms": 40,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6212,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6346,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6478,
+    "query_ms": 118,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6697,
+    "query_ms": 29,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6827,
+    "query_ms": 60,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 6989,
+    "query_ms": 136,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 7226,
+    "query_ms": 65,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 7391,
+    "query_ms": 35,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 7527,
+    "query_ms": 118,
+    "state": "active",
+    "wait_type": "Client",
+    "event": "ClientWrite"
+  },
+  {
+    "at_ms": 7746,
+    "query_ms": 30,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 7877,
+    "query_ms": 36,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8014,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8146,
+    "query_ms": 41,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8289,
+    "query_ms": 32,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8422,
+    "query_ms": 62,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8586,
+    "query_ms": 120,
+    "state": "active",
+    "wait_type": "IO",
+    "event": "BuffileWrite"
+  },
+  {
+    "at_ms": 8807,
+    "query_ms": 33,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 8942,
+    "query_ms": 265,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9307,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9440,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9571,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9703,
+    "query_ms": 56,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9859,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 9991,
+    "query_ms": 31,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  },
+  {
+    "at_ms": 10123,
+    "query_ms": 34,
+    "state": "active",
+    "wait_type": "Timeout",
+    "event": "SpinDelay"
+  },
+  {
+    "at_ms": 10258,
+    "query_ms": 34,
+    "state": "active",
+    "wait_type": "",
+    "event": ""
+  }
+]

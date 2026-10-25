@@ -1,0 +1,5 @@
+{"time":"2026-10-25T10:58:15.946789+08:00","level":"INFO","msg":"inflow published","role":"compute","chain":"solana","window":"1m","rows":35000,"query":2119701208,"fill":0,"write":961983625}
+{"time":"2026-10-25T10:58:18.173177+08:00","level":"INFO","msg":"inflow published","role":"compute","chain":"solana","window":"5m","rows":35000,"query":1672458500,"fill":0,"write":545313542}
+{"time":"2026-10-25T10:58:20.358395+08:00","level":"INFO","msg":"inflow published","role":"compute","chain":"solana","window":"1h","rows":35000,"query":1695784841,"fill":10651868,"write":469388500}
+{"time":"2026-10-25T10:58:22.014981+08:00","level":"INFO","msg":"inflow published","role":"compute","chain":"solana","window":"4h","rows":35000,"query":1229959693,"fill":7451598,"write":411033500}
+{"time":"2026-10-25T10:58:25.134533+08:00","level":"INFO","msg":"inflow published","role":"compute","chain":"solana","window":"24h","rows":35000,"query":1525581749,"fill":10931043,"write":594967375}

@@ -1,0 +1,8 @@
+# Local PostgreSQL read-only diagnostic of the H6-4 name-cleaning fixture; no data changes
+ERROR:  unsupported Unicode escape sequence
+LINE 1: SELECT '{"name":"A\u0000B"}'::jsonb;
+               ^
+DETAIL:  \u0000 cannot be converted to text.
+CONTEXT:  JSON data, line 1: {"name":"A\u0000...
+
+exit=1

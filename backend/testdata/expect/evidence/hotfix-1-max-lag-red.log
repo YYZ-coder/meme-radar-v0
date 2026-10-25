@@ -1,0 +1,18 @@
+# hotfix-1 forward max lag red base=5e1f0c8+worktree
+8f0f9f2d725073639f67fbf19be5b12ff3a28e87ab8713b27e1473af6b12d2f9  internal/ingest/follower_test.go
+51811084ba70d630609f49484fae8c38da23eae598980d79cb0044e32765f506  internal/config/config_test.go
+35747ac1d3058f67661e9f354bb2bb6145ec2199bbdce78539ecb38d7b41fd0e  cmd/radar/ingest_test.go
+--- FAIL: TestForwardJumpsToHeadWhenLagExceedsMaxLag (0.21s)
+    follower_test.go:570: beyond MaxLag fetched [102]; want [300]
+FAIL
+FAIL	github.com/meme-radar/radar/internal/ingest	0.399s
+--- FAIL: TestDefaultsConfigureSourcesBackfillAndRetention (0.00s)
+    config_test.go:110: bsc ingest.max_lag_blocks = 0; want 6000
+FAIL
+FAIL	github.com/meme-radar/radar/internal/config	0.328s
+--- FAIL: TestParseIngestPresets (0.00s)
+    ingest_test.go:36: parseIngest(["ingest" "--chain=bsc"]) = {chain:bsc family:evm rpcURL:https://bsc-rpc.publicnode.com dbURL:postgres://radar@127.0.0.1/radar rps:16 b
+    ingest_test.go:36: parseIngest(["ingest" "--chain=bsc" "--rpc-url=https://example.org/rpc" "--rps=3" "--prefetch=1"]) = {chain:bsc family:evm rpcURL:https://example.o
+FAIL
+FAIL	github.com/meme-radar/radar/cmd/radar	0.380s
+FAIL

@@ -1,0 +1,16 @@
+H5 deployment precheck, read-only cloud SQL
+Measured at 2026-10-24 10:09:57 UTC (18:09:57 Asia/Shanghai).
+Baseline: 4b9f3d1. No balance_version or balance_parsed_at columns deployed.
+SQL forced default_transaction_read_only=on, statement_timeout=20000.
+Counts are an upper bound for initial unbalanced blocks; skipped slots excluded.
+chain   raw_blocks  compressed_bytes main_unparsed
+solana  49076       17288403307      1
+base    147200      16679508813      12
+bsc     142012      7913124712       0
+Total raw blocks: 338288; compressed bytes: 41881036832.
+Observed block times:
+solana: 2026-10-23 02:27:52 UTC .. 2026-10-24 10:09:54 UTC
+base:   2026-10-20 20:56:49 UTC .. 2026-10-24 06:43:27 UTC
+bsc:    2026-10-22 20:34:12 UTC .. 2026-10-23 14:19:34 UTC
+No DDL or data changes. No H5 chain reconciliation possible before deployment.
+Timing measurement and projected completion: pending balance loop implementation.

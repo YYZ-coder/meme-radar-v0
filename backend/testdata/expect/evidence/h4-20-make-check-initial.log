@@ -1,0 +1,47 @@
+# command: make check; Node24; H4 ports 31410/31420; real local RADAR_TEST_DATABASE_URL set
+# known H1 legacy fixture issue not skipped
+/Library/Developer/CommandLineTools/usr/bin/make -C backend check
+go vet ./...
+go build ./...
+go build -o bin/radar ./cmd/radar
+go test -count=1 ./...
+ok  	github.com/meme-radar/radar/cmd/radar	1.739s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	1.454s
+ok  	github.com/meme-radar/radar/internal/compute	16.213s
+ok  	github.com/meme-radar/radar/internal/config	0.567s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	1.050s
+ok  	github.com/meme-radar/radar/internal/evm	0.974s
+ok  	github.com/meme-radar/radar/internal/httpapi	3.108s
+ok  	github.com/meme-radar/radar/internal/ingest	5.501s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	0.552s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	0.908s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	0.950s
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+ok  	github.com/meme-radar/radar/internal/metadata	4.114s
+ok  	github.com/meme-radar/radar/internal/metrics	0.391s
+ok  	github.com/meme-radar/radar/internal/mockdata	1.048s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	0.334s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	0.373s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	0.390s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	0.388s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	0.402s
+ok  	github.com/meme-radar/radar/internal/parse/pump	0.328s
+ok  	github.com/meme-radar/radar/internal/parser	3.443s
+ok  	github.com/meme-radar/radar/internal/pgapi	15.903s
+ok  	github.com/meme-radar/radar/internal/prices	0.377s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	0.333s
+--- FAIL: TestMigrationFixesGraduationSwitchTimes (0.11s)
+    window_test.go:453: store: fill trade values: ERROR: relation "smtrades_dirty" does not exist (SQLSTATE 42P01)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	14.363s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+FAIL
+make[1]: *** [test] Error 1
+make: *** [check] Error 2
+
+# exit=2

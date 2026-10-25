@@ -1,0 +1,3 @@
+{"binary":{"encoding":"hex","data":["504e4155"]},"parsed":[
+{"id":"ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d","price":{"price":"1036205","conf":"700","expo":-4,"publish_time":1792713659},"ema_price":{"price":"1036100","conf":"700","expo":-4,"publish_time":1792713659},"metadata":{"slot":1,"proof_available_time":1792713660,"prev_publish_time":1792713658}}
+]}

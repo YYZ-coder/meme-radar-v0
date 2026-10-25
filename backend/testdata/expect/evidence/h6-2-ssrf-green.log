@@ -1,0 +1,7 @@
+# H6 2-ssrf green; base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary / independent expectation: Fetcher.Fetch real socket/DNS + external 302 replay; reject private, loopback, link-local, multicast before any request (H6 §2-5)
+# command: go test -count=1 -run TestFetchRejectsPrivateAddresses|TestNormalizeURI ./internal/metadata
+# sha256 internal/metadata/fetch_test.go: 001e4149f96f21f948a23b730d032bb96715406baf39da5fd844223a86c4d7aa
+ok  	github.com/meme-radar/radar/internal/metadata	0.419s
+
+# exit=0

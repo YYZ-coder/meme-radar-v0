@@ -1,0 +1,51 @@
+# h5-3-evm-deltas green base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestTransferDeltas -v ./internal/parse/balances
+# sha256 internal/parse/balances/evm_test.go 73df4204f8e62574a01143a62250136318571b132be0f3de81af0ee85abd0955
+=== RUN   TestTransferDeltas
+=== RUN   TestTransferDeltas/four.buy-direct.0
+=== RUN   TestTransferDeltas/four.buy-direct.1
+=== RUN   TestTransferDeltas/four.buy-routed.0
+=== RUN   TestTransferDeltas/four.buy-routed.1
+=== RUN   TestTransferDeltas/four.create-direct.0
+=== RUN   TestTransferDeltas/four.create-direct.1
+=== RUN   TestTransferDeltas/four.sell-routed.0
+=== RUN   TestTransferDeltas/four.sell-routed.1
+=== RUN   TestTransferDeltas/four.v1-create-direct.0
+=== RUN   TestTransferDeltas/four.v1-create-direct.1
+=== RUN   TestTransferDeltas/four.v1-buy-direct.0
+=== RUN   TestTransferDeltas/four.v1-buy-direct.1
+=== RUN   TestTransferDeltas/four.v1-buy-routed.0
+=== RUN   TestTransferDeltas/four.v1-buy-routed.1
+=== RUN   TestTransferDeltas/four.v1-sell-direct.0
+=== RUN   TestTransferDeltas/four.v1-sell-direct.1
+=== RUN   TestTransferDeltas/four.v1-sell-routed.0
+=== RUN   TestTransferDeltas/four.v1-sell-routed.1
+=== RUN   TestTransferDeltas/four.v1-tradestop-direct.0
+=== RUN   TestTransferDeltas/four.v1-tradestop-direct.1
+=== RUN   TestTransferDeltas/mint
+--- PASS: TestTransferDeltas (0.00s)
+    --- PASS: TestTransferDeltas/four.buy-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.buy-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.buy-routed.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.buy-routed.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.create-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.create-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.sell-routed.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.sell-routed.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-create-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-create-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-buy-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-buy-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-buy-routed.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-buy-routed.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-sell-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-sell-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-sell-routed.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-sell-routed.1 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-tradestop-direct.0 (0.00s)
+    --- PASS: TestTransferDeltas/four.v1-tradestop-direct.1 (0.00s)
+    --- PASS: TestTransferDeltas/mint (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parse/balances	0.365s
+
+# exit=0

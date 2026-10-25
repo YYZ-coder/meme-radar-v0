@@ -1,0 +1,13 @@
+# h5-4b-refresh green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancePass|TestBalanceRun -v ./internal/parser
+# sha256 internal/parser/balances_refresh_test.go d53ac6871213bf19aaeab77f3a73eb77f4eed8a9b98331de90b190960576ebb3
+=== RUN   TestBalancePassRefreshesTrackedTokensEveryBatch
+--- PASS: TestBalancePassRefreshesTrackedTokensEveryBatch (0.23s)
+=== RUN   TestBalanceRunResumesAndReportsProgress
+--- PASS: TestBalanceRunResumesAndReportsProgress (0.16s)
+=== RUN   TestBalancePassParsesOnlyBalances
+--- PASS: TestBalancePassParsesOnlyBalances (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/parser	1.082s
+
+# exit=0

@@ -1,0 +1,7 @@
+# H6 4b-raw-preflight green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Same real PG batch and JSON escape cases after raw preflight, D103 display cleaning, ok warning and one counter per saved omitted row.
+# command: go test -count=1 -run ^(TestMetadataOmitsRawThatJSONBRejects|TestParseMetadataRawPreservation)$ ./internal/metadata
+# sha256 internal/metadata/raw_test.go: d63a0bf63866fc7ab9a09e1de755955adbce4839846de0fbcad9963ef9e2468f
+ok  	github.com/meme-radar/radar/internal/metadata	0.642s
+
+# exit=0

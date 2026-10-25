@@ -1,0 +1,7 @@
+# H6 1a-cid green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: D156 ExtractCID and original-URL preservation; literal CID from stored URI, not Go output
+# command: go test -count=1 -run ^TestNormalizeURI ./internal/metadata
+# sha256 internal/metadata/uri_test.go: 2239a1b52c8e8f4ceb3a6fc458b190a4855998431dd868b2a4fc53d6d404564d
+ok  	github.com/meme-radar/radar/internal/metadata	0.454s
+
+# exit=0

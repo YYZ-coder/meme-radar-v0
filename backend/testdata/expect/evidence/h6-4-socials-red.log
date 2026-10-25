@@ -1,0 +1,20 @@
+# H6 4-socials red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: ParseMetadata; H6 §2-6 username URLs, nested disjoint-field merge and Unicode limits; manual 20+236 URL characters and D103
+# command: go test -count=1 -run ^TestSocialsNormalization$ ./internal/metadata
+# sha256 internal/metadata/socials_test.go: 6036331a3859bbc9397ff012b9cd251c92059a444b97b7124938a82db03f2ef5
+--- FAIL: TestSocialsNormalization (0.00s)
+    --- FAIL: TestSocialsNormalization/usernames (0.00s)
+        socials_test.go:29: socials=map[]; want map[telegram:https://t.me/room_2 twitter:https://x.com/alice_1]
+    --- FAIL: TestSocialsNormalization/merge (0.00s)
+        socials_test.go:29: socials=map[website:https://project.example]; want map[github:https://github.com/project telegram:https://t.me/project_chat twitter:https://x.com/project_x website:https://project.example]
+    --- FAIL: TestSocialsNormalization/link_array (0.00s)
+        socials_test.go:29: socials=map[]; want map[twitter:https://x.com/project website:https://project.example]
+    --- FAIL: TestSocialsNormalization/limits_and_names (0.00s)
+        socials_test.go:41: URL length=320; want 256 characters
+        socials_test.go:44: description length=1001; want 1000 characters
+        socials_test.go:47: D103 name=" A\x00\nB " symbol length=33
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.395s
+FAIL
+
+# exit=1

@@ -1,0 +1,40 @@
+# H1 race regression gate base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:31:56.516571+00:00
+# command: go test -race -count=1 ./...; local PG 55432; E2E ports 31110/31120; Node24
+# sha256 backend/internal/store/window.go 0dc1524312a4d0c29b35dd556da5ab551501a37048b613a3371b92eb0c99de0d
+# sha256 backend/internal/store/window_test.go e57eaab2010a5dd29f82bfeec5a3ddbdd4b6634fc2ac08dd088179c8da36bf44
+# sha256 backend/internal/store/compute.go cdf37b4a0be47f035d1d8d5be46ab6f03415ea774e6c46b2992377674f36735e
+# sha256 backend/internal/compute/ath.go e9a405cde85ca2f628b16bf5dfa097e9b13a2bc6bdb768bc19970af6b42a9171
+# sha256 backend/internal/compute/ath_test.go 1998d877509124d43d47478f38ef78411e1919b465bf4a357c310ced7fc16528
+# sha256 backend/internal/compute/cycle.go 0aa0cbd5d2a78765c52f8d22e36d8ad181dfff014ac34a7a1a514580708fc3e6
+# sha256 backend/migrations/0011_window.sql b938643869c8e2d14434b77eda79ba6e982efbbba4188cf74fb597bb26781b88
+ok  	github.com/meme-radar/radar/cmd/radar	2.745s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	3.038s
+ok  	github.com/meme-radar/radar/internal/compute	6.502s
+ok  	github.com/meme-radar/radar/internal/config	2.547s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.404s
+ok  	github.com/meme-radar/radar/internal/evm	2.511s
+ok  	github.com/meme-radar/radar/internal/httpapi	3.161s
+ok  	github.com/meme-radar/radar/internal/ingest	4.329s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.951s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.794s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	2.601s
+ok  	github.com/meme-radar/radar/internal/metrics	2.266s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.444s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.682s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.440s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.557s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.373s
+ok  	github.com/meme-radar/radar/internal/parser	3.577s
+ok  	github.com/meme-radar/radar/internal/prices	1.425s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.407s
+ok  	github.com/meme-radar/radar/internal/store	7.731s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit_code=0

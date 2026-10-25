@@ -4,11 +4,9 @@ import type {
   Chain,
   ImportReport,
   ImportRow,
-  ListVersionChange,
   Member,
   ParseFailure,
 } from "@/lib/api/types";
-import { listVersionRef } from "./inflow";
 import { evmAddress, rng, hash, solanaAddress } from "./random";
 
 const START = Date.parse("2026-10-18T00:00:00Z");
@@ -33,6 +31,7 @@ function seedMembers(): Member[] {
 }
 
 export const adminState = {
+  budgetReady: true,
   members: seedMembers(),
   exclusions: [] as { chain: Chain; address: string; reason: string; created_at: string }[],
   /** Reports keep every row in `all`; the API response returns at most 500. */
@@ -46,7 +45,7 @@ export const adminState = {
       "conservation check failed: quote delta"
     ),
     failure("f2", "base", "uniswap_v4", "52690612:41:0", "unknown hook 0x…a8c0 on pool"),
-    failure("f3", "bsc", "four_meme", "128015230:7:1", "decode: unknown event topic"),
+    failure("f3", "bsc", "fourmeme", "128015230:7:1", "decode: unknown event topic"),
   ] as ParseFailure[],
 };
 
@@ -72,10 +71,11 @@ export function isMember(chain: string, address: string) {
   return adminState.members.some((m) => memberId(m.chain, m.address) === id);
 }
 
-export function bumpVersion(change: Omit<ListVersionChange, "list_version" | "previous_version">) {
-  const previous = String(listVersionRef.current);
-  listVersionRef.current += 1;
-  return { list_version: String(listVersionRef.current), previous_version: previous, ...change };
+export function resetAdmin() {
+  adminState.budgetReady = true;
+  adminState.members = seedMembers();
+  adminState.exclusions = [];
+  adminState.imports.clear();
 }
 
 const anchors: Record<Chain, { anchor: number; perSecond: number }> = {
@@ -123,14 +123,15 @@ export function health(now: number): AdminHealth {
     };
   });
   const parsers = [
-    ["solana", "pump", "1.0.0"],
-    ["solana", "pumpswap", "1.0.0"],
-    ["solana", "raydium_launchlab", "1.0.0"],
-    ["solana", "jupiter", "1.0.0"],
-    ["base", "clanker", "1.0.0"],
-    ["base", "uniswap_v4", "1.0.0"],
-    ["bsc", "four_meme", "1.0.0"],
-    ["bsc", "pancakeswap", "1.0.0"],
+    ["solana", "pump", "1"],
+    ["solana", "pumpswap", "1"],
+    ["solana", "launchlab", "1"],
+    ["solana", "jupiter", "1"],
+    ["solana", "raydium_cpmm", "1"],
+    ["base", "clanker", "1"],
+    ["base", "uniswap_v4", "1"],
+    ["bsc", "fourmeme", "1"],
+    ["bsc", "pancakeswap", "1"],
   ].map(([chain, module, version], i) => {
     const c = chains.find((x) => x.chain === chain)!;
     return {
@@ -139,10 +140,10 @@ export function health(now: number): AdminHealth {
       version,
       position: (c.forward_position ?? 0) - i * 3,
       lag_blocks: i * 3,
-      quarantined: [4, 9, 0, 0, 1, 2, 3, 0][i],
+      quarantined: [4, 9, 0, 0, 1, 2, 3, 0, 0][i],
       failures: adminState.failures.filter((f) => f.module === module && f.status === "failed")
         .length,
-      unknown_discriminators: [0, 1, 0, 6, 0, 0, 2, 0][i],
+      unknown_discriminators: [0, 1, 0, 6, 0, 0, 2, 0, 0][i],
     };
   });
   return {

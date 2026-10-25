@@ -1,0 +1,7 @@
+# H6 1b-fallback green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: D156 Fetcher.Fetch; 403/429/5xx ordered fallback and 404 stop, explicit request sequence; scheduling backoff covered by H6-6
+# command: go test -count=1 ./internal/metadata
+# sha256 internal/metadata/fallback_test.go: 8fb94118934b395917a9907cdfcdf4205b3fe2b2c9ba94ffeed8d9b58a299d49
+ok  	github.com/meme-radar/radar/internal/metadata	0.442s
+
+# exit=0

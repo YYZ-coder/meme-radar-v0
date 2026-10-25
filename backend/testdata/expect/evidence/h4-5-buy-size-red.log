@@ -1,0 +1,36 @@
+# h4-5-buy-size red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+01d9a00793817eee526fc4189f616ad700e392a38d0ca71ca8f88b1cd8b543fe  internal/compute/inflow_overview_test.go
+# tracked diff sha256=4a7d2797b82c4bd2c3474629b0c3fbbfe8db0d7ea0a127ad0f42d769bd04a90d
+# command: go test -count=1 -v -run TestOverviewLargeSmallExample ./internal/compute
+=== RUN   TestOverviewLargeSmallExample
+=== RUN   TestOverviewLargeSmallExample/strict_boundary_same_wallet
+    inflow_overview_test.go:170: large=NULL, want 5000.000001
+    inflow_overview_test.go:171: small=NULL, want 11000
+=== RUN   TestOverviewLargeSmallExample/amount_weighted_percentages
+    inflow_overview_test.go:170: large=NULL, want 6000
+    inflow_overview_test.go:171: small=NULL, want 4000
+    inflow_overview_test.go:173: large share=NULL, want 60
+    inflow_overview_test.go:174: small share=NULL, want 40
+=== RUN   TestOverviewLargeSmallExample/unknown_buy
+=== RUN   TestOverviewLargeSmallExample/unknown_sell
+    inflow_overview_test.go:170: large=NULL, want 6000
+    inflow_overview_test.go:171: small=NULL, want 4000
+    inflow_overview_test.go:173: large share=NULL, want 60
+    inflow_overview_test.go:174: small share=NULL, want 40
+=== RUN   TestOverviewLargeSmallExample/no_buys
+    inflow_overview_test.go:170: large=NULL, want 0
+    inflow_overview_test.go:171: small=NULL, want 0
+=== RUN   TestOverviewLargeSmallExample/partial
+--- FAIL: TestOverviewLargeSmallExample (1.50s)
+    --- FAIL: TestOverviewLargeSmallExample/strict_boundary_same_wallet (0.49s)
+    --- FAIL: TestOverviewLargeSmallExample/amount_weighted_percentages (0.23s)
+    --- PASS: TestOverviewLargeSmallExample/unknown_buy (0.30s)
+    --- FAIL: TestOverviewLargeSmallExample/unknown_sell (0.17s)
+    --- FAIL: TestOverviewLargeSmallExample/no_buys (0.15s)
+    --- PASS: TestOverviewLargeSmallExample/partial (0.16s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.947s
+FAIL
+
+# exit=1

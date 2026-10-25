@@ -1,0 +1,37 @@
+optimized_full_preview chain=solana window=24h as_of=2026-10-24T19:19:00Z mode=REPEATABLE_READ_READ_ONLY H3_H4_H5_not_deployed=true
+elapsed=17.8964585s error=<nil>
+execution_ms=17221.633 planning_ms=89.674
+depth=0 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=17202.637 inclusive_ms=17202.637
+depth=1 node=Function Scan relation=<nil> actual_rows=1 loops=1 total_ms_per_loop=72.22 inclusive_ms=72.22
+depth=2 node=Seq Scan relation=coverage_ranges actual_rows=0 loops=1 total_ms_per_loop=72.194 inclusive_ms=72.194
+depth=1 node=Aggregate relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=3227.773 inclusive_ms=3227.773
+depth=2 node=Sort relation=<nil> actual_rows=269705 loops=1 total_ms_per_loop=2032.707 inclusive_ms=2032.707
+depth=1 node=Unique relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=596.841 inclusive_ms=596.841
+depth=2 node=CTE Scan relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=584.508 inclusive_ms=584.508
+depth=1 node=Merge Join relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=8264.903 inclusive_ms=8264.903
+depth=2 node=CTE Scan relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=1682.823 inclusive_ms=1682.823
+depth=2 node=Materialize relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=6538.809 inclusive_ms=6538.809
+depth=3 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=6274.019 inclusive_ms=6274.019
+depth=4 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=6183.259 inclusive_ms=6183.259
+depth=5 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=5812.209 inclusive_ms=5812.209
+depth=6 node=Merge Join relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=5327.361 inclusive_ms=5327.361
+depth=7 node=Materialize relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=4597.732 inclusive_ms=4597.732
+depth=8 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=4350.631 inclusive_ms=4350.631
+depth=9 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=3453.536 inclusive_ms=3453.536
+depth=10 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=3094.946 inclusive_ms=3094.946
+depth=11 node=Nested Loop relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=2663.339 inclusive_ms=2663.339
+depth=12 node=Merge Join relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=2271.14 inclusive_ms=2271.14
+depth=13 node=Materialize relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=1608.635 inclusive_ms=1608.635
+depth=14 node=CTE Scan relation=<nil> actual_rows=32922 loops=1 total_ms_per_loop=1596.327 inclusive_ms=1596.327
+depth=1 node=Aggregate relation=<nil> actual_rows=1 loops=32922 total_ms_per_loop=0.266 inclusive_ms=8757.252
+depth=2 node=Append relation=<nil> actual_rows=7.3 loops=32922 total_ms_per_loop=0.09 inclusive_ms=2962.98
+depth=3 node=Index Scan relation=candles actual_rows=7.18 loops=32922 total_ms_per_loop=0.072 inclusive_ms=2370.384
+depth=2 node=Unique relation=<nil> actual_rows=1.63 loops=32922 total_ms_per_loop=0.134 inclusive_ms=4411.548000000001
+depth=3 node=Sort relation=<nil> actual_rows=7.3 loops=32922 total_ms_per_loop=0.131 inclusive_ms=4312.782
+depth=4 node=CTE Scan relation=<nil> actual_rows=7.3 loops=32922 total_ms_per_loop=0.117 inclusive_ms=3851.8740000000003
+depth=2 node=Sort relation=<nil> actual_rows=20 loops=32922 total_ms_per_loop=0.24 inclusive_ms=7901.28
+depth=3 node=Nested Loop relation=<nil> actual_rows=20 loops=32922 total_ms_per_loop=0.228 inclusive_ms=7506.216
+depth=4 node=Limit relation=<nil> actual_rows=0.59 loops=658440 total_ms_per_loop=0.01 inclusive_ms=6584.400000000001
+depth=5 node=Sort relation=<nil> actual_rows=0.59 loops=658440 total_ms_per_loop=0.01 inclusive_ms=6584.400000000001
+depth=6 node=CTE Scan relation=<nil> actual_rows=1 loops=658440 total_ms_per_loop=0.007 inclusive_ms=4609.08
+root_rows=32922 root_total_ms=17202.637

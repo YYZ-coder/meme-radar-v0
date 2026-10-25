@@ -1,0 +1,11 @@
+# H1 8-daily green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:28:51.204733+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestATHUsesRetainedDailyCandle$ ./internal/compute
+# sha256 internal/compute/ath_test.go 1998d877509124d43d47478f38ef78411e1919b465bf4a357c310ced7fc16528
+# test diff sha256 41946d2688244ee1a8ecee34c9b72903d7ce9252c16d597475cc20ed05adf48e
+=== RUN   TestATHUsesRetainedDailyCandle
+--- PASS: TestATHUsesRetainedDailyCandle (0.11s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.557s
+
+# exit_code=0

@@ -1,0 +1,7 @@
+fixture_only_adjustment_not_behavior_change=true
+baseline_sha=449bb0a33352cf63ac9fe3e568e53a2def58ff04
+reason=FillValues writes smtrades_dirty from 0014, which depends on 0013; pre-0011 main-pool/candle schema preserved
+all_existing_test_functions_byte_identical=12
+original_approved_proposal_sha256=ce8b6af730fb0263a663021448327d08c3fbdf7836a6dd7055ea96b5e67ccc38
+applied_patch_sha256=670f87d27a2fc208ce81d118466e6e601a26dd21d7f8b100d5e43e6dc2d1101e
+future_rule=add independent append-only migrations to preload when FillValues or ingest writes gain a dependency; H7 0017 only if merged and required

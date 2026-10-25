@@ -1,0 +1,16 @@
+# H6 1a-cid red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: D156 ExtractCID and original-URL preservation; literal CID from stored URI, not Go output
+# command: go test -count=1 -run ^TestNormalizeURI ./internal/metadata
+# sha256 internal/metadata/uri_test.go: 2239a1b52c8e8f4ceb3a6fc458b190a4855998431dd868b2a4fc53d6d404564d
+--- FAIL: TestNormalizeURIExtractsCID (0.00s)
+    uri_test.go:50: ExtractCID("bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    uri_test.go:50: ExtractCID("ipfs://bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    uri_test.go:50: ExtractCID("ipfs://ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm/metadata.json")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    uri_test.go:50: ExtractCID("https://ipfs.io/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    uri_test.go:50: ExtractCID("https://project.mypinata.cloud/ipfs/bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm/metadata.json?download=1")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+    uri_test.go:50: ExtractCID("https://bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm.ipfs.dweb.link/metadata.json")=""; want "bafkreieiqmlygrwswplz6boqi6zrwd6a2d6u52dm6lugw7ibe6kquw63vm"
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.387s
+FAIL
+
+# exit=1

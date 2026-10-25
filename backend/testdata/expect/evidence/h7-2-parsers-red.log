@@ -1,0 +1,13 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestHealthParsers ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=77b06db18be035b6469a016306c7cf26058e495ec3fd1043abf774ab3b61eaba
+test_diff=h7-2-parsers-red-admin_health_test.diff sha256=8a6dd123d394760e25870cf540fed442bd21c612eb95237a6b3d6719b4fe86f5
+=== RUN   TestHealthParsers
+    admin_health_test.go:146: parsers=[]; want only 2 enabled modules registered by parse
+--- FAIL: TestHealthParsers (0.33s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.885s
+FAIL
+
+exit_code=1

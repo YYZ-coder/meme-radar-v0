@@ -1,0 +1,16 @@
+optimized matrix: REPEATABLE READ READ ONLY; complete SELECT preview; undeployed H3/H4/H5 empty; 16s cap per query
+chain=solana window=1m as_of=2026-10-24T19:17:00Z expected_rows=317 received_rows=0 elapsed=78.29725ms error=<nil>
+chain=solana window=5m as_of=2026-10-24T19:17:00Z expected_rows=814 received_rows=428 elapsed=729.19425ms error=<nil>
+chain=solana window=1h as_of=2026-10-24T19:17:00Z expected_rows=3875 received_rows=3563 elapsed=1.440696792s error=<nil>
+chain=solana window=4h as_of=2026-10-24T19:17:00Z expected_rows=6082 received_rows=5828 elapsed=3.176464208s error=<nil>
+chain=solana window=24h as_of=2026-10-24T19:17:00Z expected_rows=32961 received_rows=32767 elapsed=14.168086959s error=<nil>
+chain=base window=1m as_of=2026-10-24T19:07:00Z expected_rows=66 received_rows=66 elapsed=184.952ms error=<nil>
+chain=base window=5m as_of=2026-10-24T19:07:00Z expected_rows=96 received_rows=96 elapsed=92.395042ms error=<nil>
+chain=base window=1h as_of=2026-10-24T19:07:00Z expected_rows=212 received_rows=212 elapsed=259.947917ms error=<nil>
+chain=base window=4h as_of=2026-10-24T19:07:00Z expected_rows=479 received_rows=479 elapsed=465.105792ms error=<nil>
+chain=base window=24h as_of=2026-10-24T19:07:00Z expected_rows=1257 received_rows=1257 elapsed=2.018504292s error=<nil>
+chain=bsc window=1m as_of=2026-10-24T19:17:00Z expected_rows=14 received_rows=14 elapsed=34.114416ms error=<nil>
+chain=bsc window=5m as_of=2026-10-24T19:17:00Z expected_rows=41 received_rows=41 elapsed=41.319333ms error=<nil>
+chain=bsc window=1h as_of=2026-10-24T19:17:00Z expected_rows=239 received_rows=239 elapsed=171.780042ms error=<nil>
+chain=bsc window=4h as_of=2026-10-24T19:17:00Z expected_rows=771 received_rows=771 elapsed=452.426125ms error=<nil>
+chain=bsc window=24h as_of=2026-10-24T19:17:00Z expected_rows=1688 received_rows=1686 elapsed=391.026166ms error=<nil>

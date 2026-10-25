@@ -1,0 +1,40 @@
+# FAILED first verification attempt, not a Green result and not TDD Red evidence. See exit=1 and legacy-schema fixture repair in 07-compute.md.
+# h5-6-race green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -race -count=1 ./...
+# sha256 internal/compute/holder_state_test.go 0e98d4820449d6a71ca248f7e015963dde29b2822690bfc607050f0c6eb9d71e
+# sha256 internal/parser/balances_refresh_test.go b61e456e7e386d7149a8625c8ee2030c0d2f9cd05bc5e4b565e798cf00392d6b
+ok  	github.com/meme-radar/radar/cmd/radar	1.833s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	2.149s
+ok  	github.com/meme-radar/radar/internal/compute	6.414s
+ok  	github.com/meme-radar/radar/internal/config	1.693s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.099s
+ok  	github.com/meme-radar/radar/internal/evm	1.771s
+ok  	github.com/meme-radar/radar/internal/httpapi	2.686s
+ok  	github.com/meme-radar/radar/internal/ingest	4.229s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.439s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.642s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	2.007s
+ok  	github.com/meme-radar/radar/internal/metrics	1.962s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	1.372s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.437s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.722s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.468s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.502s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.391s
+ok  	github.com/meme-radar/radar/internal/parser	4.709s
+ok  	github.com/meme-radar/radar/internal/prices	1.398s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.479s
+--- FAIL: TestMigrationFixesGraduationSwitchTimes (0.09s)
+    window_test.go:438: store: commit solana 1…1: error preprocessing batch (prepare): ERROR: column "balance_version" of relation "chain_blocks" does not exist (SQLSTATE 42703)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/store	8.471s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+FAIL
+
+# exit=1

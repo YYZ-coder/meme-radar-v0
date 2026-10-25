@@ -1,0 +1,27 @@
+# Meme Radar backend
+
+Go backend with multiple roles. `radar api` serves [`api/openapi.yaml`](../api/openapi.yaml), using PostgreSQL (`--store=pg`) or a deterministic in-memory mock (`--store=mock`). `radar ingest` and `radar backfill` fetch full blocks over HTTP JSON-RPC. Each chain’s parse process runs protocol decoding and an independent balance pass. `radar compute` derives market data, holdings, list versions and inflow projections; `radar enrich` supplements supply and display metadata. Architecture and consistency boundaries: [technical overview](../TECHNICAL_OVERVIEW.md). Conventions: [AGENTS.md](AGENTS.md).
+
+Go 1.26.5 (`go.mod`). Run from the repository root:
+
+| Command                               | Purpose                                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `make -C backend setup`               | Download modules, enable the commit hook                                                               |
+| `make -C backend run`                 | Build and start `bin/radar api --store=mock` on `RADAR_API_ADDR` (default 127.0.0.1:8080)              |
+| `make -C backend check`               | fmt-check → vet → build → test → binary smoke                                                          |
+| `make -C backend test-race`           | Race tests                                                                                             |
+| `make -C backend db-up` / `db-down`   | Start/stop the local PostgreSQL container `meme-radar-app-pg` (127.0.0.1:55432, user/password `radar`) |
+| `make -C backend test-db`             | Start the database and run all tests including PostgreSQL integration tests, race-enabled              |
+| `make -C backend ingest CHAIN=solana` | Build and follow one chain (`solana`, `base`, `bsc`) into the local database                           |
+| `make -C backend bench` / `profile`   | Inflow first-query benchmark; CPU/memory pprof into `.local/profile/`                                  |
+| `make dev-connected`                  | Go API plus the frontend dev server proxying `/api/v1` to it                                           |
+
+Configuration: `--addr`, `--store=mock|pg`, `--debug-addr` (pprof, loopback only, off by default); `RADAR_ADMIN_TOKEN` guards `/api/v1/admin/*` (the mock store defaults it to `mock-admin`).
+
+PostgreSQL API (implemented and connected to the deployed frontend as of 2026-10-25): `radar api --store=pg --addr=127.0.0.1:8081` requires `RADAR_DATABASE_URL`, loads defaults or `RADAR_CONFIG`, and applies migrations at startup. `/healthz` reports database readiness. Prices, search, token details/windows/candles, activities, pools/liquidity, holdings, metadata, smart-money lists/inflow/overview/facets and admin health/retry have PostgreSQL implementations. Token smart-money cards use active-list trades for 24-hour buy/sell amounts, preserving NULL for incomplete coverage or missing prices. Missing token decimals produce a token-scoped 503 on precision-dependent routes; price candles and pools remain available. An unset `RADAR_ADMIN_TOKEN` disables PG admin routes with `401 unauthorized`; configured but missing/wrong request credentials retain `403 forbidden`. PG responses carry no mock marker. Deployment still has query timeouts, projection delays and unfinished holdings replay; process readiness is not full acceptance. Startup and frontend switching: [root README](../README.md#connecting-to-postgresql); worktrees do not deploy.
+
+Integration tests (`internal/store`, `internal/ingest`) create a throwaway database per test on the server named by `RADAR_TEST_DATABASE_URL` and skip when it is unset; CI sets it, locally use `make -C backend test-db`.
+
+Roles: `radar ingest|backfill|parse --chain=X`, `radar enrich`, `radar compute`, `radar prune-raw --before=YYYY-MM-DD [--chain=X]`. Endpoints, rate limits, backfill windows, price sources and retention come from the chain configuration (`internal/config/config.default.yaml`, or `--config` / `RADAR_CONFIG`); secrets only from the environment (`RADAR_DATABASE_URL`, `RADAR_PYTH_API_KEY`, …). Every role serves Prometheus metrics on `RADAR_METRICS_ADDR` (default `:9100`, `off` disables). Docker: `make ingest-up` with `RADAR_DATABASE_URL` in the repository's `.env`; `make obs-up` for Grafana. Each role takes its own advisory lock, applies migrations on start and stops cleanly on SIGINT/SIGTERM.
+
+Layout: `cmd/radar` (entry), `migrations` (embedded SQL), `internal/store` (PostgreSQL: raw blocks, ledger, cursor, gaps), `internal/ingest` (forward and backfill followers; `jsonrpc`, `solanarpc`, `evmrpc` sources), `internal/solana` (transaction model, CPI events, PDA), `internal/evm`, `internal/parse` (fact types; decoders per protocol), `internal/parser` (parse role), `internal/chaininfo` (read-only chain lookups), `internal/prices` (price source strategies), `internal/compute`, `internal/enrich`, `internal/metrics`, `internal/config`, `internal/testdb` (throwaway test databases), `internal/api` (wire types), `internal/httpapi` (handlers, inflow snapshots, idempotency, admin auth), `internal/smlist` (list file validation), `internal/mockdata` (mock `Backend`), `internal/pgapi` (PostgreSQL `Backend`), `internal/contracttest` (response validation against the contract).

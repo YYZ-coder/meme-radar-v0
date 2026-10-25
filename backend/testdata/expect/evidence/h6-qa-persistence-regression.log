@@ -1,0 +1,7 @@
+# H6 qa-persistence regression; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Additional regression after Green: real PG atomic rollback and idempotent outcomes, explicit pending/disabled Four.meme/API error backoff, 3 redirect cap and redirected DNS safety
+# command: go test -race -count=1 -run TestMetadataBatch|TestFourMemeFailures|TestFetchRedirectLimit ./internal/metadata
+# sha256 internal/metadata/additional_test.go: 769eafc11e934c28f9211adb0870e08f4090cb988e6a7a9e462fec1a891095bf
+ok  	github.com/meme-radar/radar/internal/metadata	1.576s
+
+# exit=0

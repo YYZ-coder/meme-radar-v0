@@ -1,0 +1,25 @@
+# H3-1 H2 contract assertion red base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Approved H2 change: import preview 503 -> 201; other routes unchanged.
+# Test SHA256 4daab084aa938b67978baa440b45fbdd03382dc1775b6637737f1a050559f844 backend/internal/pgapi/placeholders_test.go
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^TestPgEveryRouteMatchesContract$ ./internal/pgapi
+diff --git a/backend/internal/pgapi/placeholders_test.go b/backend/internal/pgapi/placeholders_test.go
+index 607efec..ebaf3db 100644
+--- a/backend/internal/pgapi/placeholders_test.go
++++ b/backend/internal/pgapi/placeholders_test.go
+@@ -64,7 +64,7 @@ func placeholderRoutes() []routeRequest {
+ 		{"GET", "/api/v1/tokens/{chain}/{address}/smart-money", token + "/smart-money", "", 200},
+ 		{"GET", p + "health", p + "health", "", 503},
+ 		{"POST", p + "parse-failures/{id}/retry", p + "parse-failures/1/retry", "", 503},
+-		{"POST", p + "smart-money/imports", p + "smart-money/imports", "", 503},
++		{"POST", p + "smart-money/imports", p + "smart-money/imports", "", 201},
+ 		{"GET", p + "smart-money/imports/{id}", p + "smart-money/imports/im_test", "", 503},
+ 		{"POST", p + "smart-money/imports/{id}/apply", p + "smart-money/imports/im_test/apply", "", 503},
+ 		{"GET", p + "smart-money/list-builds/{version}", p + "smart-money/list-builds/1", "", 503},
+--- FAIL: TestPgEveryRouteMatchesContract (0.45s)
+    --- FAIL: TestPgEveryRouteMatchesContract/POST_/api/v1/admin/smart-money/imports (0.00s)
+        routes_test.go:126: POST /api/v1/admin/smart-money/imports=503, want 201: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"3689151f6e40d364eca2678d756d77e7"}}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.931s
+FAIL
+
+exit=1

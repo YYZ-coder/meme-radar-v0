@@ -1,0 +1,16 @@
+BSC readonly candidate list and independent raw-trade check as_of=2026-10-24T20:05:00Z mode=REPEATABLE_READ_READ_ONLY; no import, activation or API comparison: H3/H4 not deployed
+chain,address,observed_24h_trade_count
+bsc,0xdae8a136d4f1c35499c1c6966ad535198a0f1e08,112
+bsc,0xc9d8b41359c29e2ef6efbadeff03dd7fdb8b03bd,88
+bsc,0xfc2b8afb911fbaea5d6a35fc83e08d862a60e4cb,86
+bsc,0x05d072ff4fc64df106e4ebe30601d39f407b4b57,79
+bsc,0x57e321928daa9cc0143c35c1241a94cc610b9bf1,77
+bsc,0x774352301321637bc2cad74e67d4089f36e15962,77
+bsc,0xa6f732416993b155036b235cd4afc2a436b4dbb0,77
+bsc,0xe5c44c2b300adb1370ca8ed49bebd50cae1abcd1,77
+bsc,0xf9f10765363023af0615146061190fac44a93854,77
+bsc,0x71c7c31bc91e8967cf270a413b775c2fb6269277,76
+token=0x5628f65f7dc3ed0633dbe9cc72edcbde7b734444 smart_trades_1h=17 unknown_usd_trades=0 observed_net_usd=41.160383773415455039
+token=0xfdc45e44068c4d9ea543a786ef6be314886f4444 smart_trades_1h=9 unknown_usd_trades=0 observed_net_usd=9.530336334603570573
+token=0x0703560c12231a1b715a1b882c071c779923ffff smart_trades_1h=1 unknown_usd_trades=0 observed_net_usd=0.001169556216213588
+read-only preparation complete; after user-arranged deployment rerun this snapshot's list import/activation and compare three API rows

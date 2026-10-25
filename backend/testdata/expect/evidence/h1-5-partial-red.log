@@ -1,0 +1,13 @@
+# No target-behavior Red: first compilable run already passed. Regression supplement for coverage/value preservation implemented in H1-1/H1-2; no production change or manufactured failure.
+# H1 5-partial green base=b846349b78e2aab6bcd32513d17c65d07c63a76e+worktree
+# UTC 2026-10-23T15:12:30.413513+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenWindowsPartialCoverage$ ./internal/store
+# sha256 internal/store/window_test.go 1c2d10def90a82cb877375d23f85f090d2ef0b860044d8cbb962046e2b011d61
+# test diff sha256 490840526ae6b197ddac31f2edd9d820e7ed55ef1c40c291b03aff08fc84e8e5
+=== RUN   TestTokenWindowsPartialCoverage
+--- PASS: TestTokenWindowsPartialCoverage (0.65s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.788s
+
+# exit_code=0
+# Fixture helper correction: removed an accidental missing-parameter argument from H1-4 setup; the compile failure was not a target Red.

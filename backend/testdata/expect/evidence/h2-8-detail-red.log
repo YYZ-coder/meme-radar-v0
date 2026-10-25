@@ -1,0 +1,17 @@
+# h2-8-detail red base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgTokenDetail ./internal/pgapi
+# test_sha256 646b7b91a5bb23149dc7bb94e83914a9bd620153be712e24c2127908772bc33d internal/pgapi/detail_test.go
+=== RUN   TestPgTokenDetail
+=== RUN   TestPgTokenDetail/complete5m
+    detail_test.go:96: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"50e01cd76e89a4c0b6a043cdf4522ccc"}}
+=== RUN   TestPgTokenDetail/partial5m
+    detail_test.go:96: GET /api/v1/tokens/bsc/0x0000000000000000000000000000000000000061 = 503, want 200: {"error":{"code":"api_unavailable","message":"data source is not ready","field":null,"trace_id":"95717871500a0ed61c1e8404177318f8"}}
+--- FAIL: TestPgTokenDetail (0.46s)
+    --- FAIL: TestPgTokenDetail/complete5m (0.27s)
+    --- FAIL: TestPgTokenDetail/partial5m (0.19s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	0.936s
+FAIL
+# exit_status=1
+# Fixture correction: total liquidity is unknown if any active pool lacks a sample. Provide formal reserves for B as well as A; the independent total is two pools x 2 x 1 BNB x 100 = 400 USD. Keep an exact known-value assertion, not a nullable relaxation.

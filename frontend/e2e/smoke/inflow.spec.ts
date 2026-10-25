@@ -164,3 +164,44 @@ test("mobile layout stays within the viewport", async ({ page }) => {
   await page.getByRole("button", { name: "筛选", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
 });
+
+test("a stale list pauses refresh while keeping its rows until explicit requery", async ({
+  page,
+}) => {
+  let staleQuery: string | undefined;
+  await page.route("**/api/v1/tokens/batch", async (route) => {
+    const request = route.request().postDataJSON();
+    if (!request.query_id) return route.continue();
+    expect(request.list_version).toBeTruthy();
+    staleQuery = request.query_id;
+    await route.fulfill({
+      status: 410,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: {
+          code: "query_expired",
+          message: "version changed",
+          trace_id: "0123456789abcdef0123456789abcdef",
+        },
+      }),
+    });
+  });
+  await page.goto("/smart-money/inflow");
+  await expect(rows(page).first()).toBeVisible();
+  const before = await rows(page).first().innerText();
+  await expect(page.getByText("名单或数据已更新，已暂停数值刷新；当前分页仍保留。")).toBeVisible();
+  expect(await rows(page).first().innerText()).toBe(before);
+  expect(staleQuery).toBeTruthy();
+  await page.unroute("**/api/v1/tokens/batch");
+  const refreshed = page.waitForResponse(
+    (res) =>
+      res.url().includes("/smart-money/inflow?") &&
+      !res.url().includes("query_id=") &&
+      res.status() === 200
+  );
+  await page.getByRole("button", { name: "重新查询", exact: true }).click();
+  const response = await refreshed;
+  expect((await response.json()).query_id).not.toBe(staleQuery);
+  await expect(page.getByText("名单或数据已更新，已暂停数值刷新；当前分页仍保留。")).toHaveCount(0);
+  await expect(rows(page).first()).toBeVisible();
+});

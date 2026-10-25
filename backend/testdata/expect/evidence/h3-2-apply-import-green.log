@@ -1,0 +1,12 @@
+# h3-2-apply-import green base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 770458a24a41befadd4822a200e4222772bc3b08c801fdcbcc06fbab4ecd39f6 backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 cf59be3e5734651acdea3331dec8e2338ef108062447e90ebc736b49a5545c85 backend/internal/pgapi/placeholders_test.go
+# Tracked test diff SHA256 25a1af16713c0b794851c4c11836a64221ed3888d4973837a02dd0c532ee449e
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestPgImportPreview|TestPgApplyImportQueuesVersion|TestPgEveryRouteMatchesContract|TestPgPlaceholdersMatchContract)$ ./internal/pgapi
+ok  	github.com/meme-radar/radar/internal/pgapi	1.461s
+
+exit=0

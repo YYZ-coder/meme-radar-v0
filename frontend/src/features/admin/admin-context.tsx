@@ -71,7 +71,9 @@ function Gate() {
       await apiFetch("/admin/health", adminHealthSchema, { token: value.trim() });
       writeToken(value.trim());
     } catch (e) {
-      setError(isApiError(e, 403) ? t("forbidden") : e instanceof Error ? e.message : String(e));
+      if (isApiError(e, 503) && e.code === "api_unavailable") writeToken(value.trim());
+      else
+        setError(isApiError(e, 403) ? t("forbidden") : e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }

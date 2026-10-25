@@ -1,0 +1,27 @@
+# h4-11b-config-validation red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+30b6f44992be5af08f815ae40d3dd51bca5aeec2d270712beb124bb01be1929e  internal/config/inflow_test.go
+# tracked diff sha256=3d639a3cb84b998f330a234d0271d1fec27faa1ca774c9d60e0c03501771b2a0
+# command: go test -count=1 -v -run TestInflowIntervalsRejectNonPositiveAndMissing ./internal/config
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/zero
+    inflow_test.go:43: Load(zero)=<nil>; want compute.inflow_intervals error
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/negative
+    inflow_test.go:43: Load(negative)=<nil>; want compute.inflow_intervals error
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/missing_window
+    inflow_test.go:43: Load(missing window)=<nil>; want compute.inflow_intervals error
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/empty_intervals
+    inflow_test.go:43: Load(empty intervals)=<nil>; want compute.inflow_intervals error
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/empty_section
+    inflow_test.go:43: Load(empty section)=<nil>; want compute.inflow_intervals error
+--- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing (0.01s)
+    --- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing/zero (0.00s)
+    --- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing/negative (0.00s)
+    --- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing/missing_window (0.00s)
+    --- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing/empty_intervals (0.00s)
+    --- FAIL: TestInflowIntervalsRejectNonPositiveAndMissing/empty_section (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/config	0.357s
+FAIL
+
+# exit=1

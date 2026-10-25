@@ -1,0 +1,13 @@
+# h5-5-retention red base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestBalancesSurviveRawAndLedgerRetention -v ./internal/compute
+# sha256 internal/compute/balances_retention_test.go b494146f10db052c0d1e081b5c124325cb7dedc890e9b897dbd917238a2fc3e4
+=== RUN   TestBalancesSurviveRawAndLedgerRetention
+    balances_retention_test.go:28: expired deltas=1;want 0
+    balances_retention_test.go:31: expired journal=1;want 0
+    balances_retention_test.go:37: retention retracted historical balance=0;want 100
+--- FAIL: TestBalancesSurviveRawAndLedgerRetention (0.15s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.562s
+FAIL
+
+# exit=1

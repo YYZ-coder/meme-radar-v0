@@ -1,0 +1,12 @@
+# h2-1-import-timeout red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestBackendImportTimeoutMatchesContract$ ./internal/httpapi
+# test_sha256 d552cedf559dc9a2c776ea4ae89ff61c8e2219ad8a2880f7d4cbb028abe9613d internal/httpapi/backend_import_error_test.go
+=== RUN   TestBackendImportTimeoutMatchesContract
+    backend_import_error_test.go:48: POST /api/v1/admin/smart-money/imports → 503 violates contract: status 503 not declared
+        body: {"error":{"code":"busy","message":"query timed out","field":null,"trace_id":"7b510c274d87df507cc7a868f322831c"}}
+--- FAIL: TestBackendImportTimeoutMatchesContract (0.02s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/httpapi	0.459s
+FAIL
+# exit_status=1

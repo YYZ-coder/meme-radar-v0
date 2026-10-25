@@ -1,0 +1,6 @@
+# h5-8-h4-coverage green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyVolumes(NeedCoverage|UnknownAndZero|24h)$ ./internal/pgapi
+# sha256 internal/pgapi/smart_money_volume_coverage_test.go 2f335825cc3d2e6829d75ae8a1e05149c96780f8e43786df7bda2062af0e3994
+ok  	github.com/meme-radar/radar/internal/pgapi	2.142s
+
+# exit=0

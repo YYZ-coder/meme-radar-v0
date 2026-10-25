@@ -1,0 +1,8 @@
+# H6 4b-row-isolation green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Same real PG boundary after per-row upserts: supported character SQLSTATEs retry once without raw; sibling constraint failure reported, usable rows preserved and raw_omitted increments only after save.
+# command: go test -count=1 -run ^(TestMetadataWriteRetriesOnlyTheRejectedRawAndIsolatesRows|TestMetadataBatchIsIsolatedAndPendingWorkIsReplayable|TestMetadataOmitsRawThatJSONBRejects)$ ./internal/metadata
+# sha256 internal/metadata/persistence_test.go: 73fb05189a9615ae5eeda101fac8f682aca7f83157932ba40ecf704964cb8dda
+# sha256 internal/metadata/additional_test.go: 114040a4324d31cb035f1874dab8e80ea5694653d20d24517cc114e494d87558
+ok  	github.com/meme-radar/radar/internal/metadata	0.783s
+
+# exit=0

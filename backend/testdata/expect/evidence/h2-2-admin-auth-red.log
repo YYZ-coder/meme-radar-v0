@@ -1,0 +1,12 @@
+# h2-2-admin-auth red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run ^TestPgAPIStartup$ ./cmd/radar
+# test_sha256 1159dd3560be59494a461fa677245328ac49efe22bc72ef45c604e6d626e356c cmd/radar/api_pg_test.go
+=== RUN   TestPgAPIStartup
+    api_pg_test.go:114: unconfigured PG admin = 403 {"error":{"code":"forbidden","message":"admin token required","field":null,"trace_id":"f001a930545ca68af43b88eca1896461"}}
+        , want 401
+--- FAIL: TestPgAPIStartup (0.16s)
+FAIL
+FAIL	github.com/meme-radar/radar/cmd/radar	0.673s
+FAIL
+# exit_status=1

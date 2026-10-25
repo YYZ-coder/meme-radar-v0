@@ -1,0 +1,34 @@
+# h4-7-rows green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+# fixture correction after valid Red: provide BNB price at the actual trade minute and both reserve sides so existing Values/Liquidity can price the facts. No expected values changed.
+1587bf0f8dddecc245bdab6d368170422641c537ceeb110b14a05b0a047734aa  internal/compute/inflow_rows_test.go
+# tracked diff sha256=d5ecad248c3602e16aa6b1b45fe45b187c34673ce15abd5ae891d742dd1b95d4
+# command: go test -count=1 -v -run TestInflowRowsFromFacts|TestOverview ./internal/compute
+=== RUN   TestOverviewActiveWalletsExample
+--- PASS: TestOverviewActiveWalletsExample (0.60s)
+=== RUN   TestOverviewLargeSmallExample
+=== RUN   TestOverviewLargeSmallExample/strict_boundary_same_wallet
+=== RUN   TestOverviewLargeSmallExample/amount_weighted_percentages
+=== RUN   TestOverviewLargeSmallExample/unknown_buy
+=== RUN   TestOverviewLargeSmallExample/unknown_sell
+=== RUN   TestOverviewLargeSmallExample/no_buys
+=== RUN   TestOverviewLargeSmallExample/partial
+--- PASS: TestOverviewLargeSmallExample (0.94s)
+    --- PASS: TestOverviewLargeSmallExample/strict_boundary_same_wallet (0.14s)
+    --- PASS: TestOverviewLargeSmallExample/amount_weighted_percentages (0.15s)
+    --- PASS: TestOverviewLargeSmallExample/unknown_buy (0.13s)
+    --- PASS: TestOverviewLargeSmallExample/unknown_sell (0.20s)
+    --- PASS: TestOverviewLargeSmallExample/no_buys (0.16s)
+    --- PASS: TestOverviewLargeSmallExample/partial (0.15s)
+=== RUN   TestOverviewNetInflowBarsAndChange
+--- PASS: TestOverviewNetInflowBarsAndChange (0.16s)
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+=== RUN   TestInflowRowsFromFacts/partial
+--- PASS: TestInflowRowsFromFacts (0.39s)
+    --- PASS: TestInflowRowsFromFacts/complete (0.20s)
+    --- PASS: TestInflowRowsFromFacts/partial (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	2.602s
+
+# exit=0

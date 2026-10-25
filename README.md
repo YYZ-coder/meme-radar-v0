@@ -2,97 +2,121 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-A multi-chain meme-token smart-money tracker. It runs its own on-chain indexer for Solana, Base, and BSC and provides smart-money inflows, signals, a leaderboard, token and wallet analytics, wallet tracking, and quick trading.
+An on-chain token and smart-money terminal for Solana, Base and BSC. It collects raw blocks, parses trades and balance changes, derives market data, candles, holdings and inflow projections in PostgreSQL, and serves a Next.js frontend through a Go API.
 
-**Status (2026-10-19):** design docs finalized; backend skeleton and migrations `00001`–`00008` landed; the M1 API contract `api/openapi.yaml` is frozen; **the M1 frontend is done** (pixel-terminal style, currently served by the built-in mock API); backend ingestion/parsing/derivation/API are pending per the [M1 task cards](docs/engineering/16-m1-agent-tasks.md). Doc index: [docs/README.md](docs/README.md) (Chinese is the source of truth).
+The current scope is **M1: inflow, token details and administration**. Signals, leaderboards, wallet analytics, wallet login and quick trading belong to later milestones; navigation entries do not imply that those features are implemented.
 
-![Inflow page (pixel UI, demo data)](docs/assets/inflow-en.png)
+## Current status
 
-## Features and milestones
+As of 2026-10-25, the PostgreSQL API, list versioning, inflow projections, holdings replay, metadata fetching and operational health/decode retries are connected. The deployed frontend uses the real API, and the mock backend has been stopped.
 
-| Milestone | Delivery |
-| --- | --- |
-| M0 | RPC validation for all three chains: full-block and 30-day history (D73) availability, request volume, cost |
-| M1 | Ingestion and parsing on three chains; **Inflow** list; **Token detail** (chart, activity, holders, pools); admin console (smart-money import, run quality); Chinese/English UI switch |
-| M2 | **Leaderboard** (7d/30d); **Wallet analysis** (assets, PnL, win rate); automatic smart-money detection |
-| M3 | **Signals**; address labels (dev, sniper, bundler, insider, whale, KOL); token info card, dev tokens |
-| M4 | Wallet sign-in; **follow / track / collections**, alerts; WebSocket push |
-| M5 | **Quick trade** (non-custodial, signed in the user's wallet) |
+Deployment acceptance remains incomplete: list queries can time out, derived data can lag, historical holdings are still being replayed, and some external metadata sources are unavailable. A running service and a successful `/healthz` establish process/database readiness; data completeness and freshness require separate verification.
 
-After M5: limit orders, copy trading/bots, security checks, holder bubble map, AI insights. See [milestones](docs/engineering/11-milestones.md) and the [decision log](docs/DECISIONS.md).
+| Connected capability | Current boundary                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| Inflow list          | Three chains, five windows, filtering/sorting, fixed-snapshot pagination and visible-row refresh |
+| Token details        | Market data, main-pool candles, activities, holders, liquidity pools and changes                 |
+| Smart-money lists    | CSV/JSON validation, asynchronous builds, version activation, exclusion and restoration          |
+| Operational health   | Ingestion/parsing progress, gaps, decode failures and a persistent retry queue                   |
+| UI and observability | English/Chinese UI, mobile layout, coverage indicators, Prometheus/Grafana/Loki                  |
 
-## Initial coverage
-
-| Chain | Protocols |
-| --- | --- |
-| Solana | Pump.fun, PumpSwap, Raydium LaunchLab and graduated pools, Jupiter route detection |
-| Base | Clanker, Uniswap v4 |
-| BSC | Four.meme, PancakeSwap |
-
-## Key definitions
-
-- Amounts are aggregated per token and shown in USD, switchable to the native coin (SOL/ETH/BNB).
-- Price comes from the latest trade in the main pool (highest 1h average liquidity); curve graduation switches pools immediately.
-- PnL uses FIFO. Unknown cost is never treated as zero; such tokens are excluded from win rate and rankings.
-- Smart money = admin-imported list + automatic detection based on 30-day PnL and win rate.
-- Missing data is shown as "--", never as 0.
-
-Full definitions: [docs index](docs/README.md) (metrics section).
-
-## Architecture
+## How data flows
 
 ```mermaid
 flowchart LR
-    NODE["Solana / Base / BSC nodes"] --> COL["Ingestion: full blocks + 30-day history"]
-    COL --> RAW[("Raw object store")]
-    RAW --> PAR["Protocol parsing + wallet attribution"]
-    PAR --> CALC["Pricing · FIFO · holdings · smart money · signals"]
-    CALC --> DB[("PostgreSQL")]
-    DB --> API["Go REST / WebSocket"]
-    API --> WEB["Next.js"]
-    WEB -->|signed tx| W["User wallet"]
+    RPC["Chain RPC"] --> IN["Ingestion and backfill"]
+    IN --> DB[("PostgreSQL")]
+    DB <--> PARSE["Protocol and balance parsing"]
+    PRICE["Price sources"] --> COMPUTE["Computation and projections"]
+    DB <--> COMPUTE
+    META["Chain lookups and metadata"] --> ENRICH["Supply and metadata enrichment"]
+    ENRICH --> DB
+    DB --> API["Go API"]
+    API --> WEB["Next.js frontend"]
 ```
 
-| Layer | Technology |
-| --- | --- |
-| Backend | Go (net/http, slog, database/sql, pgx, goose) |
-| Frontend | Next.js App Router, TypeScript |
-| Database | PostgreSQL 17 (BYTEA addresses/hashes; facts partitioned by chain) |
-| Charts | TradingView Lightweight Charts |
+Ingestion currently uses **HTTP JSON-RPC block polling**. Solana fetches full blocks; EVM fetches full blocks and receipts. Protocol filtering happens during parsing. Yellowstone gRPC ingestion is not implemented.
 
-## Layout
+| Chain  | Currently enabled decoders                             |
+| ------ | ------------------------------------------------------ |
+| Solana | Pump.fun, PumpSwap                                     |
+| Base   | Clanker v4, Doppler, using Uniswap v4 pool information |
+| BSC    | Four.meme, PancakeSwap V2/V3, Pancake Infinity CL      |
 
-```text
-meme-radar/
-├── README.md / README.zh-CN.md
-├── Makefile
-├── docker-compose.yml
-├── api/openapi.yaml
-├── docs/                  # start at docs/README.md
-├── backend/migrations/    # authoritative goose DDL
-├── backend/cmd/radar/
-├── frontend/
-└── scripts/               # demo sample fetch/decode
+## Local development
+
+Requirements: Go 1.26.5, Node 24 (see [.node-version](.node-version)) and npm 11. Real-data operation and database integration tests also require PostgreSQL 17 or Docker Compose.
+
+```sh
+make setup
+make dev
 ```
 
-## Development
+Open the [inflow page](http://127.0.0.1:3000/smart-money/inflow). `make dev` uses the frontend's built-in demo data by default.
 
-| Command | Purpose |
-| --- | --- |
-| `docker compose up -d postgres` | Local DB on port 5433 |
-| `make setup` | Install deps and pre-commit hook |
-| `make check` | Backend + frontend checks (includes backend smoke) |
-| `make -C backend run` | Start API (runs migrations) |
-| `npm --prefix frontend run dev` | Start frontend |
-| `make smoke` | Smoke tests |
+| Command                        | Purpose                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| `make dev-connected`           | Develop the frontend against the Go mock API                                              |
+| `make up`                      | Start the default Docker demo environment, which still uses the mock API                  |
+| `make check`                   | Backend gates, frontend checks/build and browser smoke tests in both modes                |
+| `make check-race`              | Run Go race checks; database integration requires a configured test database              |
+| `make -C backend test-db`      | Run race tests with isolated temporary databases on a dedicated local PostgreSQL instance |
+| `make frontend TASK=api:types` | Regenerate frontend types from OpenAPI                                                    |
 
-See [backend](backend/AGENTS.md) and [frontend](frontend/AGENTS.md) conventions. Reading order: [docs/README.md](docs/README.md).
+The demo admin token is `mock-admin`, for demo mode only.
 
-## Constraints
+## Connecting to PostgreSQL
 
-- Real API keys live only in backend secret configuration, never in chat, the repository, or the frontend.
-- Signing up for or purchasing data services requires explicit approval; validation budget is USD 100/month (pause forward at cap, D104).
-- Trading is non-custodial: the server never stores private keys or signs on the user's behalf.
-- No third-party private APIs or brand assets are used.
+Create a local `.env` using [.env.example](.env.example) and set `RADAR_DATABASE_URL`. Set a separate random `RADAR_ADMIN_TOKEN` if administration is needed. Keep real connection strings and tokens out of version control. The Go binary does not load `.env` automatically; Compose injects it into Docker roles.
 
-License and public URL are to be decided.
+To start a standalone real API for the first time, use shell-compatible assignments in `.env`:
+
+```sh
+make -C backend build
+set -a
+. ./.env
+set +a
+./backend/bin/radar api --store=pg --addr=127.0.0.1:8081
+```
+
+API startup applies database migrations, so verify the database target and migration permissions before connecting it to real data. Start the frontend in another terminal:
+
+```sh
+cd frontend
+RADAR_API_ORIGIN=http://127.0.0.1:8081 npm run dev
+```
+
+Production builds must use **the same origin at build time and runtime**: business requests read the runtime proxy configuration, while the `/healthz` rewrite is generated during the build.
+
+```sh
+cd frontend
+RADAR_API_ORIGIN=http://127.0.0.1:8081 npm run build
+RADAR_API_ORIGIN=http://127.0.0.1:8081 npm run start
+```
+
+An empty database does not populate itself. Ingestion, parsing, computation and enrichment must also run; the Compose `ingest` profile contains these 12 backend roles. `make ingest-up` starts them but does not switch the default Docker frontend to the real API. See the [technical overview](TECHNICAL_OVERVIEW.md#10-running-and-deploying) for a frontend Compose override. Existing deployments should retain their release overrides and pinned images to avoid replacing their configuration with the demo defaults.
+
+## API and data semantics
+
+- The contract is [api/openapi.yaml](api/openapi.yaml). The frontend generates types and validates responses at runtime; server responses also have contract tests.
+- The first inflow query freezes up to 2,000 rows. Pagination uses `query_id`; visible values refresh in batches every 10 seconds without reordering rows.
+- Gaps, unfinished historical replay and unknown prices affect complete statistics. Unknown values remain `NULL` and render as `--`; observed parsed counts are presented separately from complete-window statistics.
+- List changes build a new version asynchronously. The previous active list remains available during preparation. After activation, value refreshes tied to the old snapshot return `410` and prompt a new query.
+- The real API does not return `X-Radar-Mock`. An unavailable upstream produces an error, with no automatic fallback to demo data.
+- Administration uses Bearer tokens. The browser stores a token only in the current tab's `sessionStorage`. PG admin routes are disabled when no admin token is configured.
+
+## Repository guide
+
+| Location                                                                                   | Contents                                                                         |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| [TECHNICAL_OVERVIEW.md](TECHNICAL_OVERVIEW.md)                                             | Standalone technical overview, sequences and testing boundaries                  |
+| [backend/README.md](backend/README.md)                                                     | Backend roles, commands and configuration                                        |
+| [frontend/README.md](frontend/README.md)                                                   | Pages, frontend modes and checks                                                 |
+| [api/openapi.yaml](api/openapi.yaml)                                                       | HTTP contract                                                                    |
+| [backend/migrations](backend/migrations)                                                   | Ordered database migrations                                                      |
+| [backend/internal/config/config.default.yaml](backend/internal/config/config.default.yaml) | Default chains, protocols, price sources, backfill windows and refresh schedules |
+| [docker-compose.yml](docker-compose.yml)                                                   | Demo services, real-data roles and observability components                      |
+| [ops/observability](ops/observability)                                                     | Metrics, logs, dashboards and alerts                                             |
+| [AGENTS.md](AGENTS.md)                                                                     | TDD, commits, isolated worktrees and deployment rules                            |
+
+Database integration tests, browser acceptance against real data and post-deployment raw-data reconciliation each verify different boundaries. Demo smoke tests cannot establish acceptance of the real data path.

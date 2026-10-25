@@ -1,0 +1,12 @@
+# H6 6c-enrich red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: radar enrich command + real PG token_metadata boundary; config supplies gateway and RPS, Clanker requires no HTTP/RPC
+# command: go test -count=1 -run ^TestEnrichRunsMetadataStepWithConfiguredGateway$ ./cmd/radar
+# sha256 cmd/radar/enrich_metadata_test.go: 971d07e34982837291490984ea63386ec23349c0b600d24aaed63bb8d67ba746
+--- FAIL: TestEnrichRunsMetadataStepWithConfiguredGateway (1.11s)
+    enrich_metadata_test.go:59: enrich lost configured metadata RPS: {IPFSGateways:[] RPS:0 PerHostRPS:0 FourMemeAPIURL: FourMemeRPS:0}
+    enrich_metadata_test.go:95: enrich never persisted its metadata step
+FAIL
+FAIL	github.com/meme-radar/radar/cmd/radar	1.566s
+FAIL
+
+# exit=1

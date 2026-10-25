@@ -3,8 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-// Same-origin /api/v1 (14-frontend §3). With RADAR_API_ORIGIN set at build time the
-// requests are proxied to the Go API; otherwise the built-in mock route answers.
+// API forwarding lives in the route handler so connection failures retain the
+// API error contract. The runner binds build and runtime to the same origin.
 const apiOrigin = process.env.RADAR_API_ORIGIN?.replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
@@ -17,10 +17,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return apiOrigin
       ? {
-          beforeFiles: [
-            { source: "/api/v1/:path*", destination: `${apiOrigin}/api/v1/:path*` },
-            { source: "/healthz", destination: `${apiOrigin}/healthz` },
-          ],
+          beforeFiles: [{ source: "/healthz", destination: `${apiOrigin}/healthz` }],
           afterFiles: [],
           fallback: [],
         }

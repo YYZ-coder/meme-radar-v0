@@ -65,7 +65,7 @@ export const InflowTableRow = memo(function InflowTableRow({
 }) {
   const t = useTranslations("inflow");
   const copy = useCopy();
-  const symbol = row.token.symbol;
+  const symbol = row.token.symbol.trim() || shortAddress(row.token.address);
   const cur = row.currency;
   const points = normalizePoints(row.sparkline.map((p) => (p === null ? null : Number(p))));
   return (
@@ -144,6 +144,20 @@ export const InflowTableRow = memo(function InflowTableRow({
           <span className="divider-slash"> / </span>
           <span className="negative">{formatCount(row.sells, locale)}</span>
         </small>
+        {row.trades === null && row.coverage === "partial" ? (
+          <>
+            <small className="observed-counts" title={t("parsedHint")}>
+              {t("parsedCounts", {
+                trades: formatCount(row.observed.trades, locale),
+                buys: formatCount(row.observed.buys, locale),
+                sells: formatCount(row.observed.sells, locale),
+              })}
+            </small>
+            <small className="parsed-coverage" title={t("parsedHint")}>
+              {t("parsedCoverage")}
+            </small>
+          </>
+        ) : null}
       </td>
       <td className="mono">{formatAmount(row.volume, locale, cur)}</td>
       <td className={`mono inflow-value ${toneOf(row.net_inflow)}`}>

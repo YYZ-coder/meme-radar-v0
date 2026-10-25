@@ -1,0 +1,189 @@
+--- HEAD/internal/parser/health_test.go
++++ worktree/internal/parser/health_test.go
+@@ -0,0 +1,186 @@
++package parser_test
++
++import (
++	"context"
++	"errors"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/jackc/pgx/v5"
++	"github.com/meme-radar/radar/internal/metrics"
++	"github.com/prometheus/client_golang/prometheus/testutil"
++
++	"github.com/meme-radar/radar/internal/parse"
++	"github.com/meme-radar/radar/internal/parser"
++	"github.com/meme-radar/radar/internal/store"
++)
++
++func TestParserRegistersStatusAtStartup(t *testing.T) {
++	st, c := setup(t)
++	commit(t, st, 7, []byte(`{}`))
++	for _, tc := range []struct {
++		version  int
++		decoders []string
++	}{{8, []string{"pump_fun", "pumpswap"}}, {9, []string{"pump_fun"}}} {
++		ctx, cancel := context.WithCancel(context.Background())
++		before := time.Now().UTC()
++		p := parser.New(parser.Config{Chain: "solana", Store: st, Version: tc.version, Decoders: tc.decoders, Batch: 1, Decode: func(context.Context, []byte) (parser.Decoded, error) { cancel(); return parser.Decoded{}, nil }})
++		done := make(chan error, 1)
++		go func() { done <- p.Run(ctx) }()
++		select {
++		case err := <-done:
++			if err != nil {
++				t.Fatal(err)
++			}
++		case <-time.After(5 * time.Second):
++			cancel()
++			t.Fatal("parser did not stop")
++		}
++		cancel()
++		var version int
++		var decoders []string
++		var started time.Time
++		if err := c.QueryRow(context.Background(), `SELECT version,decoders,started_at FROM parser_status WHERE chain='solana'`).Scan(&version, &decoders, &started); err != nil {
++			t.Fatalf("startup must persist parser status before decoding: %v", err)
++		}
++		if version != tc.version || !reflect.DeepEqual(decoders, tc.decoders) || started.Before(before.Add(-time.Microsecond)) || started.After(time.Now().UTC()) {
++			t.Fatalf("startup status=%d/%v/%s; want version %d and enabled modules %v at this startup", version, decoders, started, tc.version, tc.decoders)
++		}
++	}
++}
++
++func TestParserReparsesRetriedBlocks(t *testing.T) {
++	ctx := context.Background()
++	st, c := setup(t)
++	commit(t, st, 7, []byte(`{}`))
++	bad := parser.New(parser.Config{Chain: "solana", Store: st, Version: 8, Batch: 10, Decode: func(context.Context, []byte) (parser.Decoded, error) {
++		return parser.Decoded{Facts: parse.Facts{Failures: []parse.Failure{{Tx: 2, Decoder: "pump_fun", Err: "old failure"}, {Tx: 3, Decoder: "pumpswap", Err: "old failure"}}}}, nil
++	}})
++	if _, err := bad.Step(ctx); err != nil {
++		t.Fatal(err)
++	}
++	rows, err := c.Query(ctx, `SELECT id FROM decode_failures WHERE chain='solana' ORDER BY id`)
++	if err != nil {
++		t.Fatal(err)
++	}
++	ids, err := pgx.CollectRows(rows, pgx.RowTo[int64])
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(ids) != 2 {
++		t.Fatalf("fixture failures=%v; want two", ids)
++	}
++	for _, id := range ids {
++		if _, err := st.QueueParseRetry(ctx, id, time.Now().UTC()); err != nil {
++			t.Fatal(err)
++		}
++	}
++	// The base chain has the same block number: a solana step must leave it alone.
++	at := time.Unix(1792719992, 0)
++	if err := st.Commit(ctx, store.Commit{Chain: "base", Block: store.Block{Num: 7, Hash: []byte{7}, Time: at, Status: store.StatusConfirmed, Payload: []byte(`{}`), Source: "test"}}); err != nil {
++		t.Fatal(err)
++	}
++	if err := st.ApplyParsed(ctx, store.Parsed{Chain: "base", Num: 7, Time: at, Version: 8, Facts: parse.Facts{Failures: []parse.Failure{{Tx: 1, Decoder: "doppler", Err: "base failure"}}}}); err != nil {
++		t.Fatal(err)
++	}
++	var other int64
++	if err := c.QueryRow(ctx, `SELECT id FROM decode_failures WHERE chain='base'`).Scan(&other); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := st.QueueParseRetry(ctx, other, time.Now().UTC()); err != nil {
++		t.Fatal(err)
++	}
++	good := parser.New(parser.Config{Chain: "solana", Store: st, Version: 8, Batch: 10, Decode: func(context.Context, []byte) (parser.Decoded, error) {
++		return parser.Decoded{Facts: parse.Facts{Tokens: []parse.Token{{Address: make([]byte, 32), Created: true, Symbol: "RECOVERED"}}}}, nil
++	}})
++	if _, err := good.Step(ctx); err != nil {
++		t.Fatal(err)
++	}
++	for sql, want := range map[string]string{
++		`SELECT count(*)::text FROM decode_failures WHERE chain='solana'`:                       "0",
++		`SELECT count(*)::text FROM parse_retries WHERE chain='solana' AND done_at IS NOT NULL`: "2",
++		`SELECT parsed_version::text FROM chain_blocks WHERE chain='solana' AND block_num=7`:    "8",
++		`SELECT count(*)::text FROM tokens WHERE chain='solana' AND symbol='RECOVERED'`:         "1",
++		`SELECT count(*)::text FROM parse_retries WHERE chain='base' AND done_at IS NULL`:       "1",
++		`SELECT count(*)::text FROM decode_failures WHERE chain='base'`:                         "1",
++	} {
++		if got := query(t, c, sql); got != want {
++			t.Errorf("%s=%s; want %s", sql, got, want)
++		}
++	}
++}
++
++func TestParserRetryMetrics(t *testing.T) {
++	ctx := context.Background()
++	st, c := setup(t)
++	commit(t, st, 7, []byte(`{}`))
++	at := time.Unix(1792719992, 0)
++	if err := st.ApplyParsed(ctx, store.Parsed{Chain: "solana", Num: 7, Time: at, Version: 8, Facts: parse.Facts{Failures: []parse.Failure{{Tx: 1, Decoder: "pump_fun", Err: "old failure"}}}}); err != nil {
++		t.Fatal(err)
++	}
++	var id int64
++	if err := c.QueryRow(ctx, `SELECT id FROM decode_failures`).Scan(&id); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := st.QueueParseRetry(ctx, id, time.Now()); err != nil {
++		t.Fatal(err)
++	}
++	before := testutil.ToFloat64(metrics.ParseRetryBlocks.WithLabelValues("solana"))
++	p := parser.New(parser.Config{Chain: "solana", Store: st, Version: 8, Batch: 10, Decode: func(context.Context, []byte) (parser.Decoded, error) { return parser.Decoded{}, nil }})
++	for i := 0; i < 2; i++ {
++		if _, err := p.Step(ctx); err != nil {
++			t.Fatal(err)
++		}
++		if got := testutil.ToFloat64(metrics.ParseRetryBlocks.WithLabelValues("solana")) - before; got != 1 {
++			t.Fatalf("reset blocks increment=%v after step %d; want 1 even after the next empty step", got, i+1)
++		}
++	}
++}
++
++// TestParserRetryAtomicAndRestart supplements the TDD path with a real SQL
++// rollback and a restart after a transient decoder failure.
++func TestParserRetryAtomicAndRestart(t *testing.T) {
++	ctx := context.Background()
++	st, c := setup(t)
++	commit(t, st, 7, []byte(`{}`))
++	at := time.Unix(1792719992, 0)
++	if err := st.ApplyParsed(ctx, store.Parsed{Chain: "solana", Num: 7, Time: at, Version: 8, Facts: parse.Facts{Failures: []parse.Failure{{Tx: 1, Decoder: "pump_fun", Err: "old failure"}}}}); err != nil {
++		t.Fatal(err)
++	}
++	var id int64
++	if err := c.QueryRow(ctx, `SELECT id FROM decode_failures`).Scan(&id); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := st.QueueParseRetry(ctx, id, time.Now()); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := c.Exec(ctx, `CREATE FUNCTION reject_retry_reset() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'test reset rejected'; END$$;
++ CREATE TRIGGER reject_retry_reset BEFORE UPDATE OF parsed_version ON chain_blocks FOR EACH ROW EXECUTE FUNCTION reject_retry_reset()`); err != nil {
++		t.Fatal(err)
++	}
++	p := parser.New(parser.Config{Chain: "solana", Store: st, Version: 8, Batch: 10, Decode: func(context.Context, []byte) (parser.Decoded, error) { return parser.Decoded{}, parse.ErrRetry }})
++	if _, err := p.Step(ctx); err == nil || !strings.Contains(err.Error(), "test reset rejected") {
++		t.Fatalf("reset rejection=%v; want real PostgreSQL rejection", err)
++	}
++	if got := query(t, c, `SELECT (SELECT parsed_version FROM chain_blocks)::text||'/'||(SELECT count(*) FROM parse_retries WHERE done_at IS NULL)`); got != "8/1" {
++		t.Fatalf("rollback=%s; want parsed version8 and pending request", got)
++	}
++	if _, err := c.Exec(ctx, `DROP TRIGGER reject_retry_reset ON chain_blocks`); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := p.Step(ctx); !errors.Is(err, parse.ErrRetry) {
++		t.Fatalf("transient decode error=%v; want ErrRetry", err)
++	}
++	if got := query(t, c, `SELECT (SELECT count(*) FROM chain_blocks WHERE parsed_version IS NULL)::text||'/'||(SELECT count(*) FROM parse_retries WHERE done_at IS NOT NULL)`); got != "1/1" {
++		t.Fatalf("transient state=%s; want unparsed block and executed reset", got)
++	}
++	restarted := parser.New(parser.Config{Chain: "solana", Store: st, Version: 8, Batch: 10, Decode: func(context.Context, []byte) (parser.Decoded, error) { return parser.Decoded{}, nil }})
++	if _, err := restarted.Step(ctx); err != nil {
++		t.Fatal(err)
++	}
++	if got := query(t, c, `SELECT (SELECT count(*) FROM decode_failures)::text||'/'||(SELECT parsed_version FROM chain_blocks)||'/'||(SELECT count(*) FROM parse_retries)`); got != "0/8/1" {
++		t.Fatalf("restart=%s; want no failures/current version/same request history", got)
++	}
++}

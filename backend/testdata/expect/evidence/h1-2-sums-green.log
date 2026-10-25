@@ -1,0 +1,11 @@
+# H1 2-sums green base=e9ec08397246d0570c1d43319ff0bea9006f0f09+worktree
+# UTC 2026-10-23T14:11:06.226001+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTokenWindowsSumMinuteStats$ ./internal/store
+# sha256 internal/store/window_test.go 0fa3045b11f7f78708efdbad7a3333a93a226aad8b7cebe931b0a1efcc4fb0fa
+# test diff sha256 fa9cc6d53b5fdd07401372b2f9b6ae6f49214453ce95cc065a2cb225b5707ac6
+=== RUN   TestTokenWindowsSumMinuteStats
+--- PASS: TestTokenWindowsSumMinuteStats (0.96s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	1.461s
+
+# exit_code=0

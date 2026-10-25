@@ -1,0 +1,9 @@
+# h5-8-smart-cards green base=e401ba4487d4b35079272f343e351b017182df03+worktree
+# command: go test -count=1 -run ^TestPgTokenSmartMoneyAndCreator$ -v ./internal/pgapi
+# sha256 internal/pgapi/holdings_smart_money_test.go f0775767c934b2d58b3c4517d4779ad2f33923cb7312bbbb5aed479fd17366e3
+=== RUN   TestPgTokenSmartMoneyAndCreator
+--- PASS: TestPgTokenSmartMoneyAndCreator (0.42s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.913s
+
+# exit=0

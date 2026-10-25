@@ -1,0 +1,7 @@
+# H6 3-pump green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: Fetcher.Fetch; hand-read independent literals from three Pinata recordings verified by SHA256 CIDv1 raw (record_pump.py)
+# command: go test -count=1 -run ^TestFetchPumpMetadata$ ./internal/metadata
+# sha256 internal/metadata/parse_test.go: 0082d44530a9182eb4966415fcebaefe8bd649ad7033554ef4a3e13a75f447f2
+ok  	github.com/meme-radar/radar/internal/metadata	0.401s
+
+# exit=0

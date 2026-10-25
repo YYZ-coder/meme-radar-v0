@@ -1,0 +1,49 @@
+rule_files:
+  - rules.yml
+evaluation_interval: 1m
+tests:
+  - name: one failed list build fires and later leaves the five minute window
+    interval: 1m
+    input_series:
+      - series: 'radar_list_builds_total{outcome="failed"}'
+        values: '0 0 1 1 1 1 1 1 1 1 1'
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: ListBuildFailed
+        exp_alerts: []
+      - eval_time: 3m
+        alertname: ListBuildFailed
+        exp_alerts:
+          - exp_labels: {severity: warning}
+            exp_annotations: {summary: 'a list build failed in the last 5 minutes'}
+      - eval_time: 9m
+        alertname: ListBuildFailed
+        exp_alerts: []
+  - name: queued list job fires strictly after five minutes
+    interval: 1m
+    input_series:
+      - series: 'radar_jobs_oldest_queued_seconds{kind="list_build"}'
+        values: '0 60 120 180 240 300 360 420'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: ListBuildStuck
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: ListBuildStuck
+        exp_alerts:
+          - exp_labels: {severity: warning, kind: list_build}
+            exp_annotations: {summary: 'a list build has been queued for more than 5 minutes'}
+  - name: empty queue and successful builds do not alert
+    interval: 1m
+    input_series:
+      - series: 'radar_jobs_oldest_queued_seconds{kind="list_build"}'
+        values: '0+0x12'
+      - series: 'radar_list_builds_total{outcome="activated"}'
+        values: '0+1x12'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ListBuildFailed
+        exp_alerts: []
+      - eval_time: 10m
+        alertname: ListBuildStuck
+        exp_alerts: []

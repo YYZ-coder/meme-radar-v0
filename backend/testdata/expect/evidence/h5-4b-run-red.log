@@ -1,0 +1,11 @@
+# h5-4b-run red base=a465911d945ed65dcd81b33cac606808101ffea5+worktree
+# command: go test -count=1 -run TestBalanceRunResumesAndReportsProgress -v ./internal/parser
+# sha256 internal/parser/balances_run_test.go 3ab2c3b37547aea6614de4d13dd0f753fee7f83f4d7a888913284a6a8f26d204
+=== RUN   TestBalanceRunResumesAndReportsProgress
+    balances_run_test.go:32: balance Run returned before progress: <nil>
+--- FAIL: TestBalanceRunResumesAndReportsProgress (0.21s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parser	0.660s
+FAIL
+
+# exit=1

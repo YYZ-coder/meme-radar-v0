@@ -1,0 +1,34 @@
+# h2-5 race base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# command: go test -race -count=1 ./...
+# RADAR_TEST_DATABASE_URL: local PostgreSQL 127.0.0.1:55432; RADAR_E2E_PORT=31210 RADAR_E2E_API_PORT=31220; Node=24.19.0
+ok  	github.com/meme-radar/radar/cmd/radar	2.809s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	2.730s
+ok  	github.com/meme-radar/radar/internal/compute	4.524s
+ok  	github.com/meme-radar/radar/internal/config	1.777s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.716s
+ok  	github.com/meme-radar/radar/internal/evm	1.801s
+ok  	github.com/meme-radar/radar/internal/httpapi	5.618s
+ok  	github.com/meme-radar/radar/internal/ingest	5.679s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.971s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.735s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	2.589s
+ok  	github.com/meme-radar/radar/internal/metrics	1.688s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.502s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.736s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.537s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.581s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.390s
+ok  	github.com/meme-radar/radar/internal/parser	4.629s
+ok  	github.com/meme-radar/radar/internal/pgapi	3.242s
+ok  	github.com/meme-radar/radar/internal/prices	1.428s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.416s
+ok  	github.com/meme-radar/radar/internal/store	4.748s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit_status=0

@@ -1,0 +1,50 @@
+=== RUN   TestFillInflowBuckets
+=== RUN   TestFillInflowBuckets/all_empty
+=== RUN   TestFillInflowBuckets/seed_only
+=== RUN   TestFillInflowBuckets/first_and_last
+=== RUN   TestFillInflowBuckets/all_twenty
+--- PASS: TestFillInflowBuckets (0.00s)
+    --- PASS: TestFillInflowBuckets/all_empty (0.00s)
+    --- PASS: TestFillInflowBuckets/seed_only (0.00s)
+    --- PASS: TestFillInflowBuckets/first_and_last (0.00s)
+    --- PASS: TestFillInflowBuckets/all_twenty (0.00s)
+=== RUN   TestInflowSQLBuckets
+=== RUN   TestInflowSQLBuckets/all_empty
+=== RUN   TestInflowSQLBuckets/seed_only
+=== RUN   TestInflowSQLBuckets/first_and_last
+=== RUN   TestInflowSQLBuckets/all_twenty
+--- PASS: TestInflowSQLBuckets (0.45s)
+    --- PASS: TestInflowSQLBuckets/all_empty (0.00s)
+    --- PASS: TestInflowSQLBuckets/seed_only (0.00s)
+    --- PASS: TestInflowSQLBuckets/first_and_last (0.00s)
+    --- PASS: TestInflowSQLBuckets/all_twenty (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	2.132s
+=== RUN   TestProjectionHeadSwitchIsAtomic
+--- PASS: TestProjectionHeadSwitchIsAtomic (0.47s)
+=== RUN   TestInflowCopyFailureRollsBackWholeVersion
+--- PASS: TestInflowCopyFailureRollsBackWholeVersion (0.27s)
+=== RUN   TestProjectionWaitsForStatsAndSmTrades
+--- PASS: TestProjectionWaitsForStatsAndSmTrades (0.21s)
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+=== RUN   TestInflowRowsFromFacts/partial
+--- PASS: TestInflowRowsFromFacts (0.42s)
+    --- PASS: TestInflowRowsFromFacts/complete (0.22s)
+    --- PASS: TestInflowRowsFromFacts/partial (0.20s)
+=== RUN   TestInflowSparkline
+=== RUN   TestInflowSparkline/1h/seed=false
+=== RUN   TestInflowSparkline/1h/seed=true
+=== RUN   TestInflowSparkline/5m/seed=false
+=== RUN   TestInflowSparkline/5m/seed=true
+--- PASS: TestInflowSparkline (0.74s)
+    --- PASS: TestInflowSparkline/1h/seed=false (0.20s)
+    --- PASS: TestInflowSparkline/1h/seed=true (0.18s)
+    --- PASS: TestInflowSparkline/5m/seed=false (0.17s)
+    --- PASS: TestInflowSparkline/5m/seed=true (0.18s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	3.799s
+=== RUN   TestPgInflowEndToEnd
+--- PASS: TestPgInflowEndToEnd (0.71s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	2.428s

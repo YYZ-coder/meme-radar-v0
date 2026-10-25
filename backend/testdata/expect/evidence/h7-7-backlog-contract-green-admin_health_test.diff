@@ -1,0 +1,374 @@
+--- HEAD/internal/pgapi/admin_health_test.go
++++ worktree/internal/pgapi/admin_health_test.go
+@@ -0,0 +1,371 @@
++package pgapi_test
++
++import (
++	"context"
++	"encoding/json"
++	"errors"
++	"fmt"
++	"github.com/meme-radar/radar/internal/contracttest"
++	"net/http"
++	"net/http/httptest"
++	"reflect"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/meme-radar/radar/internal/api"
++	"github.com/meme-radar/radar/internal/config"
++	"github.com/meme-radar/radar/internal/parse"
++	"github.com/meme-radar/radar/internal/pgapi"
++	"github.com/meme-radar/radar/internal/store"
++)
++
++// healthFixture uses ingest/parse/compute writers; the expectations are the
++// hand-worked H7 task examples, independent of the health query.
++func healthFixture(t *testing.T) *fixture {
++	t.Helper()
++	f := newFixture(t)
++	f.cfg.Chains = []config.Chain{
++		{Name: "bsc", Backfill: config.Backfill{Hours: 1}, Ingest: config.Ingest{BlockInterval: config.Duration(36 * time.Second)}},
++		{Name: "base"}, {Name: "solana"},
++	}
++	ctx := context.Background()
++	put := func(chain string, n uint64, g *store.Gap, forward *store.Cursor, fill int64) {
++		t.Helper()
++		if err := f.st.Commit(ctx, store.Commit{Chain: chain, Block: store.Block{Num: n, Hash: raw(32, byte(n)), ParentHash: raw(32, byte(n-1)), Time: f.now.Add(-7 * time.Second), Status: store.StatusConfirmed, Payload: []byte(`{}`), Source: "test"}, NewGap: g, Forward: forward, FillGap: fill}); err != nil {
++			t.Fatal(err)
++		}
++	}
++	put("bsc", 990, &store.Gap{From: 900, To: 949, Reason: "startup"}, &store.Cursor{Anchor: 950, Position: 990, Head: 1000}, 0)
++	put("bsc", 989, &store.Gap{From: 980, To: 982, Reason: "rate_limited"}, nil, 0)
++	put("bsc", 988, &store.Gap{From: 970, To: 970, Reason: "startup"}, nil, 0)
++	gaps, err := f.st.OpenGaps(ctx, "bsc")
++	if err != nil {
++		t.Fatal(err)
++	}
++	for _, g := range gaps {
++		if g.From == 970 {
++			put("bsc", 970, nil, nil, g.ID)
++		}
++	}
++	for _, n := range []uint64{890, 910} {
++		f.apply(t, "bsc", n, f.now.Add(-time.Minute), parse.Facts{})
++	}
++	if err := f.st.RefreshCoverage(ctx, "bsc"); err != nil {
++		t.Fatal(err)
++	}
++	if err := f.st.SetForwardError(ctx, "bsc", "rate_limited", "429 Too Many Requests"); err != nil {
++		t.Fatal(err)
++	}
++	put("base", 29, nil, &store.Cursor{Anchor: 11, Position: 29, Head: 30}, 0)
++	return f
++}
++
++func TestHealthChains(t *testing.T) {
++	f := healthFixture(t)
++	ctx := context.Background()
++	rows, err := f.st.HealthChains(ctx, []store.HealthChainConfig{{Chain: "bsc", WindowBlocks: 100}, {Chain: "base"}, {Chain: "solana"}}, f.now)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(rows) != 3 {
++		t.Fatalf("store chain rows=%d; want 3 configured chains", len(rows))
++	}
++	if rows[0].Head == nil || *rows[0].Head != 1000 || rows[0].BacklogBlocks == nil || *rows[0].BacklogBlocks != 10 {
++		t.Fatalf("store bsc=%+v; want head=1000/backlog=10", rows[0])
++	}
++	h, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if h.AsOf != "2026-10-23T10:00:30.000Z" || len(h.Chains) != 3 {
++		t.Fatalf("health=%+v", h)
++	}
++	c := h.Chains[0]
++	if c.Chain != api.BSC || c.Head == nil || *c.Head != 1000 || c.Anchor != 950 || c.ForwardPosition == nil || *c.ForwardPosition != 990 || c.BacklogBlocks == nil || *c.BacklogBlocks != 10 || c.LagSeconds == nil || *c.LagSeconds != 7 || c.LowerBound != 900 || c.HistoryPosition == nil || *c.HistoryPosition != 910 || c.GapsOpen != 2 || !reflect.DeepEqual(c.GapsByReason, map[string]int64{"startup": 1, "rate_limited": 1}) || c.BudgetPaused {
++		t.Fatalf("bsc=%+v; want head=1000 anchor=950 forward=990 backlog=10 lag=7 lower=900 history=910 two gap rows", c)
++	}
++	if c.LastError == nil || c.LastError.Kind != "retryable" || c.LastError.Message != "429 Too Many Requests" {
++		t.Errorf("last_error=%+v", c.LastError)
++	}
++	if c := h.Chains[1]; c.LowerBound != 11 || c.HistoryPosition != nil || c.LastError != nil {
++		t.Errorf("no backfill/coverage: %+v", c)
++	}
++	if c := h.Chains[2]; c.Head != nil || c.ForwardPosition != nil || c.BacklogBlocks != nil || c.LagSeconds != nil || c.HistoryPosition != nil || c.LastError != nil || c.GapsOpen != 0 || c.GapsByReason == nil {
++		t.Errorf("missing cursor must stay unknown: %+v", c)
++	}
++	for _, tc := range []struct{ kind, message, want string }{{"error", "HTTP 401 Unauthorized", "config"}, {"rate_limited", "HTTP 403 Forbidden", "config"}, {"error", "connection reset", "retryable"}, {"not_found", "missing block", "not_found"}, {"history_unavailable", "pruned", "history_unavailable"}, {"incomplete", "partial receipt", "incomplete"}} {
++		if err := f.st.SetForwardError(ctx, "bsc", tc.kind, tc.message); err != nil {
++			t.Fatal(err)
++		}
++		got, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if got.Chains[0].LastError == nil || got.Chains[0].LastError.Kind != tc.want {
++			t.Errorf("kind %s message %s: %+v; want %s", tc.kind, tc.message, got.Chains[0].LastError, tc.want)
++		}
++	}
++}
++
++// failure sets the time at the agreed persistence seam: ApplyParsed uses the
++// database clock, so only created_at is adjusted to this fixture's fixed clock.
++func (f *fixture) failure(t *testing.T, chain string, num uint64, tx int, decoder string, at time.Time) int64 {
++	t.Helper()
++	f.apply(t, chain, num, f.now.Add(-time.Minute), parse.Facts{Failures: []parse.Failure{{Tx: tx, Decoder: decoder, Err: "independent fixture failure"}}})
++	var id int64
++	if err := f.conn.QueryRow(context.Background(), `UPDATE decode_failures SET created_at=$3 WHERE chain=$1 AND block_num=$2 RETURNING id`, chain, int64(num), at).Scan(&id); err != nil {
++		t.Fatal(err)
++	}
++	return id
++}
++
++func TestHealthParsers(t *testing.T) {
++	f := newFixture(t)
++	ctx := context.Background()
++	if err := f.st.SaveParserStatus(ctx, "bsc", 8, []string{"four_meme", "pancake_v2"}, f.now.Add(-time.Hour)); err != nil {
++		t.Fatal(err)
++	}
++	f.apply(t, "bsc", 980, f.now.Add(-time.Minute), parse.Facts{})
++	var blocks []store.Commit
++	for n := uint64(981); n <= 1000; n++ {
++		blocks = append(blocks, store.Commit{Chain: "bsc", Block: store.Block{Num: n, Hash: raw(32, byte(n)), Time: f.now, Status: store.StatusConfirmed, Payload: []byte(`{}`), Source: "test"}})
++	}
++	// A skipped slot is processed coverage, not parser backlog.
++	blocks = append(blocks, store.Commit{Chain: "bsc", Block: store.Block{Num: 1001, Status: store.StatusSkipped}})
++	if err := f.st.CommitBlocks(ctx, blocks); err != nil {
++		t.Fatal(err)
++	}
++	queued := f.failure(t, "bsc", 970, 1, "four_meme", f.now.Add(-time.Hour))
++	f.failure(t, "bsc", 971, 2, "four_meme", f.now.Add(-2*time.Hour))
++	f.failure(t, "bsc", 972, 3, "four_meme", f.now.Add(-24*time.Hour)) // inclusive lower boundary
++	f.failure(t, "bsc", 973, 4, "four_meme", f.now.Add(-24*time.Hour-time.Microsecond))
++	f.failure(t, "bsc", 974, 5, "four_meme", f.now.Add(time.Microsecond)) // future is not recent
++	f.failure(t, "base", 975, 6, "four_meme", f.now.Add(-time.Hour))
++	if _, err := f.conn.Exec(ctx, `INSERT INTO parse_retries(chain,block_num,failure_id,requested_at) VALUES ('bsc',970,$1,$2)`, queued, f.now); err != nil {
++		t.Fatal(err)
++	}
++	h, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(h.Parsers) != 2 {
++		t.Fatalf("parsers=%+v; want only 2 enabled modules registered by parse", h.Parsers)
++	}
++	for _, p := range h.Parsers {
++		if p.Chain != api.BSC || p.Version != "8" || p.Position == nil || *p.Position != 980 || p.LagBlocks == nil || *p.LagBlocks != 20 || p.UnknownDiscriminators != 0 {
++			t.Errorf("parser=%+v; want bsc/version8/position980/lag20/unknown0", p)
++		}
++		switch p.Module {
++		case "four_meme":
++			if p.Failures != 3 || p.Quarantined != 2 {
++				t.Errorf("four_meme=%+v; want 3 recent failures, 2 without pending retry", p)
++			}
++		case "pancake_v2":
++			if p.Failures != 0 || p.Quarantined != 0 {
++				t.Errorf("pancake=%+v; want zero", p)
++			}
++		default:
++			t.Errorf("unexpected module %q", p.Module)
++		}
++	}
++}
++
++func TestHealthFailures(t *testing.T) {
++	f := newFixture(t)
++	ctx := context.Background()
++	ids := make([]int64, 60)
++	for i := 0; i < 60; i++ {
++		at := f.now.Add(time.Duration(i-60) * time.Minute)
++		if i == 58 {
++			at = f.now.Add(-time.Minute)
++		} // tie: higher id wins deterministically
++		ids[i] = f.failure(t, "bsc", uint64(100+i), i, "four_meme", at)
++	}
++	if _, err := f.conn.Exec(ctx, `INSERT INTO parse_retries(chain,block_num,failure_id,requested_at,done_at) VALUES
++ ('bsc',159,$1,$4,NULL),('bsc',158,$2,$4,$4),('bsc',158,$2,$4,$4),('base',158,$3,$4,$4)`, ids[59], ids[58], ids[0], f.now); err != nil {
++		t.Fatal(err)
++	}
++	h, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(h.Failures) != 50 {
++		t.Fatalf("failures=%d; want newest 50 of 60", len(h.Failures))
++	}
++	for i, item := range h.Failures {
++		wantIndex := 59 - i
++		if item.ID != fmt.Sprint(ids[wantIndex]) || item.Chain != api.BSC || item.Module != "four_meme" || item.Position != fmt.Sprintf("%d/%d", 100+wantIndex, wantIndex) || item.Error != "independent fixture failure" {
++			t.Errorf("failure[%d]=%+v; want fixture index %d", i, item, wantIndex)
++		}
++	}
++	if got := h.Failures[0]; got.Status != "queued" || got.Attempts != 1 || got.LastAttemptAt != "2026-10-23T09:59:30.000Z" {
++		t.Errorf("pending=%+v; want queued, attempts=1, original created_at", got)
++	}
++	if got := h.Failures[1]; got.Status != "failed" || got.Attempts != 3 {
++		t.Errorf("executed=%+v; want failed, attempts=3 (two executed block retries, exclude other chain)", got)
++	}
++	if got := h.Failures[49]; got.Status != "failed" || got.Attempts != 1 {
++		t.Errorf("last=%+v; want untouched failure", got)
++	}
++}
++
++func TestRetryFailureQueuesOnce(t *testing.T) {
++	f := newFixture(t)
++	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++	defer cancel()
++	id := f.failure(t, "bsc", 77, 3, "four_meme", f.now.Add(-time.Hour))
++	b := pgapi.New(f.st, f.cfg, func() time.Time { return f.now })
++	snapshot := func() string {
++		t.Helper()
++		var s string
++		if err := f.conn.QueryRow(ctx, `SELECT jsonb_build_object('blocks',(SELECT jsonb_agg(to_jsonb(b)) FROM chain_blocks b),'failures',(SELECT jsonb_agg(to_jsonb(f)) FROM decode_failures f))::text`).Scan(&s); err != nil {
++			t.Fatal(err)
++		}
++		return s
++	}
++	before := snapshot()
++	h := f.handler()
++	request := routeRequest{method: http.MethodPost, route: "/api/v1/admin/parse-failures/{id}/retry", target: fmt.Sprintf("/api/v1/admin/parse-failures/%d/retry", id), status: http.StatusAccepted}
++	var first, second api.ParseFailure
++	for _, out := range []*api.ParseFailure{&first, &second} {
++		rec := requestPG(t, h, request) // asserts 202 and validates the real HTTP response against OpenAPI
++		if err := json.Unmarshal(rec.Body.Bytes(), out); err != nil {
++			t.Fatal(err)
++		}
++	}
++	want := api.ParseFailure{ID: fmt.Sprint(id), Chain: api.BSC, Module: "four_meme", Position: "77/3", Error: "independent fixture failure", Attempts: 1, Status: "queued", LastAttemptAt: "2026-10-23T09:00:30.000Z"}
++	if first != want || second != want {
++		t.Fatalf("retry=%+v then %+v; want %+v both times", first, second, want)
++	}
++	var wg sync.WaitGroup
++	errs := make(chan error, 12)
++	start := make(chan struct{})
++	for i := 0; i < 12; i++ {
++		wg.Add(1)
++		go func() {
++			defer wg.Done()
++			<-start
++			got, err := b.RetryFailure(ctx, fmt.Sprint(id))
++			if err != nil {
++				errs <- err
++			} else if got != want {
++				errs <- fmt.Errorf("concurrent retry=%+v; want %+v", got, want)
++			}
++		}()
++	}
++	close(start)
++	wg.Wait()
++	close(errs)
++	for err := range errs {
++		t.Error(err)
++	}
++	var count int
++	var requested time.Time
++	if err := f.conn.QueryRow(ctx, `SELECT count(*),min(requested_at) FROM parse_retries WHERE failure_id=$1`, id).Scan(&count, &requested); err != nil {
++		t.Fatal(err)
++	}
++	if count != 1 || !requested.Equal(f.now) {
++		t.Errorf("queued rows=%d at %s; want 1 at request clock", count, requested)
++	}
++	if after := snapshot(); after != before {
++		t.Error("API changed parser-owned chain_blocks/decode_failures")
++	}
++	requestPG(t, h, routeRequest{method: http.MethodPost, route: request.route, target: "/api/v1/admin/parse-failures/999999999/retry", status: http.StatusNotFound})
++	for _, missing := range []string{"999999999", "bad-id", "-1", "9223372036854775808"} {
++		_, err := b.RetryFailure(ctx, missing)
++		var e *api.Error
++		if !errors.As(err, &e) || e.Status != 404 || e.Code != "not_found" {
++			t.Errorf("retry missing %s: %v; want 404 not_found", missing, err)
++		}
++	}
++}
++
++func TestHealthBudget(t *testing.T) {
++	f := newFixture(t)
++	for _, tc := range []struct {
++		now          time.Time
++		month, stamp string
++	}{
++		{time.Date(2026, 11, 1, 7, 59, 59, 0, time.FixedZone("UTC+8", 8*3600)), "2026-10", "2026-10-31T23:59:59.000Z"},
++		{time.Date(2026, 11, 1, 0, 0, 0, 0, time.UTC), "2026-11", "2026-11-01T00:00:00.000Z"},
++	} {
++		f.now = tc.now
++		rec := requestPG(t, f.handler(), routeRequest{method: http.MethodGet, route: "/api/v1/admin/health", target: "/api/v1/admin/health", status: http.StatusOK})
++		var h api.AdminHealth
++		if err := json.Unmarshal(rec.Body.Bytes(), &h); err != nil {
++			t.Fatal(err)
++		}
++		want := api.Budget{Month: tc.month, SpentUSD: "0", LimitUSD: "100", State: "normal"}
++		if h.Budget != want || h.AsOf != tc.stamp {
++			t.Errorf("budget=%+v as_of=%s; want %+v as_of=%s", h.Budget, h.AsOf, want, tc.stamp)
++		}
++		if h.Chains == nil || h.Parsers == nil || h.Failures == nil {
++			t.Error("collections must encode as arrays, including empty parsers/failures")
++		}
++		for _, c := range h.Chains {
++			if c.BudgetPaused {
++				t.Errorf("placeholder budget must not pause chain %s", c.Chain)
++			}
++		}
++	}
++}
++
++// TestHealthMatchesBacklogGauges is a regression comparison, not a new TDD
++// behavior: task clarification preserves gap rows and gap blocks as distinct units.
++func TestHealthMatchesBacklogGauges(t *testing.T) {
++	f := healthFixture(t)
++	ctx := context.Background()
++	if err := f.st.SaveParserStatus(ctx, "bsc", 8, []string{"four_meme"}, f.now); err != nil {
++		t.Fatal(err)
++	}
++	h, err := pgapi.New(f.st, f.cfg, func() time.Time { return f.now }).Health(ctx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	backlog, err := f.st.Backlog(ctx, "bsc", f.now)
++	if err != nil {
++		t.Fatal(err)
++	}
++	// Independently: ranges 900..949 (50) and 980..982 (3), plus a filled
++	// 970..970 range that counts in neither gap total. Four raw blocks
++	// 990, 989, 988, 970 remain unparsed; 890 and 910 were parsed.
++	if c := h.Chains[0]; c.GapsOpen != 2 || !reflect.DeepEqual(c.GapsByReason, map[string]int64{"startup": 1, "rate_limited": 1}) {
++		t.Errorf("gap rows=%d/%v; want 2 and startup:1/rate_limited:1", c.GapsOpen, c.GapsByReason)
++	}
++	if backlog.GapBlocks != 53 {
++		t.Errorf("gap blocks=%d; want 50+3=53, excluding filled range", backlog.GapBlocks)
++	}
++	if h.Chains[0].BacklogBlocks == nil || *h.Chains[0].BacklogBlocks != 10 || backlog.ForwardLag != 10 || *h.Chains[0].BacklogBlocks != backlog.ForwardLag {
++		t.Errorf("forward health=%v backlog=%d; want 10 in both", h.Chains[0].BacklogBlocks, backlog.ForwardLag)
++	}
++	if len(h.Parsers) != 1 || h.Parsers[0].LagBlocks == nil || *h.Parsers[0].LagBlocks != 4 || backlog.Unparsed != 4 || *h.Parsers[0].LagBlocks != backlog.Unparsed {
++		t.Errorf("parser=%+v backlog=%d; want 4 in both", h.Parsers, backlog.Unparsed)
++	}
++}
++
++func TestHealthAdminAuth(t *testing.T) {
++	f := newFixture(t)
++	id := f.failure(t, "bsc", 7, 1, "four_meme", f.now)
++	for _, tc := range []struct{ method, target, route string }{{"GET", "/api/v1/admin/health", "/api/v1/admin/health"}, {"POST", fmt.Sprintf("/api/v1/admin/parse-failures/%d/retry", id), "/api/v1/admin/parse-failures/{id}/retry"}} {
++		for _, token := range []string{"", "wrong-token"} {
++			req := httptest.NewRequest(tc.method, tc.target, nil)
++			if token != "" {
++				req.Header.Set("Authorization", "Bearer "+token)
++			}
++			rec := httptest.NewRecorder()
++			f.handler().ServeHTTP(rec, req)
++			if rec.Code != http.StatusForbidden {
++				t.Fatalf("unauthorized %s=%d; want 403", tc.method, rec.Code)
++			}
++			contracttest.Check(t, tc.method, tc.route, rec)
++		}
++	}
++	var n int
++	if err := f.conn.QueryRow(context.Background(), `SELECT count(*) FROM parse_retries`).Scan(&n); err != nil {
++		t.Fatal(err)
++	}
++	if n != 0 {
++		t.Errorf("unauthorized request wrote %d retries", n)
++	}
++}

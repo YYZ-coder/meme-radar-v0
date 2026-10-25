@@ -1,0 +1,9 @@
+# h5-4c-rewrite-rollback green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestRewriteAndRollbackClearBalances -v ./internal/store
+# sha256 internal/store/balances_rollback_test.go a97b8862e98e2fa40c555d579f71c02efa88991e4a6ab0ab371b7aead6c1a5a1
+=== RUN   TestRewriteAndRollbackClearBalances
+--- PASS: TestRewriteAndRollbackClearBalances (0.22s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.823s
+
+# exit=0

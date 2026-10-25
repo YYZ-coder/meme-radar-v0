@@ -1,0 +1,3 @@
+manual_measurement_correction_not_behavior_red=true
+Initial replay used raw.gob: Gob collapses zero-length []byte and nil, losing the distinction between SQL empty text and NULL. The NOT NULL symbol constraint correctly rejected this invalid staging input. Production SQL and all test expectations remain unchanged.
+Correction: this measurement now receives raw fields into memory from one live cloud REPEATABLE READ READ ONLY snapshot and loads them directly into its local isolated staging table, preserving v==nil versus empty bytes. No raw.gob replay is used. Initial failure retained; no partial publication committed.

@@ -1,0 +1,39 @@
+baseline_sample_256_preview chain=solana window=24h as_of=2026-10-24T19:09:00Z mode=REPEATABLE_READ_READ_ONLY H3_H4_H5_not_deployed=true
+elapsed=19.2944215s error=<nil>
+execution_ms=18121.458 planning_ms=24.978
+depth=0 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=18102.185 inclusive_ms=18102.185
+depth=1 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=5912.47 inclusive_ms=5912.47
+depth=2 node=Limit relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=2293.119 inclusive_ms=2293.119
+depth=3 node=Sort relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=2293.006 inclusive_ms=2293.006
+depth=4 node=Aggregate relation=<nil> actual_rows=32902 loops=1 total_ms_per_loop=2289.476 inclusive_ms=2289.476
+depth=5 node=Append relation=<nil> actual_rows=1.847522e+06 loops=1 total_ms_per_loop=1701.995 inclusive_ms=1701.995
+depth=2 node=Nested Loop relation=<nil> actual_rows=1 loops=256 total_ms_per_loop=14.136 inclusive_ms=3618.816
+depth=3 node=Seq Scan relation=coverage_ranges actual_rows=0 loops=256 total_ms_per_loop=11.471 inclusive_ms=2936.576
+depth=1 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=4909.096 inclusive_ms=4909.096
+depth=2 node=Limit relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=1616.873 inclusive_ms=1616.873
+depth=3 node=Sort relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=1616.774 inclusive_ms=1616.774
+depth=4 node=Aggregate relation=<nil> actual_rows=32902 loops=1 total_ms_per_loop=1613.29 inclusive_ms=1613.29
+depth=5 node=Append relation=<nil> actual_rows=1.847522e+06 loops=1 total_ms_per_loop=1263.783 inclusive_ms=1263.783
+depth=2 node=Nested Loop relation=<nil> actual_rows=1 loops=256 total_ms_per_loop=12.857 inclusive_ms=3291.392
+depth=3 node=Seq Scan relation=coverage_ranges actual_rows=0 loops=256 total_ms_per_loop=9.289 inclusive_ms=2377.984
+depth=1 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=17972.984 inclusive_ms=17972.984
+depth=2 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=17972.855 inclusive_ms=17972.855
+depth=3 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=17971.764 inclusive_ms=17971.764
+depth=4 node=Merge Join relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=17968.986 inclusive_ms=17968.986
+depth=5 node=Sort relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=10836.615 inclusive_ms=10836.615
+depth=6 node=Nested Loop relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=10835.817 inclusive_ms=10835.817
+depth=7 node=Hash Join relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=10825.913 inclusive_ms=10825.913
+depth=8 node=CTE Scan relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=5913.492 inclusive_ms=5913.492
+depth=8 node=Hash relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=4911.127 inclusive_ms=4911.127
+depth=9 node=CTE Scan relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=4910.341 inclusive_ms=4910.341
+depth=5 node=Aggregate relation=<nil> actual_rows=256 loops=1 total_ms_per_loop=7132.158 inclusive_ms=7132.158
+depth=6 node=Sort relation=<nil> actual_rows=35861 loops=1 total_ms_per_loop=7074.6 inclusive_ms=7074.6
+depth=7 node=Hash Join relation=<nil> actual_rows=1.847522e+06 loops=1 total_ms_per_loop=4521.027 inclusive_ms=4521.027
+depth=8 node=Append relation=<nil> actual_rows=1.847522e+06 loops=1 total_ms_per_loop=3678.007 inclusive_ms=3678.007
+depth=9 node=Seq Scan relation=trades_20261023 actual_rows=613822 loops=1 total_ms_per_loop=2100.69 inclusive_ms=2100.69
+depth=9 node=Seq Scan relation=trades_20261024 actual_rows=1.2337e+06 loops=1 total_ms_per_loop=1334.79 inclusive_ms=1334.79
+depth=2 node=Result relation=<nil> actual_rows=0 loops=256 total_ms_per_loop=0 inclusive_ms=0
+depth=1 node=Aggregate relation=<nil> actual_rows=1 loops=256 total_ms_per_loop=0.503 inclusive_ms=128.768
+depth=2 node=Index Scan relation=candles actual_rows=22.98 loops=256 total_ms_per_loop=0.292 inclusive_ms=74.752
+depth=2 node=Sort relation=<nil> actual_rows=20 loops=256 total_ms_per_loop=0.498 inclusive_ms=127.488
+root_rows=256 root_total_ms=18102.185

@@ -1,0 +1,18 @@
+# H6 5a-chain-uri red; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: ChainSource.URI external RPC replay; literal JUP URI and independent ABI string decoded in h6-chain-samples.py; no source on null/revert
+# command: go test -count=1 -run ^TestChainSourceReadsRecordedURIs$ ./internal/metadata
+# sha256 internal/metadata/source_test.go: 305128a34acefaf26e03bd3409b9293d5d2432a277394f936f51f6958d424991
+--- FAIL: TestChainSourceReadsRecordedURIs (0.00s)
+    --- FAIL: TestChainSourceReadsRecordedURIs/metaplex (0.00s)
+        source_test.go:90: URI="" err=metadata: not implemented; want "https://static.jup.ag/jup/metadata.json"
+    --- FAIL: TestChainSourceReadsRecordedURIs/doppler (0.00s)
+        source_test.go:90: URI="" err=metadata: not implemented; want "https://ipfs.io/ipfs/QmWwZM7CR4wJ1boTsD76nrv2nxeMyMJ8PmRiJNCu85HPAp"
+    --- FAIL: TestChainSourceReadsRecordedURIs/missing_account (0.00s)
+        source_test.go:85: URI="" err=metadata: not implemented; want ErrNoSource
+    --- FAIL: TestChainSourceReadsRecordedURIs/reverted_call (0.00s)
+        source_test.go:85: URI="" err=metadata: not implemented; want ErrNoSource
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.431s
+FAIL
+
+# exit=1

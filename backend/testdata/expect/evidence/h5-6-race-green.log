@@ -1,0 +1,36 @@
+# h5-6-race green base=7f7687d5d23a2f9d914b2bee7d704392a6d1605f+worktree
+# command: go test -race -count=1 ./...
+# sha256 internal/compute/holder_state_test.go 0e98d4820449d6a71ca248f7e015963dde29b2822690bfc607050f0c6eb9d71e
+# sha256 internal/store/window_test.go 7c346bd398214f5a817110df701bbc8b12a47d236f121d2d5a2fa6d41dff0c0f
+# sha256 internal/parser/balances_error_test.go 39752c1e24268ca41322f9e7a8ba259c4ace754f669725c87693fce6c400368b
+ok  	github.com/meme-radar/radar/cmd/radar	3.384s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	7.282s
+ok  	github.com/meme-radar/radar/internal/compute	14.513s
+ok  	github.com/meme-radar/radar/internal/config	2.589s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	7.251s
+ok  	github.com/meme-radar/radar/internal/evm	2.889s
+ok  	github.com/meme-radar/radar/internal/httpapi	5.547s
+ok  	github.com/meme-radar/radar/internal/ingest	9.739s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	5.047s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.639s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	3.435s
+ok  	github.com/meme-radar/radar/internal/metrics	1.784s
+?   	github.com/meme-radar/radar/internal/mockdata	[no test files]
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	1.251s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.453s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	2.545s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.645s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	2.011s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.448s
+ok  	github.com/meme-radar/radar/internal/parser	7.240s
+ok  	github.com/meme-radar/radar/internal/prices	1.274s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.404s
+ok  	github.com/meme-radar/radar/internal/store	13.309s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit=0

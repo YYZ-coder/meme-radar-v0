@@ -1,0 +1,23 @@
+{
+  "doppler_token_uri": "https://ipfs.io/ipfs/QmWwZM7CR4wJ1boTsD76nrv2nxeMyMJ8PmRiJNCu85HPAp",
+  "fourmeme_error": "Get \"https://four.meme/meme-api/v1/private/token/get/v2?address=0x5d709925a8671dbd97d73d0b1f3053ec66dfffff\": metadata: blocked address",
+  "mode": "read-only Fetcher/ChainSource; no Store or enrich role",
+  "pump": [
+    {
+      "error": "Get \"https://ipfs.io/ipfs/bafkreih4eo3gyvds4fzuwi62bx6vx7gjke6ve443uqmtn47vt4xbfsfrcy\": metadata: blocked address",
+      "mint": "EaQmGzp3DcVhzApmxEx4YXn1wziGBzVCPGjTBVCapump",
+      "source_uri": "https://ipfs.io/ipfs/bafkreih4eo3gyvds4fzuwi62bx6vx7gjke6ve443uqmtn47vt4xbfsfrcy"
+    },
+    {
+      "error": "Get \"https://ipfs.io/ipfs/bafkreifl6cglg6sk4a7gmchpyakkk6vw7bgtzvggihemj662ucwxlylpkm\": metadata: blocked address",
+      "mint": "DnNnnVinn4QfiGgMoHE1riKFuBWdT4zY5nRwztxTpump",
+      "source_uri": "https://ipfs.io/ipfs/bafkreifl6cglg6sk4a7gmchpyakkk6vw7bgtzvggihemj662ucwxlylpkm"
+    },
+    {
+      "error": "Get \"https://ipfs.io/ipfs/bafkreiepwba35vkrvm3oih5chdlub4od3tukh3xti2bjs5jlttylgn245y\": metadata: blocked address",
+      "mint": "TbU8rWELwCNuFu5wuW2uxgRfzYNfhe1CwgUBGA1tcUh",
+      "source_uri": "https://ipfs.io/ipfs/bafkreiepwba35vkrvm3oih5chdlub4od3tukh3xti2bjs5jlttylgn245y"
+    }
+  ],
+  "recorded_at": "2026-10-24T11:51:23Z"
+}

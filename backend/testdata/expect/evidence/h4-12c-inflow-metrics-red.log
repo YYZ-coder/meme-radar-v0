@@ -1,0 +1,14 @@
+# h4-12c-inflow-metrics red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+e6b0b60cfb1a9378a79788faeaaf8f1f7d2c87728629eb9e218559a7f739ab60  internal/compute/inflow_loop_test.go
+# tracked diff sha256=7fc0f06e38c81c17e406edd8ceb9b1595b080bc3bbb7d4e4eb714ace06c5f849
+# command: go test -count=1 -v -run TestInflowLoopReportsPublishedRowsAndDuration ./internal/compute
+=== RUN   TestInflowLoopReportsPublishedRowsAndDuration
+    inflow_loop_test.go:105: published row gauge=0; want 1
+    inflow_loop_test.go:109: published duration samples=0; want 1
+--- FAIL: TestInflowLoopReportsPublishedRowsAndDuration (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.456s
+FAIL
+
+# exit=1

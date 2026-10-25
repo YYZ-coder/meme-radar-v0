@@ -1,0 +1,58 @@
+# Alert rules; firing alerts go to Alertmanager, which emails ALERT_EMAIL_TO
+# (docs/engineering/08-observability.md §4).
+groups:
+  - name: radar
+    rules:
+      - alert: ServiceDown
+        expr: up{job="radar"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.service }} is not answering /metrics"}
+      - alert: ForwardLagging
+        expr: radar_forward_lag_blocks{chain!="solana"} > 100
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.chain }} forward ingest is {{ $value }} blocks behind the head"}
+      - alert: ForwardStalled
+        expr: sum by (chain) (rate(radar_blocks_committed_total{role="forward"}[10m])) == 0
+        for: 10m
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.chain }} forward ingest committed no block for 10 minutes"}
+      - alert: ParseBacklog
+        expr: radar_unparsed_blocks > 1000
+        for: 15m
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.chain }} has {{ $value }} unparsed blocks"}
+      - alert: StepErrors
+        expr: sum by (service, role) (rate(radar_step_errors_total[10m])) * 600 > 20
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.service }} failed {{ $value }} steps in 10 minutes"}
+      - alert: ComputeStepFailing
+        expr: sum by (step) (rate(radar_compute_step_errors_total[10m])) * 600 > 10
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "compute step {{ $labels.step }} keeps failing"}
+      - alert: PriceSourcesDown
+        expr: sum(rate(radar_price_requests_total{outcome="ok"}[5m])) == 0
+        for: 5m
+        labels: {severity: critical}
+        annotations: {summary: "no price source answered for 5 minutes (USD values stop, D135)"}
+      - alert: APIErrors
+        expr: sum(rate(radar_api_requests_total{status=~"5.."}[5m])) / sum(rate(radar_api_requests_total[5m])) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "API 5xx responses exceed 5%"}
+      - alert: ListBuildFailed
+        expr: sum(increase(radar_list_builds_total{outcome="failed"}[5m])) > 0
+        labels: {severity: warning}
+        annotations: {summary: "a list build failed in the last 5 minutes"}
+      - alert: ListBuildStuck
+        expr: radar_jobs_oldest_queued_seconds{kind="list_build"} > 300
+        labels: {severity: warning}
+        annotations: {summary: "a list build has been queued for more than 5 minutes"}
+      - alert: ProjectionStale
+        expr: radar_projection_age_seconds > 60
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.chain }} {{ $labels.window }} inflow projection is stale"}

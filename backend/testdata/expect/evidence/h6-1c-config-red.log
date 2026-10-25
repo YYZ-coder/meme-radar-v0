@@ -1,0 +1,15 @@
+# H6 1c-config red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: H6-1c configuration contract: default10m/3, explicit zero or negative invalid, custom2m/5 preserved. Struct-only skeleton has no default/validation.
+# command: go test -count=1 -run ^TestMetadataHostCooldownConfiguration$ ./internal/config
+# sha256 internal/config/metadata_test.go: df8672ecec46bdb085dfb7421ae43f11207b17358be95d58922ba352b3d0f0ec
+--- FAIL: TestMetadataHostCooldownConfiguration (0.00s)
+    metadata_test.go:42: cooldown defaults={HostCooldown:0 HostFailures:0 IPFSGateways:[https://gateway.pinata.cloud/ipfs/ https://ipfs.io/ipfs/] RPS:10 PerHostRPS:2 FourMemeAPIURL:https://four.meme/meme-api/v1/private/token/get/v2 FourMemeRPS:2}; want 10m and 3
+    metadata_test.go:45: accepted metadata: {host_cooldown: 0s}
+    metadata_test.go:45: accepted metadata: {host_cooldown: -1m}
+    metadata_test.go:45: accepted metadata: {host_failures: 0}
+    metadata_test.go:45: accepted metadata: {host_failures: -1}
+FAIL
+FAIL	github.com/meme-radar/radar/internal/config	0.341s
+FAIL
+
+# exit=1

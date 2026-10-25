@@ -1,0 +1,21 @@
+# h4-11b-config-validation green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+30b6f44992be5af08f815ae40d3dd51bca5aeec2d270712beb124bb01be1929e  internal/config/inflow_test.go
+# tracked diff sha256=61745134cd3e9ad393e46d9f30d7b8202cdbc0f14787762122878bba45153d6e
+# command: go test -count=1 -v -run TestInflowIntervalsRejectNonPositiveAndMissing ./internal/config
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/zero
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/negative
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/missing_window
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/empty_intervals
+=== RUN   TestInflowIntervalsRejectNonPositiveAndMissing/empty_section
+--- PASS: TestInflowIntervalsRejectNonPositiveAndMissing (0.01s)
+    --- PASS: TestInflowIntervalsRejectNonPositiveAndMissing/zero (0.00s)
+    --- PASS: TestInflowIntervalsRejectNonPositiveAndMissing/negative (0.00s)
+    --- PASS: TestInflowIntervalsRejectNonPositiveAndMissing/missing_window (0.00s)
+    --- PASS: TestInflowIntervalsRejectNonPositiveAndMissing/empty_intervals (0.00s)
+    --- PASS: TestInflowIntervalsRejectNonPositiveAndMissing/empty_section (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/config	0.417s
+
+# exit=0

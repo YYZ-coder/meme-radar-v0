@@ -1,0 +1,29 @@
+# h4-9b-readiness green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+c99b9a7efaad31f619676690237094fe6111778d354379537a98b8f89bdc9016  internal/compute/inflow_readiness_test.go
+# tracked diff sha256=fe86938a0e26e21983681aa3af73eee6ae75c62b2511f3f8d23cd0e9c91ef2f6
+# command: go test -count=1 -v -run TestProjectionWaitsForStatsAndSmTrades|TestInflow|TestProjectionHeadSwitchIsAtomic ./internal/compute
+=== RUN   TestProjectionHeadSwitchIsAtomic
+--- PASS: TestProjectionHeadSwitchIsAtomic (0.39s)
+=== RUN   TestProjectionWaitsForStatsAndSmTrades
+--- PASS: TestProjectionWaitsForStatsAndSmTrades (0.26s)
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+=== RUN   TestInflowRowsFromFacts/partial
+--- PASS: TestInflowRowsFromFacts (0.43s)
+    --- PASS: TestInflowRowsFromFacts/complete (0.23s)
+    --- PASS: TestInflowRowsFromFacts/partial (0.20s)
+=== RUN   TestInflowSparkline
+=== RUN   TestInflowSparkline/1h/seed=false
+=== RUN   TestInflowSparkline/1h/seed=true
+=== RUN   TestInflowSparkline/5m/seed=false
+=== RUN   TestInflowSparkline/5m/seed=true
+--- PASS: TestInflowSparkline (0.68s)
+    --- PASS: TestInflowSparkline/1h/seed=false (0.17s)
+    --- PASS: TestInflowSparkline/1h/seed=true (0.18s)
+    --- PASS: TestInflowSparkline/5m/seed=false (0.16s)
+    --- PASS: TestInflowSparkline/5m/seed=true (0.16s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	2.185s
+
+# exit=0

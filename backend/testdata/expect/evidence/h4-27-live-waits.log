@@ -1,0 +1,9 @@
+mode=REPEATABLE_READ_READ_ONLY as_of=2026-10-25T03:08:00Z work_mem=4MB block_size=8192 production_sql_unchanged=true
+rows=31650 field_value_bytes=11175313 first_row=1.069687208s last_row=10.336018917s elapsed=10.336023125s samples=67
+sample_state="active//" count=45
+sample_state="active/Client/ClientWrite" count=18
+sample_state="active/IO/BuffileRead" count=1
+sample_state="active/IO/BuffileWrite" count=1
+sample_state="active/Timeout/SpinDelay" count=1
+sample_state="idle in transaction/Client/ClientRead" count=1
+Samples are observations, not an exact time decomposition; server execution and transport overlap. No cloud writes.

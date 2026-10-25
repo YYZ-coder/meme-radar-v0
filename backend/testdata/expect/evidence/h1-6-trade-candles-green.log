@@ -1,0 +1,13 @@
+# H1 6-trade-candles green base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:18:02.582541+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestTradeCandlesFromTrades$ ./internal/store
+# sha256 internal/store/window_test.go 4387f7f19ab037c27f2f7315f12fdea8544d56b5920a6ced2196e9a500b5e4a9
+# test diff sha256 10929ae6d7c2b760acccaddb89ce6e288f99995749d2c9736d1d5616b390d88c
+# sha256 internal/store/window.go 2b9b014619fd0ab18cb7eb11833663d1651dd5cd97fd1d4c6ee67ad451f8e13e
+# test diff sha256 1c68275e813e2ce7c0577d3896ad4038420490565b9034938c2afa3c66bf2920
+=== RUN   TestTradeCandlesFromTrades
+--- PASS: TestTradeCandlesFromTrades (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.623s
+
+# exit_code=0

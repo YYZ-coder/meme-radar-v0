@@ -1,0 +1,12 @@
+# h4-38-stagger green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+2c2464dcd5e365098373fdadf4fde2a09d040c057e9d9982b6f2088a431166b1  internal/compute/inflow_loop_test.go
+1b022626f7d20eceabff1e04e05adb8e049e318e357e3955a76df4eec3d3244a  internal/compute/inflow.go
+# tracked diff sha256=670a5ac50e957f5f2d8ef8b202c7ac359bb652badf8a91600c6b41f1b94e927a
+# command: go test -count=1 -v -run ^TestInflowLoopUsesIndependentWindowSchedulesAndStops$ ./internal/compute
+=== RUN   TestInflowLoopUsesIndependentWindowSchedulesAndStops
+--- PASS: TestInflowLoopUsesIndependentWindowSchedulesAndStops (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	0.532s
+
+# exit=0

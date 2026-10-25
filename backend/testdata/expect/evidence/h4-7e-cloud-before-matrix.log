@@ -1,0 +1,16 @@
+baseline matrix: REPEATABLE READ READ ONLY; complete SELECT preview; undeployed H3/H4/H5 empty; 16s cap per query
+chain=solana window=1m as_of=2026-10-24T19:11:00Z expected_rows=288 received_rows=66 elapsed=16.052641042s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=solana window=5m as_of=2026-10-24T19:11:00Z expected_rows=757 received_rows=0 elapsed=16.072111667s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=solana window=1h as_of=2026-10-24T19:11:00Z expected_rows=3649 received_rows=0 elapsed=16.076381708s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=solana window=4h as_of=2026-10-24T19:11:00Z expected_rows=5875 received_rows=0 elapsed=16.137376s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=solana window=24h as_of=2026-10-24T19:11:00Z expected_rows=32918 received_rows=0 elapsed=16.069879584s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=base window=1m as_of=2026-10-24T19:07:00Z expected_rows=66 received_rows=66 elapsed=12.984717833s error=<nil>
+chain=base window=5m as_of=2026-10-24T19:07:00Z expected_rows=96 received_rows=89 elapsed=16.578043542s error=ERROR: canceling statement due to statement timeout (SQLSTATE 57014)
+chain=base window=1h as_of=2026-10-24T19:07:00Z expected_rows=212 received_rows=212 elapsed=2.173066542s error=<nil>
+chain=base window=4h as_of=2026-10-24T19:07:00Z expected_rows=479 received_rows=479 elapsed=4.230088791s error=<nil>
+chain=base window=24h as_of=2026-10-24T19:07:00Z expected_rows=1257 received_rows=1257 elapsed=7.95230575s error=<nil>
+chain=bsc window=1m as_of=2026-10-24T19:13:00Z expected_rows=13 received_rows=13 elapsed=839.027875ms error=<nil>
+chain=bsc window=5m as_of=2026-10-24T19:13:00Z expected_rows=42 received_rows=42 elapsed=9.282533666s error=<nil>
+chain=bsc window=1h as_of=2026-10-24T19:13:00Z expected_rows=241 received_rows=241 elapsed=1.490127917s error=<nil>
+chain=bsc window=4h as_of=2026-10-24T19:13:00Z expected_rows=784 received_rows=784 elapsed=3.19547675s error=<nil>
+chain=bsc window=24h as_of=2026-10-24T19:13:00Z expected_rows=1668 received_rows=1668 elapsed=1.769778042s error=<nil>

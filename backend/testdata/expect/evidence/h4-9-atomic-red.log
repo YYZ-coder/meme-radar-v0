@@ -1,0 +1,13 @@
+# h4-9-atomic red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+90e8c660c8a60b01e3c745cc483c6a2a1b7e38b22e09852662c4ebc476bbbc42  internal/compute/inflow_atomic_test.go
+# tracked diff sha256=d5ecad248c3602e16aa6b1b45fe45b187c34673ce15abd5ae891d742dd1b95d4
+# command: go test -count=1 -v -run TestProjectionHeadSwitchIsAtomic ./internal/compute
+=== RUN   TestProjectionHeadSwitchIsAtomic
+    inflow_atomic_test.go:106: old rows after 15m retirement=1, want 0
+--- FAIL: TestProjectionHeadSwitchIsAtomic (0.27s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.946s
+FAIL
+
+# exit=1

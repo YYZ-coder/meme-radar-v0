@@ -1,0 +1,15 @@
+# H1 9-main-pool red base=b846349b78e2aab6bcd32513d17c65d07c63a76e+worktree
+# UTC 2026-10-23T15:16:38.720524+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestCandlesUseMainPoolPerTrade$ ./internal/compute
+# sha256 internal/compute/candles_test.go 603a1595b6cabf634b365375e1cde464df34dd4c06421f5e30539fd0df76e282
+# test diff sha256 89713208772176bb96abc2e50abc7adc166b4e93a6283138c1ddfbf60207a45d
+# sha256 migrations/0011_window.sql 6769606950a6f02d942138fd49e62ec336c18e9fdb741911d278dc28e36d5e8f
+# test diff sha256 a88b14a9184dd5b9690747eb31aa2a6bae2e9b8cede5941c0ea18347af54bab3
+=== RUN   TestCandlesUseMainPoolPerTrade
+    candles_test.go:143: per-trade main-pool candle=2 2.2 2 2.2 0.02 0.022 0.02 0.022 42 15.4; want 1 2.2 1 2.2 0.01 0.022 0.01 0.022 42 15.4
+--- FAIL: TestCandlesUseMainPoolPerTrade (0.16s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.303s
+FAIL
+
+# exit_code=1

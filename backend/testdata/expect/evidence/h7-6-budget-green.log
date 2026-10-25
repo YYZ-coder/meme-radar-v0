@@ -1,0 +1,11 @@
+base_sha=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+command=go test -count=1 -v -run TestHealthBudget ./internal/pgapi
+database=local throwaway PostgreSQL at 127.0.0.1:55432
+test_sha256 internal/pgapi/admin_health_test.go=ed02448b9621dc8fdcf4ef2ad260e1f8724550fd9adf2744f27be716a3b40593
+test_diff=h7-6-budget-green-admin_health_test.diff sha256=c6710ed3a8703b8d7fbdc7df2a7067ffbe9e2fcc157151407b4ecd520821efde
+=== RUN   TestHealthBudget
+--- PASS: TestHealthBudget (0.14s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.692s
+
+exit_code=0

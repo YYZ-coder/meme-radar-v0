@@ -1,0 +1,36 @@
+# h2-11-shapes regression base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgShapesMatchMock ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 f15a97e8dcaf62debe05dc9940eb11eb5fdf710dd85bc27f87b4a9e9c80e065d internal/pgapi/shapes_test.go
+=== RUN   TestPgShapesMatchMock
+=== RUN   TestPgShapesMatchMock/GET_/healthz
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/market/natives
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/search?q=GX1J&chain=solana
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump?currency=native
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/smart-money/inflow?window=5m&limit=2
+=== RUN   TestPgShapesMatchMock/POST_/api/v1/tokens/batch
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/activities?limit=2
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/holders?limit=2
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/pools?limit=2
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/liquidity-events?limit=2
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/smart-money?limit=2
+=== RUN   TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&from=1792749540&to=1792749600&limit=2
+--- PASS: TestPgShapesMatchMock (0.40s)
+    --- PASS: TestPgShapesMatchMock/GET_/healthz (0.02s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/market/natives (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/search?q=GX1J&chain=solana (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump?currency=native (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/smart-money/inflow?window=5m&limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/POST_/api/v1/tokens/batch (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/activities?limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/holders?limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/pools?limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/liquidity-events?limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/smart-money?limit=2 (0.00s)
+    --- PASS: TestPgShapesMatchMock/GET_/api/v1/tokens/solana/GX1JGwFmrzgkv6MBjwZZdZt3qBcWi1d5ZuAUS3KFpump/candles?interval=1m&from=1792749540&to=1792749600&limit=2 (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	0.844s
+# exit_status=0

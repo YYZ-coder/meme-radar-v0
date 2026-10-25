@@ -1,0 +1,7 @@
+# H6 1c-config green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Same configured defaults/validation test after adding YAML defaults and validation; enrich forwards both values.
+# command: go test -count=1 -run ^TestMetadata ./internal/config
+# sha256 internal/config/metadata_test.go: df8672ecec46bdb085dfb7421ae43f11207b17358be95d58922ba352b3d0f0ec
+ok  	github.com/meme-radar/radar/internal/config	0.364s
+
+# exit=0

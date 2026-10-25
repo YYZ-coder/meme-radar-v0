@@ -1,79 +1,60 @@
-BIN_DIR := bin
-BIN     := $(BIN_DIR)/radar
+# Backend entry points (backend/AGENTS.md §3). Run from the repository root as
+# `make -C backend <target>` or through the root Makefile.
+BIN := bin/radar
+PKG ?= ./internal/httpapi
+BENCH ?= BenchmarkInflowFirstQuery
+PROFILE_DIR := ../.local/profile
+GO_FILES = $(shell find . -name '*.go' -not -path './bin/*')
+# Local PostgreSQL for integration tests and ingest (container meme-radar-app-pg).
+DB_PORT ?= 55432
+DB_ADMIN_URL ?= postgres://radar:radar@127.0.0.1:$(DB_PORT)/postgres?sslmode=disable
+DB_URL ?= postgres://radar:radar@127.0.0.1:$(DB_PORT)/radar?sslmode=disable
+CHAIN ?= base
 
-GOFILES := $(shell find . -name '*.go' -not -path './vendor/*')
-VERSION ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
-LDFLAGS := -X main.version=$(VERSION)
-
-.PHONY: setup fmt fmt-check vet lint-go build test test-race run smoke check bench profile
-
+.PHONY: setup fmt fmt-check vet build test test-race test-db db-up db-down ingest run smoke check bench profile
 setup:
-	@command -v go >/dev/null 2>&1 || { echo "ERROR: go not found"; exit 1; }
+	go version
 	go mod download
-	@cd .. && git config core.hooksPath .githooks 2>/dev/null || true
-	@echo "Backend setup complete."
-
+	cd .. && ./scripts/install-hooks.sh
 fmt:
-	gofmt -w $(GOFILES)
-
+	gofmt -w $(GO_FILES)
 fmt-check:
-	@DIFF=$$(gofmt -l $(GOFILES)); \
-	if [ -n "$$DIFF" ]; then echo "Unformatted Go files:"; echo "$$DIFF"; exit 1; fi
-
+	@out="$$(gofmt -l $(GO_FILES))"; if [ -n "$$out" ]; then echo "gofmt needed:"; echo "$$out"; exit 1; fi
 vet:
 	go vet ./...
-
-# 18-observability §4: goroutines must start via obs.Go/Loop/Supervise (trace + panic guard).
-lint-go:
-	@BAD=$$(grep -rnE '^[[:space:]]*go[[:space:]]+(func|[A-Za-z_][A-Za-z0-9_.]*\()' --include='*.go' . \
-		| grep -v '^./internal/obs/' | grep -v '_test.go:'); \
-	if [ -n "$$BAD" ]; then echo "Bare go statements (use obs.Go/Loop/Supervise):"; echo "$$BAD"; exit 1; fi
-
-build: $(BIN)
-
-$(BIN): $(GOFILES) go.mod go.sum
-	@mkdir -p $(BIN_DIR)
-	go build -ldflags "$(LDFLAGS)" -o $(BIN) ./cmd/radar
-
+build:
+	go build ./...
+	go build -o $(BIN) ./cmd/radar
 test:
 	go test -count=1 ./...
-
 test-race:
 	go test -race -count=1 ./...
-
+# PostgreSQL integration tests skip unless RADAR_TEST_DATABASE_URL is set;
+# test-db starts the local database and runs everything (race-enabled).
+test-db: db-up
+	RADAR_TEST_DATABASE_URL='$(DB_ADMIN_URL)' go test -race -count=1 ./...
+db-up:
+	@docker start meme-radar-app-pg >/dev/null 2>&1 || docker run -d --name meme-radar-app-pg \
+		-e POSTGRES_USER=radar -e POSTGRES_PASSWORD=radar -e POSTGRES_DB=radar \
+		-p 127.0.0.1:$(DB_PORT):5432 -v meme-radar-app-pgdata:/var/lib/postgresql/data \
+		--health-cmd 'pg_isready -U radar' --health-interval 2s postgres:17 >/dev/null
+	@for i in $$(seq 1 60); do [ "$$(docker inspect -f '{{.State.Health.Status}}' meme-radar-app-pg)" = healthy ] && exit 0; sleep 1; done; \
+		echo "meme-radar-app-pg not healthy"; exit 1
+db-down:
+	docker stop meme-radar-app-pg
+# Follow one chain from its free public RPC: make -C backend ingest CHAIN=solana
+ingest: build db-up
+	RADAR_DATABASE_URL='$(DB_URL)' ./$(BIN) ingest --chain=$(CHAIN)
 run: build
-	RADAR_LOG_FILE=$${RADAR_LOG_FILE:-../.local/logs/radar.log} ./$(BIN) --config config.yaml
-
-# Smoke: start postgres via docker compose, run the binary, verify /healthz, stop.
+	./$(BIN) api --store=mock --addr=$${RADAR_API_ADDR:-127.0.0.1:8080}
 smoke: build
-	@echo "==> smoke: starting postgres"
-	@docker compose -f ../docker-compose.yml up -d postgres
-	@echo "==> smoke: waiting for postgres to be ready"
-	@for i in $$(seq 1 30); do \
-		docker compose -f ../docker-compose.yml exec -T postgres \
-			pg_isready -U radar -q && break || sleep 1; \
-	done
-	@echo "==> smoke: starting radar"
-	@RADAR_DATABASE_URL="postgres://radar:radar@localhost:5433/radar?sslmode=disable" \
-	 RADAR_HTTP_ADDR=":18080" \
-	 ./$(BIN) --config config.example.yaml & echo $$! > /tmp/radar-smoke.pid
-	@echo "==> smoke: waiting for /healthz"
-	@for i in $$(seq 1 30); do \
-		curl --noproxy '*' -sf http://localhost:18080/healthz >/dev/null && break || sleep 1; \
-	done
-	@echo "==> smoke: checking /healthz"
-	@curl --noproxy '*' -sf http://localhost:18080/healthz | grep '"status":"ok"'
-	@echo ""
-	@echo "==> smoke: stopping radar"
-	@kill $$(cat /tmp/radar-smoke.pid) 2>/dev/null || true
-	@rm -f /tmp/radar-smoke.pid
-	@echo "==> smoke: PASSED"
-
-check: fmt-check vet lint-go build test smoke
-
+	../scripts/backend-smoke.sh $(BIN)
+check: fmt-check vet build test smoke
 bench:
-	go test -bench=. -benchmem ./...
-
+	go test -run '^$$' -bench '$(BENCH)' -benchmem -count=1 $(PKG)
 profile:
-	@echo "Usage: go test -cpuprofile=cpu.prof -memprofile=mem.prof -bench=. ./internal/httpapi/..."
-	@echo "Then:  go tool pprof -top cpu.prof"
+	mkdir -p $(PROFILE_DIR)
+	go test -run '^$$' -bench '$(BENCH)' -benchmem -count=1 -o $(PROFILE_DIR)/httpapi.test \
+		-cpuprofile $(PROFILE_DIR)/cpu.out -memprofile $(PROFILE_DIR)/mem.out $(PKG)
+	go tool pprof -top -nodecount=15 $(PROFILE_DIR)/httpapi.test $(PROFILE_DIR)/cpu.out
+	go tool pprof -top -nodecount=10 -sample_index=alloc_space $(PROFILE_DIR)/httpapi.test $(PROFILE_DIR)/mem.out

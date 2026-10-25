@@ -1,0 +1,19 @@
+diff --git a/backend/internal/store/window_test.go b/backend/internal/store/window_test.go
+index 3e5dc9a..f8a871b 100644
+--- a/backend/internal/store/window_test.go
++++ b/backend/internal/store/window_test.go
+@@ -390,10 +390,10 @@ func openBeforeWindowMigration(t *testing.T) (*store.Store, *pgx.Conn) {
+ 	}
+ 	sort.Strings(names)
+ 	for _, name := range names {
+-		// Keep H1's switch/candle schema before 0011. The current ingest
+-		// writer also resets H5 progress, so preload its independent additive
+-		// migration; the 0011 behavior and all expected values stay unchanged.
+-		if name >= "0011" && name != "0015_balances.sql" {
++		// Preserve the pre-0011 main-pool and candle schema. Preload the
++		// independent additive migrations required by current FillValues/ingest
++		// writes; extend this list when that path gains another dependency.
++		if name >= "0011" && name != "0013_sm_lists.sql" && name != "0014_inflow.sql" && name != "0015_balances.sql" {
+ 			continue
+ 		}
+ 		sql, err := fs.ReadFile(migrations.FS, name)

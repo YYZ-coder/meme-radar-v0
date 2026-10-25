@@ -1,0 +1,11 @@
+# H6 1b-size-stop red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: D156 terminal size limit takes precedence when final body Read both exceeds512KiB and reports connection reset; literal one-host request order.
+# command: go test -count=1 -run ^TestFetchOversizeStopsEvenWhenBodyReadAlsoFails$ ./internal/metadata
+# sha256 internal/metadata/transport_test.go: e3d3cb2bc628a993b15d23d01cc23460c322c21312e3e8dd57ab19c94bcb4026
+--- FAIL: TestFetchOversizeStopsEvenWhenBodyReadAlsoFails (0.00s)
+    transport_test.go:115: oversize err=<nil> requests=[original.example gateway.example]; must stop after original
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.663s
+FAIL
+
+# exit=1

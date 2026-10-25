@@ -1,0 +1,26 @@
+=== RUN   TestTokenWindowsSumMinuteStats
+--- PASS: TestTokenWindowsSumMinuteStats (1.01s)
+=== RUN   TestTokenWindowsCountDistinctWallets
+--- PASS: TestTokenWindowsCountDistinctWallets (0.22s)
+=== RUN   TestTokenWindowsPriceChange
+=== RUN   TestTokenWindowsPriceChange/historical
+=== RUN   TestTokenWindowsPriceChange/first_inside
+=== RUN   TestTokenWindowsPriceChange/historical_pool_switch
+=== RUN   TestTokenWindowsPriceChange/zero_base
+=== RUN   TestTokenWindowsPriceChange/no_current_or_base
+--- PASS: TestTokenWindowsPriceChange (1.28s)
+    --- PASS: TestTokenWindowsPriceChange/historical (0.26s)
+    --- PASS: TestTokenWindowsPriceChange/first_inside (0.24s)
+    --- PASS: TestTokenWindowsPriceChange/historical_pool_switch (0.26s)
+    --- PASS: TestTokenWindowsPriceChange/zero_base (0.25s)
+    --- PASS: TestTokenWindowsPriceChange/no_current_or_base (0.25s)
+=== RUN   TestTokenWindowsPartialCoverage
+--- PASS: TestTokenWindowsPartialCoverage (0.87s)
+=== RUN   TestMigrationFixesGraduationSwitchTimes
+--- PASS: TestMigrationFixesGraduationSwitchTimes (0.19s)
+=== RUN   TestWindowSumsMatchRawTrades
+--- PASS: TestWindowSumsMatchRawTrades (1.21s)
+=== RUN   TestTokenWindowsKeepsTinyPriceChanges
+--- PASS: TestTokenWindowsKeepsTinyPriceChanges (0.20s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	6.457s

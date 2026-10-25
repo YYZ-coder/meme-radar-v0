@@ -1,0 +1,27 @@
+# h4-12h-no-head-age red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+d4ece0c840ef610b8807a48fa14fcb169ca9b07c28daaf52a6f06fd042cdecac  internal/compute/inflow_cycle_test.go
+# tracked diff sha256=c7903d24cf0c9c6b1546ad9977be9c9cf85a0f83b8554ddd93d1c626ce3d29dc
+# command: go test -count=1 -v -run TestCycleReportsPositiveInfinityBeforeFirstProjection ./internal/compute
+=== RUN   TestCycleReportsPositiveInfinityBeforeFirstProjection
+    inflow_cycle_test.go:75: first head absent: bsc/1m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: bsc/5m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: bsc/1h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: bsc/4h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: bsc/24h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: base/1m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: base/5m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: base/1h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: base/4h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: base/24h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: solana/1m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: solana/5m age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: solana/1h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: solana/4h age=0; want +Inf
+    inflow_cycle_test.go:75: first head absent: solana/24h age=0; want +Inf
+--- FAIL: TestCycleReportsPositiveInfinityBeforeFirstProjection (0.79s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	1.530s
+FAIL
+
+# exit=1

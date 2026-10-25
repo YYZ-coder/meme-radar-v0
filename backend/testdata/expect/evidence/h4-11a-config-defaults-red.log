@@ -1,0 +1,18 @@
+# h4-11a-config-defaults red base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+4052380e031d60c37ae098fcb765214e1f84e1a9ef2f0db46354514f4054957b  internal/config/inflow_test.go
+# tracked diff sha256=55186f6e16bfb33d632179281bea0ba4a510c2baf488e036128fff72e923a9ba
+# command: go test -count=1 -v -run TestInflowConfigurationDefaults ./internal/config
+=== RUN   TestInflowConfigurationDefaults
+    inflow_test.go:21: 1m interval=0s, want 5s
+    inflow_test.go:21: 5m interval=0s, want 5s
+    inflow_test.go:21: 1h interval=0s, want 15s
+    inflow_test.go:21: 4h interval=0s, want 15s
+    inflow_test.go:21: 24h interval=0s, want 15s
+    inflow_test.go:25: display names={Dexes:map[] Platforms:map[]}; want mock names
+--- FAIL: TestInflowConfigurationDefaults (0.00s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/config	0.519s
+FAIL
+
+# exit=1

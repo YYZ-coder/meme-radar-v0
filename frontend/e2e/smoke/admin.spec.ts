@@ -1,8 +1,21 @@
+import { randomBytes } from "node:crypto";
 import { test, expect } from "@playwright/test";
 
 const base58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-const randomAddress = () =>
-  Array.from({ length: 44 }, () => base58[Math.floor(Math.random() * 58)]).join("");
+const randomAddress = () => {
+  const bytes = randomBytes(32);
+  let number = BigInt(`0x${bytes.toString("hex")}`);
+  let address = "";
+  while (number > BigInt(0)) {
+    address = base58[Number(number % BigInt(58))] + address;
+    number /= BigInt(58);
+  }
+  for (const byte of bytes) {
+    if (byte !== 0) break;
+    address = "1" + address;
+  }
+  return address;
+};
 
 test("admin token gate, import, exclusion and retry", async ({ page }) => {
   // The mock keeps admin state in memory, so every run uses its own address and label.
@@ -35,9 +48,19 @@ test("admin token gate, import, exclusion and retry", async ({ page }) => {
   });
   await page.getByRole("button", { name: "上传并校验" }).click();
   await expect(page.getByText("格式错误 1")).toBeVisible();
-  await page.getByRole("button", { name: "确认导入 1 个地址" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "已生效" })).toBeVisible();
+  await page.reload();
+  const applyButton = page.getByRole("button", { name: "确认导入 1 个地址" });
+  await expect(applyButton).toBeEnabled();
+  await applyButton.click();
+  await expect(applyButton).toBeDisabled();
+  await expect(page.getByRole("status").filter({ hasText: "准备" }).first()).toBeVisible();
+  // Reload while the build is preparing: the report and pending version survive.
+  await page.reload();
+  await expect(
+    page.locator(".inline-alert[role=status]").filter({ hasText: "已生效：新增 1" })
+  ).toBeVisible();
 
+  await page.screenshot({ path: test.info().outputPath("list-activated.png"), fullPage: true });
   await page.getByRole("link", { name: "名单管理" }).click();
   await page.getByLabel("地址或名称").fill(label);
   const member = page.getByRole("row").filter({ hasText: label });

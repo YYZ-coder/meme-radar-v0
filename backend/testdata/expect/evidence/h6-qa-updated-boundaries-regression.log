@@ -1,0 +1,8 @@
+# H6 qa-updated-boundaries regression; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Regression after green: cooldown metric+1 and four PG ok rows, redirected cooled hosts skipped, Four original envelope omitted, canceled parent zero requests. Replay response.Request restored to external URL so host policy sees production host.
+# command: go test -count=1 ./internal/metadata
+# sha256 internal/metadata/updated_regression_test.go: 2ae20d691d6849784d155beb2abf5a8bf16b3136ce68c98982baafe399596290
+# sha256 internal/metadata/cooldown_test.go: e40d3b1fde8a5414b212a84a803cbc99c97997cb1d3a1490bcdcc2f5aeeb8bf0
+ok  	github.com/meme-radar/radar/internal/metadata	2.925s
+
+# exit=0

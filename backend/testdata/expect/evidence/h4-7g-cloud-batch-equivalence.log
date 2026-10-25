@@ -1,0 +1,8 @@
+REPEATABLE READ READ ONLY: old H1 vs refactored H1 vs ChainWindows; exact JSON bytes per token/window/currency; no numeric normalization
+chain=solana currency=usd tokens=12 windows=5 rows=60 exact=true batch_elapsed=49.958508292s H1_old_and_new_elapsed=2.05280192s
+chain=solana currency=native tokens=12 windows=5 rows=60 exact=true batch_elapsed=36.699708083s H1_old_and_new_elapsed=2.694946416s
+chain=base currency=usd tokens=12 windows=5 rows=60 exact=true batch_elapsed=4.200595375s H1_old_and_new_elapsed=670.523374ms
+chain=base currency=native tokens=12 windows=5 rows=60 exact=true batch_elapsed=3.394368542s H1_old_and_new_elapsed=598.046417ms
+chain=bsc currency=usd tokens=12 windows=5 rows=60 exact=true batch_elapsed=612.3385ms H1_old_and_new_elapsed=671.698248ms
+chain=bsc currency=native tokens=12 windows=5 rows=60 exact=true batch_elapsed=4.196344334s H1_old_and_new_elapsed=1.379780544s
+total_exact_rows=360 sha256=506faa6c2935777e1418d49d1262683bdb1e81174d88e808bc4f44656fa9d4e5

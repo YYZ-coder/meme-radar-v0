@@ -1,0 +1,13 @@
+# h5-4c-stale green base=61a9ca17cf19626b1a0fc1b4aa68ed63b1765fe4+worktree
+# command: go test -count=1 -run TestApplyBalances|TestRewriteAndRollback -v ./internal/store
+# sha256 internal/store/balances_stale_test.go 807e1e4dc0ed20a46e414cff0f4688bb7999cc0f822135dd5cac1cdce05e00b5
+=== RUN   TestRewriteAndRollbackClearBalances
+--- PASS: TestRewriteAndRollbackClearBalances (0.15s)
+=== RUN   TestApplyBalancesRejectsRewrittenRaw
+--- PASS: TestApplyBalancesRejectsRewrittenRaw (0.11s)
+=== RUN   TestApplyBalancesWritesDeltasAndVersion
+--- PASS: TestApplyBalancesWritesDeltasAndVersion (0.12s)
+PASS
+ok  	github.com/meme-radar/radar/internal/store	0.804s
+
+# exit=0

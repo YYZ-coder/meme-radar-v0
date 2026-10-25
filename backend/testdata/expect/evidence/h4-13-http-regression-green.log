@@ -1,0 +1,52 @@
+# h4-13-http-regression green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+13390ddd8e60150d71bcd1aacf13589ca2625877b4c64c3af9154bd290dcb126  internal/pgapi/placeholders_test.go
+bbecd715f79547ee8dfaebb5a2f432f562f98109016c398f8d4db32e88e28783  internal/pgapi/inflow_facets_test.go
+# tracked diff sha256=126a8a4f8f011b9a14ded6bb1376f9a5fd58088bed6a25f88254de6cc2fa978e
+# command: go test -count=1 -v -run TestPg(FacetsPartial|OverviewUses|Placeholders) ./internal/pgapi
+=== RUN   TestPgFacetsPartialKeepsOnlyObservedCounts
+--- PASS: TestPgFacetsPartialKeepsOnlyObservedCounts (0.44s)
+=== RUN   TestPgOverviewUsesActiveFactsAcrossChains
+--- PASS: TestPgOverviewUsesActiveFactsAcrossChains (0.30s)
+=== RUN   TestPgPlaceholdersMatchContract
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/overview
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow/facets
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/tokens/batch
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/holders
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/smart-money
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/health
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/parse-failures/{id}/retry
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/imports/{id}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports/{id}/apply
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/list-builds/{version}
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/list-builds/{version}/retry
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/members
+=== RUN   TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/exclusions
+=== RUN   TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/exclusions/{chain}/{address}
+=== RUN   TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/members/{chain}/{address}
+--- PASS: TestPgPlaceholdersMatchContract (0.26s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/overview (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow/facets (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/smart-money/inflow (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/tokens/batch (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/holders (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/tokens/{chain}/{address}/smart-money (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/health (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/parse-failures/{id}/retry (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/imports/{id} (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/imports/{id}/apply (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/list-builds/{version} (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/list-builds/{version}/retry (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/members (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/GET_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/POST_/api/v1/admin/smart-money/exclusions (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/exclusions/{chain}/{address} (0.00s)
+    --- PASS: TestPgPlaceholdersMatchContract/DELETE_/api/v1/admin/smart-money/members/{chain}/{address} (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	1.651s
+
+# exit=0

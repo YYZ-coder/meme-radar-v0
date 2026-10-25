@@ -1,0 +1,10 @@
+# h2-11-timeout regression base=c0b4d2006854daacafad2421f7eeb73b624cb4fe+worktree
+# boundary/expectations: docs/handoff/h2-api-pg.md §2 and §4; api/openapi.yaml
+# command: GOCACHE=/tmp/meme-radar-h2-go-cache go test -count=1 -v -run TestPgQueryTimeout ./internal/pgapi
+# dependency_merge_pending=92d20d0b3438ad257f62b0a97eee20e9a86b18f1; H1 implementation=809c199, merged through 2b47c5b; verified in main at 8ac9aa7
+# test_sha256 bc457bf610cfe6a4027907f52070e78bdf434dd6a121ab243cd214876e1baa92 internal/pgapi/timeout_test.go
+=== RUN   TestPgQueryTimeout
+--- PASS: TestPgQueryTimeout (2.15s)
+PASS
+ok  	github.com/meme-radar/radar/internal/pgapi	2.653s
+# exit_status=0

@@ -1,0 +1,11 @@
+# h4-12g-independent-command-regression green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+ff4a4cf823a85a249570b0e1351796367715a65198d8347dcce895361ab276b1  cmd/radar/inflow_integration_test.go
+# tracked diff sha256=d7096d1114481a4cbb43b8a6d514f79b6be490d071940b637493143405314e87
+# command: go test -count=1 -v -run TestComputePublishesInflowWhileSerialPassWaitsAndCancels ./cmd/radar
+=== RUN   TestComputePublishesInflowWhileSerialPassWaitsAndCancels
+--- PASS: TestComputePublishesInflowWhileSerialPassWaitsAndCancels (0.26s)
+PASS
+ok  	github.com/meme-radar/radar/cmd/radar	0.929s
+
+# exit=0

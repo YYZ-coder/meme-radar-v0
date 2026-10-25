@@ -1,0 +1,2 @@
+mode=REPEATABLE_READ_READ_ONLY chain=solana window=24h as_of=2026-10-25T02:53:00Z H3_H4_H5_not_deployed=true seed_join_only_change=true
+rows=31794 query_decode=8.37653794s fill=20.762435ms total=8.397300375s serialized_bytes=34122028 heap_alloc_bytes=86075120 audit_peak_rss_bytes_darwin=104005632 write=NOT_RUN_CLOUD_READ_ONLY

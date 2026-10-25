@@ -1,0 +1,37 @@
+# latest H4: transaction-local 64MB and staggered D153 starts
+# command: make -C backend test-db (go test -race -count=1 ./...)
+RADAR_TEST_DATABASE_URL='postgres://radar:radar@127.0.0.1:55432/postgres?sslmode=disable' go test -race -count=1 ./...
+ok  	github.com/meme-radar/radar/cmd/radar	5.500s
+?   	github.com/meme-radar/radar/internal/api	[no test files]
+ok  	github.com/meme-radar/radar/internal/chaininfo	2.337s
+ok  	github.com/meme-radar/radar/internal/compute	22.629s
+ok  	github.com/meme-radar/radar/internal/config	1.599s
+?   	github.com/meme-radar/radar/internal/contracttest	[no test files]
+ok  	github.com/meme-radar/radar/internal/enrich	2.155s
+ok  	github.com/meme-radar/radar/internal/evm	1.499s
+ok  	github.com/meme-radar/radar/internal/httpapi	4.821s
+ok  	github.com/meme-radar/radar/internal/ingest	7.385s
+ok  	github.com/meme-radar/radar/internal/ingest/evmrpc	2.365s
+ok  	github.com/meme-radar/radar/internal/ingest/jsonrpc	1.460s
+ok  	github.com/meme-radar/radar/internal/ingest/solanarpc	1.932s
+?   	github.com/meme-radar/radar/internal/lists	[no test files]
+ok  	github.com/meme-radar/radar/internal/metadata	6.161s
+ok  	github.com/meme-radar/radar/internal/metrics	1.466s
+ok  	github.com/meme-radar/radar/internal/mockdata	2.222s
+?   	github.com/meme-radar/radar/internal/parse	[no test files]
+ok  	github.com/meme-radar/radar/internal/parse/balances	1.364s
+ok  	github.com/meme-radar/radar/internal/parse/clanker	1.508s
+ok  	github.com/meme-radar/radar/internal/parse/doppler	1.784s
+ok  	github.com/meme-radar/radar/internal/parse/fourmeme	1.545s
+ok  	github.com/meme-radar/radar/internal/parse/pancake	1.530s
+ok  	github.com/meme-radar/radar/internal/parse/pump	1.540s
+ok  	github.com/meme-radar/radar/internal/parser	7.457s
+ok  	github.com/meme-radar/radar/internal/pgapi	21.713s
+ok  	github.com/meme-radar/radar/internal/prices	1.462s
+?   	github.com/meme-radar/radar/internal/smlist	[no test files]
+ok  	github.com/meme-radar/radar/internal/solana	1.536s
+ok  	github.com/meme-radar/radar/internal/store	20.625s
+?   	github.com/meme-radar/radar/internal/testdb	[no test files]
+?   	github.com/meme-radar/radar/migrations	[no test files]
+
+# exit=0

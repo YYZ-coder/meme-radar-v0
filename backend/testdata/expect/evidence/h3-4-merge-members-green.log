@@ -1,0 +1,14 @@
+# h3-4-merge-members green base=1ff1b076c024d1cd4bf5df094be181b248942740+worktree
+# Boundaries and independent expectations: docs/handoff/h3-sm-lists.md section 4; literal fixtures in test source
+# SHA256 ad48bb460f874697b4d5fd13d08e712d95ef417a605808a95fcc6e5a59579cac backend/internal/compute/cycle_test.go
+# SHA256 7a8e8c78af3aeb5f6c2ca0dcfa9277cbbfe0f509aeac670aa868716dd0e7b10c backend/internal/compute/lists_test.go
+# SHA256 77ca1a880406b6d59308b1b0efc75507205779f804c539895b0043e4ddcea286 backend/internal/pgapi/routes_test.go
+# SHA256 770458a24a41befadd4822a200e4222772bc3b08c801fdcbcc06fbab4ecd39f6 backend/internal/pgapi/admin_test.go
+# SHA256 66bc99dda24faf7caf20730a27bc1d95f21267e84cf8e9720b2f18d93cee54b2 backend/internal/pgapi/search_test.go
+# SHA256 c09ceb1e7372b01dcab86dfc5ff015032064fcef9e9eefd9e300e6dd8f3f5b7a backend/internal/pgapi/placeholders_test.go
+# SHA256 c727d40af5f2b431fbe19f637c50b81a5278fc4a409e13e78f7247368a3656df backend/internal/store/lists_test.go
+# Tracked test diff SHA256 299db7786483382ab4c1d51a6d4b5fd0f55be6c8c86392d040a7c6b007742281
+# Command: cd backend && RADAR_TEST_DATABASE_URL=<local-test-db> go test -count=1 -run ^(TestBuildMergesExistingMembers|TestBuildActivatesMembersSnapshot)$ ./internal/store
+ok  	github.com/meme-radar/radar/internal/store	0.907s
+
+exit=0

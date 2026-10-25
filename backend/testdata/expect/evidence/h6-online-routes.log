@@ -1,0 +1,8 @@
+# H6 outbound-route comparison; same approved URLs, no DB writes
+HTTP_PROXY is set; host=127.0.0.1
+HTTPS_PROXY is set; host=127.0.0.1
+ALL_PROXY is set; host=127.0.0.1
+environment route gateway.pinata.cloud HTTP 200; remote 127.0.0.1; time 6.564043 exit=0 
+direct gateway.pinata.cloud HTTP 200; remote 2606:4700:4409::6812:2387; time 5.004658 exit=0 
+environment route four.meme HTTP 403; remote 127.0.0.1; time 7.689277 exit=0 
+direct four.meme HTTP 403; remote 2606:4700:10::6814:2f19; time 2.027926 exit=0 

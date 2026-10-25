@@ -1,0 +1,20 @@
+# H1 8-ath red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T16:24:34.747484+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestATHTracksHighestCandle$ ./internal/compute
+# sha256 internal/compute/ath_test.go f068d99895dc5314ac881447b41996c02b118f7a451fc9201360f798bd12e787
+# test diff sha256 52a2800cbca4ea904f9d9cbefedc78d860fc5521ed513e0982cff0c1bd5e235d
+# sha256 internal/compute/ath.go e9a405cde85ca2f628b16bf5dfa097e9b13a2bc6bdb768bc19970af6b42a9171
+# test diff sha256 30eb279ffaae8331338286034b2070da2646ab961db378d0402227622f50b360
+# sha256 migrations/0011_window.sql b938643869c8e2d14434b77eda79ba6e982efbbba4188cf74fb597bb26781b88
+# test diff sha256 8ac87091b2e548e7d8ebef61863ff95869ae2b2634d80216efa6c6ed9fdc2b8b
+=== RUN   TestATHTracksHighestCandle
+    ath_test.go:71: ATH=NULL NULL NULL; want 3 3000000000 60 (independent candle high x 1e9)
+    ath_test.go:74: ATH=NULL NULL NULL; want 3 3000000000 60 (independent candle high x 1e9)
+    ath_test.go:77: ATH=NULL NULL NULL; want 4 4000000000 240 (independent candle high x 1e9)
+    ath_test.go:88: ATH=NULL NULL NULL; want 4 4000000000 240 (independent candle high x 1e9)
+--- FAIL: TestATHTracksHighestCandle (0.20s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.860s
+FAIL
+
+# exit_code=1

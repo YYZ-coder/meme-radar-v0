@@ -1,0 +1,52 @@
+2026-10-24T10:41:13.993Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:41:13.997Z pw:webserver Error while checking if http://127.0.0.1:31620/healthz is available: connect ECONNREFUSED 127.0.0.1:31620
+2026-10-24T10:41:13.997Z pw:webserver Starting WebServer process ../backend/bin/radar api --store=mock --addr=127.0.0.1:31620...
+2026-10-24T10:41:13.999Z pw:webserver Process started
+2026-10-24T10:41:13.999Z pw:webserver Waiting for availability...
+2026-10-24T10:41:13.999Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:41:14.002Z pw:webserver Error while checking if http://127.0.0.1:31620/healthz is available: connect ECONNREFUSED 127.0.0.1:31620
+2026-10-24T10:41:14.002Z pw:webserver Waiting 100ms
+[WebServer] {"time":"2026-10-24T18:41:14.007819+08:00","level":"INFO","msg":"listening","addr":"127.0.0.1:31620","store":"mock"}
+2026-10-24T10:41:14.104Z pw:webserver HTTP GET: http://127.0.0.1:31620/healthz
+2026-10-24T10:41:14.105Z pw:webserver HTTP Status: 200
+2026-10-24T10:41:14.106Z pw:webserver WebServer available
+2026-10-24T10:41:14.106Z pw:webserver HTTP GET: http://127.0.0.1:31610/smart-money/inflow
+2026-10-24T10:41:14.106Z pw:webserver Error while checking if http://127.0.0.1:31610/smart-money/inflow is available: connect ECONNREFUSED 127.0.0.1:31610
+2026-10-24T10:41:14.106Z pw:webserver Starting WebServer process next start --hostname 127.0.0.1 --port 31610...
+2026-10-24T10:41:14.107Z pw:webserver Process started
+2026-10-24T10:41:14.107Z pw:webserver Waiting for availability...
+2026-10-24T10:41:14.107Z pw:webserver HTTP GET: http://127.0.0.1:31610/smart-money/inflow
+2026-10-24T10:41:14.107Z pw:webserver Error while checking if http://127.0.0.1:31610/smart-money/inflow is available: connect ECONNREFUSED 127.0.0.1:31610
+2026-10-24T10:41:14.108Z pw:webserver Waiting 100ms
+2026-10-24T10:41:14.208Z pw:webserver HTTP GET: http://127.0.0.1:31610/smart-money/inflow
+2026-10-24T10:41:14.208Z pw:webserver Error while checking if http://127.0.0.1:31610/smart-money/inflow is available: connect ECONNREFUSED 127.0.0.1:31610
+2026-10-24T10:41:14.208Z pw:webserver Waiting 250ms
+[WebServer] (node:94221) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ▲ Next.js 16.4.2
+[WebServer] - Local:         http://127.0.0.1:31610
+[WebServer] - Network:       http://127.0.0.1:31610
+[WebServer] ✓ Ready in 114ms
+2026-10-24T10:41:14.459Z pw:webserver HTTP GET: http://127.0.0.1:31610/smart-money/inflow
+[WebServer] ✓ Running next.config.ts took 153ms
+2026-10-24T10:41:14.632Z pw:webserver HTTP Status: 200
+2026-10-24T10:41:14.632Z pw:webserver WebServer available
+
+Running 3 tests using 3 workers
+
+(node:94224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:94223) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:94222) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -  1 [chromium] › e2e/smoke/health.spec.ts:15:5 › mock API answers the contract and flags itself
+  ✓  3 [chromium] › e2e/smoke/health.spec.ts:3:5 › legacy /inflow redirects and the page loads without errors (629ms)
+  ✓  2 [chromium] › e2e/smoke/health.spec.ts:27:5 › connected mode proxies /api/v1 to the Go API and labels demo data (734ms)
+2026-10-24T10:41:15.873Z pw:webserver Terminating the WebServer
+2026-10-24T10:41:15.880Z pw:webserver Terminated the WebServer
+2026-10-24T10:41:15.880Z pw:webserver Terminating the WebServer
+2026-10-24T10:41:15.881Z pw:webserver Terminated the WebServer
+
+  1 skipped
+  2 passed (1.9s)

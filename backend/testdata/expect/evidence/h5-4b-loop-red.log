@@ -1,0 +1,13 @@
+# h5-4b-loop red base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# command: go test -count=1 -run TestBalancePassParsesOnlyBalances -v ./internal/parser
+# sha256 internal/parser/balances_test.go b003c4624eb8035a5e4f60ae6414988faa6ec36f9e6175a0f278a164eeca172b
+=== RUN   TestBalancePassParsesOnlyBalances
+    balances_test.go:53: SELECT coalesce(string_agg(block_num::text,',' ORDER BY block_num),'') FROM chain_blocks WHERE balance_version=1 = ;want 13
+    balances_test.go:53: SELECT count(*)::text FROM balance_deltas = 0;want 2
+    balances_test.go:52: SELECT string_agg(delta::text,',' ORDER BY delta) FROM balance_deltas: can't scan into dest[0] (col: string_agg): cannot scan NULL into *string
+--- FAIL: TestBalancePassParsesOnlyBalances (0.20s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/parser	0.682s
+FAIL
+
+# exit=1

@@ -1,0 +1,15 @@
+# H1 10-recompute red base=a1dce9fade2752a2f1fa70cfccd643a286ae21ed+worktree
+# UTC 2026-10-23T15:46:04.277509+00:00
+# command: RADAR_TEST_DATABASE_URL=<local:55432/postgres> go test -count=1 -v -run ^TestGraduationSwitchUsesChainTime/rebuild_already_computed$ ./internal/compute
+# sha256 internal/compute/market_test.go fffec2e9a92bfe10e7223548644bea062803b0523bf33a6aaf5071bc3d60776d
+# test diff sha256 ccb3665b55363da451bd5d52018894b9736622f6ae818afa4c0c89e6fb8daaec
+=== RUN   TestGraduationSwitchUsesChainTime
+=== RUN   TestGraduationSwitchUsesChainTime/rebuild_already_computed
+    market_test.go:141: SELECT trim_scale(c)::text FROM candles WHERE chain='solana' AND token_address=$1 AND interval='1m' AND t=$2: no rows in result set
+--- FAIL: TestGraduationSwitchUsesChainTime (0.19s)
+    --- FAIL: TestGraduationSwitchUsesChainTime/rebuild_already_computed (0.19s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/compute	0.807s
+FAIL
+
+# exit_code=1

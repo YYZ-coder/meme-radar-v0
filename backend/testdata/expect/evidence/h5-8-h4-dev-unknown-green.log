@@ -1,0 +1,6 @@
+# h5-8-h4-dev-unknown green base=2b195c07a61e3a7a6b72f0aa447b150d9b6489c2+worktree
+# command: go test -count=1 -run ^TestPgInflow(HoldingsFields|UnknownDeveloperIsNotSold)$ ./internal/pgapi
+# sha256 internal/pgapi/inflow_holdings_unknown_test.go b0c88d13ef4d7acc4296cadd22774bd359656e00a5b2da1123aba7707c63659c
+ok  	github.com/meme-radar/radar/internal/pgapi	1.125s
+
+# exit=0

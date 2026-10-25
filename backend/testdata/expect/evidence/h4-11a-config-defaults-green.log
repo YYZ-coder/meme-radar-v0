@@ -1,0 +1,11 @@
+# h4-11a-config-defaults green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+4052380e031d60c37ae098fcb765214e1f84e1a9ef2f0db46354514f4054957b  internal/config/inflow_test.go
+# tracked diff sha256=3d639a3cb84b998f330a234d0271d1fec27faa1ca774c9d60e0c03501771b2a0
+# command: go test -count=1 -v -run TestInflowConfigurationDefaults ./internal/config
+=== RUN   TestInflowConfigurationDefaults
+--- PASS: TestInflowConfigurationDefaults (0.00s)
+PASS
+ok  	github.com/meme-radar/radar/internal/config	0.594s
+
+# exit=0

@@ -9,6 +9,9 @@ const int = z.number().int();
 const nInt = int.nullable();
 const ts = z.string().min(1);
 const nTs = ts.nullable();
+const chainTimesSchema = z
+  .object({ solana: ts.optional(), base: ts.optional(), bsc: ts.optional() })
+  .strict();
 
 export const chainSchema = z.enum(["solana", "base", "bsc"]);
 export const windowSchema = z.enum(["1m", "5m", "1h", "4h", "24h"]);
@@ -16,6 +19,7 @@ const summaryWindowSchema = z.enum(["5m", "1h", "4h", "24h"]);
 const intervalSchema = z.enum(["1s", "30s", "1m", "5m", "1h", "1d"]);
 const currencySchema = z.enum(["USD", "SOL", "ETH", "BNB"]);
 const address = z.string().min(32).max(44);
+export const poolIdentifierSchema = z.union([address, z.string().regex(/^0x[0-9a-fA-F]{64}$/)]);
 
 export const errorCodeSchema = z.enum(T.errorCodes);
 
@@ -80,14 +84,19 @@ export const overviewSchema = z.object({
   as_of: ts,
   list_version: z.string(),
   window: windowSchema,
+  coverage: z.enum(["partial", "complete"]),
   net_inflow_usd: nDecimal,
   net_inflow_change_pct: nDecimal,
   active_wallets: nInt,
-  tracked_tokens: int,
+  tracked_tokens: int.nonnegative().nullable(),
   new_tokens: nInt,
   buy_volume_usd: nDecimal,
   sell_volume_usd: nDecimal,
   buy_share_pct: nDecimal,
+  large_buy_volume_usd: nDecimal,
+  small_buy_volume_usd: nDecimal,
+  large_buy_share_pct: nDecimal,
+  small_buy_share_pct: nDecimal,
   inflow_bars: z.array(nDecimal).max(16),
 }) satisfies z.ZodType<T.OverviewResponse>;
 
@@ -96,10 +105,12 @@ const facetSchema = z.object({
   name: z.string(),
   chain: chainSchema.optional(),
   volume_usd: nDecimal,
-  token_count: int,
+  token_count: int.nonnegative().nullable(),
+  observed_token_count: int.nonnegative(),
 });
 
 export const facetsSchema = z.object({
+  coverage: z.enum(["partial", "complete"]),
   dexes: z.array(facetSchema),
   platforms: z.array(facetSchema),
 }) satisfies z.ZodType<T.FacetsResponse>;
@@ -114,6 +125,12 @@ export const inflowRowSchema = z.object({
   trades: nInt,
   buys: nInt,
   sells: nInt,
+  observed: z.object({
+    trades: int.nonnegative(),
+    buys: int.nonnegative(),
+    sells: int.nonnegative(),
+  }),
+  coverage: z.enum(["partial", "complete"]),
   volume: nDecimal,
   net_inflow: nDecimal,
   sm_holders: nInt,
@@ -129,6 +146,7 @@ export const inflowPageSchema = z.object({
   query_id: z.string(),
   list_version: z.string(),
   as_of: ts,
+  chain_as_of: chainTimesSchema.optional(),
   window: windowSchema,
   total: int,
   truncated: z.boolean(),
@@ -139,6 +157,8 @@ export const inflowPageSchema = z.object({
 
 export const batchSchema = z.object({
   as_of: ts,
+  chain_as_of: chainTimesSchema.optional(),
+  list_version: z.string(),
   items: z.array(inflowRowSchema),
 }) satisfies z.ZodType<T.BatchResponse>;
 
@@ -168,7 +188,9 @@ export const tokenDetailSchema = z.object({
   total_supply: nDecimal,
   socials: socialsSchema,
   creator: z.object({ address, holding_pct: nDecimal }).nullable(),
-  main_pool: z.object({ address, dex: z.string(), quote_symbol: z.string() }).nullable(),
+  main_pool: z
+    .object({ address: poolIdentifierSchema, dex: z.string(), quote_symbol: z.string().nullable() })
+    .nullable(),
   price: nDecimal,
   market_cap: nDecimal,
   liquidity: nDecimal,
@@ -187,12 +209,27 @@ export const candlesSchema = z.object({
   interval: intervalSchema,
   metric: z.enum(["price", "market_cap"]),
   currency: currencySchema,
+  as_of: ts,
+  coverage: z.enum(["complete", "partial"]),
+  empty_reason: z.enum(["no_main_pool", "no_price", "no_trades"]).nullable(),
   items: z.array(z.object({ t: int, o: decimal, h: decimal, l: decimal, c: decimal, v: decimal })),
+  observed_items: z.array(
+    z.object({
+      t: int,
+      o: decimal,
+      h: decimal,
+      l: decimal,
+      c: decimal,
+      v: nDecimal,
+      closed: z.boolean(),
+    })
+  ),
+  gaps: z.array(z.object({ from: int, to: int, reason: z.literal("price_unavailable") })),
   pool_switches: z.array(
     z.object({
       t: int,
-      from_pool: z.string().nullable(),
-      to_pool: z.string(),
+      from_pool: poolIdentifierSchema.nullable(),
+      to_pool: poolIdentifierSchema,
       reason: z.enum(["liquidity", "graduation"]),
     })
   ),
@@ -222,20 +259,27 @@ const activitySchema = z.object({
   wallet: walletRefSchema.nullable(),
   attribution: z.enum(["confirmed", "inferred", "ambiguous"]).nullable(),
   token_amount: decimal,
-  quote_amount: decimal,
-  quote_symbol: z.string(),
+  quote_amount: nDecimal,
+  quote_symbol: z.string().nullable(),
   value_usd: nDecimal,
   price_usd: nDecimal,
   market_cap_usd: nDecimal,
   tx_hash: z.string(),
-  pool: address,
+  pool: poolIdentifierSchema,
   dex: z.string(),
 }) satisfies z.ZodType<T.Activity>;
 
 export const activitiesSchema = z.object({
+  coverage: z.enum(["partial", "complete"]),
+  label_counts_coverage: z.enum(["partial", "complete"]),
   items: z.array(activitySchema),
   next_cursor: z.string().nullable(),
-  label_counts: z.record(z.string(), int),
+  label_counts: z
+    .object({
+      all: int.nonnegative().nullable(),
+      smart_money: int.nonnegative().nullable(),
+    })
+    .catchall(int.nonnegative().nullable()),
 }) satisfies z.ZodType<T.ActivitiesResponse>;
 
 export const holdersSchema = z.object({
@@ -260,10 +304,10 @@ export const holdersSchema = z.object({
 export const poolsSchema = z.object({
   items: z.array(
     z.object({
-      address,
+      address: poolIdentifierSchema,
       dex: z.string(),
       protocol: z.string(),
-      quote_symbol: z.string(),
+      quote_symbol: z.string().nullable(),
       liquidity_usd: nDecimal,
       reserve_token: nDecimal,
       reserve_quote: nDecimal,
@@ -275,18 +319,19 @@ export const poolsSchema = z.object({
 }) satisfies z.ZodType<T.PoolsResponse>;
 
 export const liquidityEventsSchema = z.object({
+  coverage: z.enum(["partial", "complete"]),
   items: z.array(
     z.object({
       id: z.string(),
       time: ts,
       kind: z.enum(["add", "remove"]),
       token_amount: decimal,
-      quote_amount: decimal,
-      quote_symbol: z.string(),
+      quote_amount: nDecimal,
+      quote_symbol: z.string().nullable(),
       value_usd: nDecimal,
       wallet: walletRefSchema.nullable(),
       tx_hash: z.string(),
-      pool: address,
+      pool: poolIdentifierSchema,
       dex: z.string(),
     })
   ),
@@ -314,6 +359,8 @@ export const importReportSchema = z.object({
   created_at: ts,
   expires_at: ts,
   applied: z.boolean(),
+  applied_list_version: z.string().nullable(),
+  rows_archived: z.boolean(),
   totals: z.object({
     rows: int,
     valid: int,
@@ -336,14 +383,37 @@ export const importReportSchema = z.object({
   ),
 }) satisfies z.ZodType<T.ImportReport>;
 
+const listStatus = z.enum(["building", "active", "retired"]);
+const buildStatus = z.enum(["queued", "running", "ready", "activated", "failed"]);
 export const listVersionChangeSchema = z.object({
   list_version: z.string(),
   previous_version: z.string(),
+  active_version: z.string(),
+  status: listStatus,
+  build_status: buildStatus,
   added: int,
   merged: int,
   removed: int,
   total_members: int,
 }) satisfies z.ZodType<T.ListVersionChange>;
+
+export const listBuildStatusSchema = z.object({
+  list_version: z.string(),
+  previous_version: z.string(),
+  active_version: z.string(),
+  status: listStatus,
+  build_status: buildStatus,
+  blocking_version: z.string().nullable(),
+  created_at: ts,
+  activated_at: nTs,
+  error_code: errorCodeSchema.nullable(),
+  change_counts: z.object({
+    added: int.nonnegative(),
+    merged: int.nonnegative(),
+    removed: int.nonnegative(),
+    total_members: int.nonnegative(),
+  }),
+}) satisfies z.ZodType<T.ListBuildStatus>;
 
 export const membersSchema = z.object({
   list_version: z.string(),
@@ -364,6 +434,7 @@ export const membersSchema = z.object({
 }) satisfies z.ZodType<T.MembersResponse>;
 
 export const exclusionsSchema = z.object({
+  list_version: z.string(),
   items: z.array(z.object({ chain: chainSchema, address, reason: z.string(), created_at: ts })),
   next_cursor: z.string().nullable(),
 }) satisfies z.ZodType<T.ExclusionsResponse>;

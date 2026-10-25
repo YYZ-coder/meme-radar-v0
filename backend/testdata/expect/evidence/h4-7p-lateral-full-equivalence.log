@@ -1,0 +1,20 @@
+mode=REPEATABLE_READ_READ_ONLY full_row_equivalence old_per_token_vs_sparse_go; H3/H4/H5 not deployed: empty smart copies and unknown holder/metadata fields in BOTH previews; no cloud writes
+sparse chain=solana window=1h as_of=2026-10-25T02:53:00Z rows=3353 query_decode=3.59827685s fill=1.953275ms total=3.600230125s heap_alloc_bytes=10388064 peak_rss_bytes_darwin=25214976 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=solana window=1h old_rows=3353 new_rows=3353 diffs=0 old_elapsed=806.775958ms sha256=e09c16540c9414a8d6195e772741bda09423538ebf60082b23dbedaf8e6def53
+sparse chain=solana window=4h as_of=2026-10-25T02:53:00Z rows=9698 query_decode=2.575360273s fill=2.511143ms total=2.577871416s heap_alloc_bytes=26995824 peak_rss_bytes_darwin=44400640 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=solana window=4h old_rows=9698 new_rows=9698 diffs=0 old_elapsed=4.458786083s sha256=61414e41bee69e3b5ba8d7d93db9f55d0afef84d13d8979672c35026d8f588e2
+sparse chain=solana window=24h as_of=2026-10-25T02:53:00Z rows=31794 query_decode=8.451963858s fill=7.810892ms total=8.45977475s heap_alloc_bytes=82129800 peak_rss_bytes_darwin=105791488 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=solana window=24h old_rows=31794 new_rows=31794 diffs=0 old_elapsed=20.24716975s sha256=1f963e4628d9744638d8e9ac9fb5b0be79d48b967de400c047b6709d488205ce
+sparse chain=base window=1h as_of=2026-10-25T02:48:00Z rows=196 query_decode=205.380661ms fill=55.173µs total=205.435834ms heap_alloc_bytes=75418808 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=base window=1h old_rows=196 new_rows=196 diffs=0 old_elapsed=170.433667ms sha256=d7d3bd24acff5e729c3e5a75ed4af303e67817e35b6406f570fff3bb52a062cb
+sparse chain=base window=4h as_of=2026-10-25T02:48:00Z rows=431 query_decode=546.180556ms fill=242.986µs total=546.423542ms heap_alloc_bytes=3433200 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=base window=4h old_rows=431 new_rows=431 diffs=0 old_elapsed=460.71975ms sha256=44ea5010b6902eaa60eb93bebcf2803c84fc430fcf39197ebccd7ebdc777c33a
+sparse chain=base window=24h as_of=2026-10-25T02:48:00Z rows=1291 query_decode=1.780206646s fill=910.396µs total=1.781117042s heap_alloc_bytes=4499144 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=base window=24h old_rows=1291 new_rows=1291 diffs=0 old_elapsed=1.755837417s sha256=5fcbb1f59d4790278e458c7c4a4bcc81d0ab9139e1c192f2d7c4e2ae1d0e297d
+sparse chain=bsc window=1h as_of=2026-10-25T02:55:00Z rows=227 query_decode=64.327992ms fill=103.591µs total=64.431583ms heap_alloc_bytes=3685040 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=bsc window=1h old_rows=227 new_rows=227 diffs=0 old_elapsed=98.015542ms sha256=9f48194f4c404b23e24d803701ec74d1cbc870095906db57bc00baf15029e384
+sparse chain=bsc window=4h as_of=2026-10-25T02:55:00Z rows=640 query_decode=317.693839ms fill=192.745µs total=317.886584ms heap_alloc_bytes=2410528 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=bsc window=4h old_rows=640 new_rows=640 diffs=0 old_elapsed=244.833209ms sha256=f9d3a6310ef4e8877d2000470a9db87388f2536813cb054d2482b678be2d64e6
+sparse chain=bsc window=24h as_of=2026-10-25T02:55:00Z rows=3073 query_decode=885.782366ms fill=1.914343ms total=887.696709ms heap_alloc_bytes=9387056 peak_rss_bytes_darwin=205684736 write=NOT_RUN_CLOUD_READ_ONLY
+compare chain=bsc window=24h old_rows=3073 new_rows=3073 diffs=0 old_elapsed=1.569470041s sha256=4efc6073beb71ee1d1d8873f047ccb767d1c4315e1d859af659ddf1049cd2aca
+PASS full rows and all20 USD/native spark points identical for 3 chains x 3 long windows in ONE readonly snapshot

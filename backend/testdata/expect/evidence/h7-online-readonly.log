@@ -1,0 +1,52 @@
+mode=read-only; cloud credentials supplied through env-file, never logged
+Pager usage is off.
+Timing is on.
+BEGIN
+Time: 18.922 ms
+SET
+Time: 12.797 ms
+      observed_at_utc       | latest_migration | parser_status | parse_retries 
+----------------------------+------------------+---------------+---------------
+ 2026-10-24 15:02:38.429554 | 0011_window.sql  |               | 
+(1 row)
+
+Time: 17.856 ms
+ chain  |   head    |  anchor   | position  | forward_lag | lag_seconds 
+--------+-----------+-----------+-----------+-------------+-------------
+ solana | 460893887 | 460272778 | 460893887 |           0 |           4
+ base   |  53032404 |  52966563 |  53032404 |           0 |           3
+ bsc    | 129534417 | 129241867 | 129534417 |           0 |           3
+(3 rows)
+
+Time: 19.241 ms
+ chain  |    reason    | open_gap_rows | open_gap_blocks 
+--------+--------------+---------------+-----------------
+ solana | rate_limited |         51031 |          561612
+ solana | startup      |            23 |           60438
+ base   | startup      |             1 |          173963
+ bsc    | startup      |             3 |         1384245
+(4 rows)
+
+Time: 36.395 ms
+ chain  | unparsed | parser_position 
+--------+----------+-----------------
+ solana |        3 |       460893857
+ base   |     1654 |        53032298
+ bsc    |     3578 |       129534397
+(3 rows)
+
+Time: 232.983 ms
+ chain | decoder | failures_24h 
+-------+---------+--------------
+(0 rows)
+
+Time: 16.994 ms
+ id | chain | block_num | tx_index | decoder | created_at 
+----+-------+-----------+----------+---------+------------
+(0 rows)
+
+Time: 13.143 ms
+ROLLBACK
+Time: 14.218 ms
+
+exit_code=0

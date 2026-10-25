@@ -1,0 +1,11 @@
+# H6 2c-ipv6-benchmark red; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: Final-IP SSRF policy: IANA 2001:2::/48 Benchmarking is not globally reachable (https://www.iana.org/assignments/iana-ipv6-special-registry/); literal injected DNS address2001:2::26 must be blocked before dial.
+# command: go test -count=1 -run ^TestFetchRejectsIPv6BenchmarkAddresses$ ./internal/metadata
+# sha256 internal/metadata/security_regression_test.go: c56f7be1219e3c1c4437ee7dd0f336b3faeae9fc8b2e430d9ad7a1f71a79f0ae
+--- FAIL: TestFetchRejectsIPv6BenchmarkAddresses (0.03s)
+    security_regression_test.go:51: IPv6 benchmark error=context deadline exceeded; want ErrBlocked before dialing
+FAIL
+FAIL	github.com/meme-radar/radar/internal/metadata	0.669s
+FAIL
+
+# exit=1

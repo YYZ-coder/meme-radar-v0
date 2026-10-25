@@ -1,0 +1,7 @@
+# H6 6a-config green; base=4b9f3d18ea6f08b328904ef3ce337178e106e51e+worktree
+# boundary / independent expectation: config.Load; D155/D156 ordered defaults and validated positive finite rates, http(s) endpoints, empty Four.meme URL disables
+# command: go test -count=1 ./internal/config
+# sha256 internal/config/metadata_test.go: 09e750dd882f694a565e545b181ef97e2c1273a474842efdde26a4e7c26f4d3c
+ok  	github.com/meme-radar/radar/internal/config	0.374s
+
+# exit=0

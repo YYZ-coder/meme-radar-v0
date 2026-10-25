@@ -1,0 +1,7 @@
+# H6 1c-cooldown green; base=3bc9ef82c5b03bb105c440514202cfd244ee3a10+worktree
+# boundary / independent expectation: H6-1c same literal request counts and clock boundaries; per-host failure state and success reset.
+# command: go test -count=1 -run ^TestGatewayHostCooldown$ ./internal/metadata
+# sha256 internal/metadata/cooldown_test.go: 50efc1832d2aacb0b77ed7138c3b2d9bed8d97d14592cfba936b5f05fb037ee1
+ok  	github.com/meme-radar/radar/internal/metadata	0.468s
+
+# exit=0

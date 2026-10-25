@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/state";
 import { useToast } from "@/components/ui/toast";
 import { SmartMoneyFrame, useRefreshPause } from "@/features/smart-money/frame";
@@ -11,13 +10,12 @@ import { apiFetch, isApiError } from "@/lib/api/client";
 import { batchSchema } from "@/lib/api/schemas";
 import { windows, type InflowRow, type InflowSortKey } from "@/lib/api/types";
 import { parseTokenKey, tokenKey } from "@/lib/chains";
-import { formatAmount, formatCount } from "@/lib/format/number";
-import { formatClock } from "@/lib/format/time";
 import { useAppLocale } from "@/lib/locale";
 import { usePreferences } from "@/lib/preferences";
 import { useUrlParams } from "@/lib/use-url-params";
 import { useWatchlist } from "@/lib/watchlist";
 import { FilterDialog } from "./filter-dialog";
+import { FacetFilters } from "./facet-filters";
 import { InflowSidebar } from "./inflow-sidebar";
 import { InflowTable } from "./inflow-table";
 import { useFacets, useInflowList, useRowRefresh } from "./use-inflow";
@@ -88,27 +86,13 @@ function InflowBody({ onRows }: { onRows: (rows: InflowRow[]) => void }) {
           ))}
         </div>
         <div className="toolbar-options">
-          <MultiSelect
-            label={t("dex")}
-            allLabel={t("dexAll")}
-            value={state.dex}
-            options={(facets.data?.dexes ?? []).map((d) => ({
-              id: d.id,
-              label: d.name,
-              detail: formatAmount(d.volume_usd, locale),
-            }))}
-            onChange={(dex) => apply({ dex })}
-          />
-          <MultiSelect
-            label={t("platform")}
-            allLabel={t("platformAll")}
-            value={state.platform}
-            options={(facets.data?.platforms ?? []).map((p) => ({
-              id: p.id,
-              label: p.name,
-              detail: formatCount(p.token_count, locale),
-            }))}
-            onChange={(platform) => apply({ platform })}
+          <FacetFilters
+            facets={facets.data}
+            locale={locale}
+            dex={state.dex}
+            platform={state.platform}
+            onDexChange={(dex) => apply({ dex })}
+            onPlatformChange={(platform) => apply({ platform })}
           />
           <button
             type="button"
@@ -187,7 +171,13 @@ function RefreshStatus({ paused, asOf }: { paused: boolean; asOf: string | null 
   return (
     <span className="refresh-status">
       <span className={paused ? "muted" : "status-dot"} />
-      {paused ? t("paused") : asOf ? t("updatedAt", { time: formatClock(asOf) }) : t("autoUpdate")}
+      {paused
+        ? t("paused")
+        : asOf
+          ? t("updatedAt", {
+              time: new Date(asOf).toISOString().replace("T", " ").slice(0, 19) + " UTC",
+            })
+          : t("autoUpdate")}
     </span>
   );
 }
@@ -214,15 +204,26 @@ function SnapshotList({
   onClear: () => void;
 }) {
   const t = useTranslations("inflow");
-  const { query, rows, first } = useInflowList(apiQuery, generation, onExpired);
+  const { query, rows, first } = useInflowList(apiQuery, generation, onExpired, !paused);
   const [visible, setVisible] = useState<InflowRow[]>([]);
   const keys = useMemo(() => visible.map((r) => r.token), [visible]);
-  const { latest, asOf } = useRowRefresh(keys, state.window, currency, !paused && !query.isPending);
+  const {
+    latest,
+    missing: refreshMissing,
+    asOf,
+    expired: refreshExpired,
+  } = useRowRefresh(
+    keys,
+    state.window,
+    currency,
+    !paused && !query.isPending && !!first,
+    first ? { queryId: first.query_id, listVersion: first.list_version } : undefined
+  );
   const missing = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(refreshMissing);
     if (latest.size) for (const k of keys) if (!latest.has(tokenKey(k))) set.add(tokenKey(k));
     return set;
-  }, [latest, keys]);
+  }, [latest, keys, refreshMissing]);
   const merged = useMemo(() => rows.map((r) => latest.get(tokenKey(r.token)) ?? r), [rows, latest]);
   const onVisible = useCallback((v: InflowRow[]) => setVisible(v), []);
   useEffect(() => onRows(merged), [merged, onRows]);
@@ -239,7 +240,11 @@ function SnapshotList({
       <ErrorState
         title={t("error")}
         detail={
-          isApiError(err, 429) ? t("rateLimited") : isApiError(err, 503) ? t("busy") : undefined
+          isApiError(err, 429)
+            ? t("rateLimited")
+            : isApiError(err, 503) && err.code === "busy"
+              ? t("busy")
+              : undefined
         }
         error={err}
         onRetry={() => void query.refetch()}
@@ -248,20 +253,43 @@ function SnapshotList({
   }
   if (!rows.length) {
     return (
-      <EmptyState
-        title={t("empty")}
-        hint={t("emptyHint")}
-        action={
-          <button type="button" className="outline-button" onClick={onClear}>
-            {t("clearAll")}
-          </button>
-        }
-      />
+      <>
+        {first ? (
+          <p className="muted" role="status">
+            {t("dataThrough", {
+              time: new Date(first.as_of).toISOString().replace("T", " ").slice(0, 19) + " UTC",
+            })}{" "}
+            · {paused ? t("paused") : t("emptyRefresh")}
+          </p>
+        ) : null}
+        <EmptyState
+          title={t("empty")}
+          hint={t("emptyHint")}
+          action={
+            <button type="button" className="outline-button" onClick={onClear}>
+              {t("clearAll")}
+            </button>
+          }
+        />
+      </>
     );
   }
   const nextError = query.isFetchNextPageError && !isApiError(query.error, 410);
   return (
     <>
+      {rows.some((row) => row.trades === null) ? (
+        <div className="inline-alert" role="status">
+          {t("partialWindow")}
+        </div>
+      ) : null}
+      {refreshExpired ? (
+        <div className="inline-alert" role="status">
+          {t("versionRefreshPaused")}
+          <button type="button" className="outline-button" onClick={onExpired}>
+            {t("requery")}
+          </button>
+        </div>
+      ) : null}
       <InflowTable
         rows={rows}
         latest={latest}
@@ -275,7 +303,7 @@ function SnapshotList({
       />
       {nextError ? (
         <div className="inline-alert" role="alert">
-          {isApiError(query.error, 503)
+          {isApiError(query.error, 503) && query.error.code === "busy"
             ? t("busy")
             : isApiError(query.error, 429)
               ? t("rateLimited")
@@ -298,7 +326,7 @@ function SnapshotList({
           <span className="footer-divider">/</span>
           {isFetchingNextPage ? t("loadingMore") : hasNextPage ? `${rows.length}` : t("end")}
         </span>
-        <RefreshStatus paused={paused} asOf={asOf} />
+        <RefreshStatus paused={paused || refreshExpired} asOf={asOf ?? first?.as_of ?? null} />
       </div>
     </>
   );

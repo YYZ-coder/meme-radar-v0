@@ -1,0 +1,25 @@
+# h4-8-sparkline green base=449bb0a33352cf63ac9fe3e568e53a2def58ff04+worktree
+# seam and independent expectations: see test comments and docs/handoff/h4-inflow.md
+d87e229195297fa88bdccb80d8757b2d9fb2a9154016566f7465f8114154f6d1  internal/compute/inflow_sparkline_test.go
+# tracked diff sha256=d5ecad248c3602e16aa6b1b45fe45b187c34673ce15abd5ae891d742dd1b95d4
+# command: go test -count=1 -v -run TestInflowSparkline|TestInflowRowsFromFacts ./internal/compute
+=== RUN   TestInflowRowsFromFacts
+=== RUN   TestInflowRowsFromFacts/complete
+=== RUN   TestInflowRowsFromFacts/partial
+--- PASS: TestInflowRowsFromFacts (0.50s)
+    --- PASS: TestInflowRowsFromFacts/complete (0.31s)
+    --- PASS: TestInflowRowsFromFacts/partial (0.20s)
+=== RUN   TestInflowSparkline
+=== RUN   TestInflowSparkline/1h/seed=false
+=== RUN   TestInflowSparkline/1h/seed=true
+=== RUN   TestInflowSparkline/5m/seed=false
+=== RUN   TestInflowSparkline/5m/seed=true
+--- PASS: TestInflowSparkline (0.64s)
+    --- PASS: TestInflowSparkline/1h/seed=false (0.15s)
+    --- PASS: TestInflowSparkline/1h/seed=true (0.16s)
+    --- PASS: TestInflowSparkline/5m/seed=false (0.15s)
+    --- PASS: TestInflowSparkline/5m/seed=true (0.19s)
+PASS
+ok  	github.com/meme-radar/radar/internal/compute	1.841s
+
+# exit=0

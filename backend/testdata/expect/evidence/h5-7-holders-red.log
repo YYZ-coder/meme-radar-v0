@@ -1,0 +1,12 @@
+# h5-7-holders red base=d3d67c724d68b32bb19d28fb944ce550e807c761+worktree
+# command: go test -count=1 -run ^TestPgHoldersTab$ -v ./internal/pgapi
+# sha256 internal/pgapi/holders_test.go d9e496d5b56f5c996e2b07117bc0394831075ecc818e7fdfb010f313864e2934
+=== RUN   TestPgHoldersTab
+    holders_test.go:75: total/coverage={Coverage:{Status:unknown Since:<nil> AsOf:2026-10-23T10:00:30.000Z} Total:<nil> Items:[] NextCursor:<nil>}
+    holders_test.go:78: page 0 items=[], want 2
+--- FAIL: TestPgHoldersTab (0.67s)
+FAIL
+FAIL	github.com/meme-radar/radar/internal/pgapi	1.119s
+FAIL
+
+# exit=1
