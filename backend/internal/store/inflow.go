@@ -595,9 +595,10 @@ type InflowKey struct {
 
 // InflowHead holds one published chain cutoff within a statement snapshot.
 type InflowHead struct {
-	Window string
-	Chain  string
-	AsOf   time.Time
+	Version int64
+	Window  string
+	Chain   string
+	AsOf    time.Time
 }
 
 // InflowDataRow holds persisted values in the selected currency. Dexes remain
@@ -617,35 +618,178 @@ type InflowDataRow struct {
 	Socials                                          []byte
 	Sparkline                                        []*string
 	DevHoldingPct                                    *string
+	// Selection marks filter-only rows; actual page payloads retain full socials.
+	Selection  bool
+	SocialMask uint8
 }
 
 // InflowSnapshot binds rows, all selected heads and active membership to one
 // repeatable-read snapshot. A nil key slice means all rows; an empty slice none.
 type InflowSnapshot struct {
-	ListVersion int64
-	Heads       []InflowHead
-	Rows        []InflowDataRow
+	ListVersion     int64
+	PayloadComplete bool
+	Heads           []InflowHead
+	Rows            []InflowDataRow
+}
+
+const inflowHeadsSQL = `SELECT active.version,h.chain::text,h.as_of,h.list_version,h.rebuild_pending,h.projection_version
+ FROM(SELECT version FROM sm_lists WHERE status='active')active LEFT JOIN projection_heads h
+ ON h.name='inflow' AND h."window"=$2 AND ($1='' OR h.chain::text=$1) AND (NOT $3 OR h.chain::text=ANY($4::text[]))`
+
+const inflowPayloadColumns = `r.chain::text,r.token_address,r.symbol,r.name,r.image_url,r.launch_platform,r.launch_at,
+ trim_scale(CASE WHEN $3::boolean THEN r.price_native ELSE r.price_usd END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.market_cap_native ELSE r.market_cap_usd END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.price_change_pct_native ELSE r.price_change_pct END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.liquidity_native ELSE r.liquidity_usd END)::text,
+ r.trades,r.buys,r.sells,r.observed_trades,r.observed_buys,r.observed_sells,r.coverage,
+ trim_scale(CASE WHEN $3::boolean THEN r.volume_native ELSE r.volume_usd END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.net_inflow_native ELSE r.net_inflow_usd END)::text,
+ r.sm_holders,r.sm_trades,r.holders,r.age_seconds,r.dexes,r.socials,
+ coalesce(cardinality(CASE WHEN $3::boolean THEN r.sparkline_native ELSE r.sparkline END),0),series.positions,series.prices,trim_scale(r.dev_holding_pct)::text`
+
+const inflowSeriesJoin = `
+ CROSS JOIN LATERAL (
+  SELECT array_agg(n::integer ORDER BY n) FILTER(WHERE n=1 OR x IS DISTINCT FROM previous) AS positions,
+   array_agg(trim_scale(x)::text ORDER BY n) FILTER(WHERE n=1 OR x IS DISTINCT FROM previous) AS prices
+  FROM(SELECT x,n,lag(x) OVER(ORDER BY n) AS previous
+   FROM unnest(CASE WHEN $3::boolean THEN r.sparkline_native ELSE r.sparkline END) WITH ORDINALITY s(x,n))points
+ )series`
+
+// A per-head parameterized lookup prevents generic merge plans from walking
+// every retired version before reaching the current head. OFFSET 0 preserves
+// the lateral boundary without limiting or reordering the published rows.
+const inflowHeadRowsJoin = `
+ FROM heads h CROSS JOIN LATERAL (
+  SELECT r.* FROM inflow_rows r WHERE r.projection_version=h.projection_version
+   AND r.chain=h.chain AND r."window"=h."window" OFFSET 0
+ ) r`
+
+const inflowRowsSQL = `WITH active AS MATERIALIZED (SELECT version FROM sm_lists WHERE status='active'), heads AS MATERIALIZED (
+ SELECT h.* FROM projection_heads h CROSS JOIN active
+ WHERE h.name='inflow' AND h."window"=$2 AND ($1='' OR h.chain::text=$1)
+ AND (NOT $6 OR h.chain::text=ANY($4::text[]))
+ ) SELECT ` + inflowPayloadColumns + `
+` + inflowHeadRowsJoin + `` + inflowSeriesJoin + `
+ WHERE NOT EXISTS(SELECT 1 FROM heads bad CROSS JOIN active a WHERE bad.rebuild_pending OR bad.list_version<>a.version)
+ AND (NOT $6 OR EXISTS(SELECT 1 FROM unnest($4::text[],$5::bytea[])k(chain,address) WHERE k.chain=r.chain::text AND k.address=r.token_address))
+ AND (NOT $7 OR (SELECT count(*) FROM(SELECT 1 FROM heads sh CROSS JOIN LATERAL (
+ SELECT 1 FROM inflow_rows sr WHERE sr.projection_version=sh.projection_version
+ AND sr.chain=sh.chain AND sr."window"=sh."window" OFFSET 0)sr LIMIT 101)small)<=100)
+ ORDER BY r.chain::text COLLATE "C",r.token_address`
+
+// Only selection attributes cross the wire for the complete candidate set.
+// Presence flags preserve the API's non-NULL social filter, including empty URLs.
+const inflowSelectionSQL = `WITH active AS MATERIALIZED (SELECT version FROM sm_lists WHERE status='active'), heads AS MATERIALIZED (
+ SELECT h.* FROM projection_heads h CROSS JOIN active
+ WHERE h.name='inflow' AND h."window"=$2 AND ($1='' OR h.chain::text=$1)
+ ) SELECT r.chain::text,r.token_address,r.launch_platform,
+ trim_scale(CASE WHEN $3::boolean THEN r.market_cap_native ELSE r.market_cap_usd END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.price_change_pct_native ELSE r.price_change_pct END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.liquidity_native ELSE r.liquidity_usd END)::text,
+ r.trades,trim_scale(CASE WHEN $3::boolean THEN r.volume_native ELSE r.volume_usd END)::text,
+ trim_scale(CASE WHEN $3::boolean THEN r.net_inflow_native ELSE r.net_inflow_usd END)::text,
+ r.sm_holders,r.sm_trades,r.holders,r.age_seconds,r.dexes,
+ (CASE WHEN r.socials->>'twitter' IS NOT NULL THEN 1 ELSE 0 END
+ +CASE WHEN r.socials->>'telegram' IS NOT NULL THEN 2 ELSE 0 END
+ +CASE WHEN r.socials->>'github' IS NOT NULL THEN 4 ELSE 0 END
+ +CASE WHEN r.socials->>'website' IS NOT NULL THEN 8 ELSE 0 END),
+ trim_scale(r.dev_holding_pct)::text
+` + inflowHeadRowsJoin + `
+ WHERE NOT EXISTS(SELECT 1 FROM heads bad CROSS JOIN active a WHERE bad.rebuild_pending OR bad.list_version<>a.version)
+ AND NOT(h.projection_version=ANY($4::bigint[]))`
+
+const inflowPinnedRowsSQL = `SELECT ` + inflowPayloadColumns + `
+ FROM unnest($1::text[],$2::bigint[],$4::bytea[])k(chain,version,address)
+ JOIN inflow_rows r ON r.projection_version=k.version AND r.chain=k.chain::chain_id AND r."window"=$5 AND r.token_address=k.address` + inflowSeriesJoin
+
+// ReadInflowSelection binds filter/sort attributes and immutable version IDs to
+// the same membership-fenced snapshot, without loading unrequested payloads.
+func (s *Store) ReadInflowSelection(ctx context.Context, chain, window string, native bool) (InflowSnapshot, error) {
+	return hedgeRead(ctx, s, func(attempt context.Context) (InflowSnapshot, error) {
+		return s.readInflow(attempt, chain, window, native, nil, true)
+	})
+}
+
+// ReadInflowVersionRows reads exact values at pinned published versions. The
+// publisher retains retired versions for 15 minutes, exceeding query TTL (10m).
+func (s *Store) ReadInflowVersionRows(ctx context.Context, window string, native bool, heads []InflowHead, keys []InflowKey) ([]InflowDataRow, error) {
+	out := make([]InflowDataRow, 0, len(keys))
+	versionsByChain := make(map[string]int64, len(heads))
+	for _, h := range heads {
+		versionsByChain[h.Chain] = h.Version
+	}
+	chains := []string{}
+	versions := []int64{}
+	addresses := [][]byte{}
+	for _, k := range keys {
+		version := versionsByChain[k.Chain]
+		if row, ok := s.inflowCache.payload(version, native, k.Address); ok {
+			out = append(out, row)
+		} else {
+			chains = append(chains, k.Chain)
+			versions = append(versions, version)
+			addresses = append(addresses, k.Address)
+		}
+	}
+	if len(chains) == 0 {
+		return out, nil
+	}
+	fetched, err := hedgeRead(ctx, s, func(attempt context.Context) ([]InflowDataRow, error) {
+		rows, err := s.pool.Query(attempt, inflowPinnedRowsSQL, chains, versions, native, addresses, window)
+		if err != nil {
+			return nil, err
+		}
+		return collectReadInflowRows(rows)
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, row := range fetched {
+		s.inflowCache.putPayload(versionsByChain[row.Chain], native, row)
+	}
+	return append(out, fetched...), nil
 }
 
 // ReadInflow reads only complete published versions, never a mixture across
-// an activation. With no head yet it preserves H2's known empty response.
+// an activation. One batched repeatable-read transaction avoids separate wire
+// waits for BEGIN, heads, rows and COMMIT. An empty key slice still means none.
 func (s *Store) ReadInflow(ctx context.Context, chain, window string, native bool, keys []InflowKey) (InflowSnapshot, error) {
+	return hedgeRead(ctx, s, func(attempt context.Context) (InflowSnapshot, error) {
+		return s.readInflow(attempt, chain, window, native, keys, false)
+	})
+}
+
+func (s *Store) readInflow(ctx context.Context, chain, window string, native bool, keys []InflowKey, selection bool) (InflowSnapshot, error) {
 	out := InflowSnapshot{Rows: []InflowDataRow{}}
 	chains := make([]string, len(keys))
 	addresses := make([][]byte, len(keys))
 	for i, k := range keys {
-		chains[i] = k.Chain
-		addresses[i] = k.Address
+		chains[i], addresses[i] = k.Chain, k.Address
 	}
-	batch := keys != nil
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
-	if err != nil {
+	byKeys := keys != nil
+	var cached map[int64][]InflowDataRow
+	var versions []int64
+	if selection {
+		cached, versions = s.inflowCache.selections(native)
+	}
+	var batch pgx.Batch
+	batch.Queue("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY")
+	batch.Queue(inflowHeadsSQL, chain, window, byKeys, chains)
+	if selection {
+		batch.Queue(inflowSelectionSQL, chain, window, native, versions)
+		// Small projections fit one response budget: pipeline their payloads
+		// too, avoiding a dependent round trip on high-latency links.
+		batch.Queue(inflowRowsSQL, chain, window, native, []string{}, [][]byte{}, false, true)
+	} else {
+		batch.Queue(inflowRowsSQL, chain, window, native, chains, addresses, byKeys, false)
+	}
+	batch.Queue("COMMIT")
+	results := s.pool.SendBatch(ctx, &batch)
+	defer results.Close()
+	if _, err := results.Exec(); err != nil {
 		return out, err
 	}
-	defer tx.Rollback(ctx)
-	rows, err := tx.Query(ctx, `SELECT active.version,h.chain::text,h.as_of,h.list_version,h.rebuild_pending
- FROM(SELECT version FROM sm_lists WHERE status='active')active LEFT JOIN projection_heads h
- ON h.name='inflow' AND h."window"=$2 AND ($1='' OR h.chain::text=$1) AND (NOT $3 OR h.chain::text=ANY($4::text[]))`, chain, window, batch, chains)
+	rows, err := results.Query()
 	if err != nil {
 		return out, err
 	}
@@ -655,12 +799,13 @@ func (s *Store) ReadInflow(ctx context.Context, chain, window string, native boo
 		var at *time.Time
 		var list *int64
 		var waiting *bool
-		if err = rows.Scan(&out.ListVersion, &ch, &at, &list, &waiting); err != nil {
+		var version *int64
+		if err = rows.Scan(&out.ListVersion, &ch, &at, &list, &waiting, &version); err != nil {
 			rows.Close()
 			return out, err
 		}
 		if ch != nil {
-			out.Heads = append(out.Heads, InflowHead{Chain: *ch, AsOf: at.UTC()})
+			out.Heads = append(out.Heads, InflowHead{Chain: *ch, Window: window, AsOf: at.UTC(), Version: *version})
 			pending = pending || *waiting || *list != out.ListVersion
 		}
 	}
@@ -669,40 +814,125 @@ func (s *Store) ReadInflow(ctx context.Context, chain, window string, native boo
 	if err != nil {
 		return out, err
 	}
-	if pending {
-		return out, ErrProjectionPending
-	}
-	if len(out.Heads) == 0 {
-		return out, tx.Commit(ctx)
-	}
-	rows, err = tx.Query(ctx, `SELECT r.chain::text,r.token_address,r.symbol,r.name,r.image_url,r.launch_platform,r.launch_at,
- trim_scale(CASE WHEN $3::boolean THEN r.price_native ELSE r.price_usd END)::text,
- trim_scale(CASE WHEN $3::boolean THEN r.market_cap_native ELSE r.market_cap_usd END)::text,
- trim_scale(CASE WHEN $3::boolean THEN r.price_change_pct_native ELSE r.price_change_pct END)::text,
- trim_scale(CASE WHEN $3::boolean THEN r.liquidity_native ELSE r.liquidity_usd END)::text,
- r.trades,r.buys,r.sells,r.observed_trades,r.observed_buys,r.observed_sells,r.coverage,
- trim_scale(CASE WHEN $3::boolean THEN r.volume_native ELSE r.volume_usd END)::text,
- trim_scale(CASE WHEN $3::boolean THEN r.net_inflow_native ELSE r.net_inflow_usd END)::text,
- r.sm_holders,r.sm_trades,r.holders,r.age_seconds,r.dexes,r.socials,
- ARRAY(SELECT trim_scale(x)::text FROM unnest(CASE WHEN $3::boolean THEN r.sparkline_native ELSE r.sparkline END)x),trim_scale(r.dev_holding_pct)::text
- FROM projection_heads h JOIN inflow_rows r ON r.projection_version=h.projection_version AND r.chain=h.chain AND r."window"=h."window"
- WHERE h.name='inflow' AND h."window"=$2 AND ($1='' OR h.chain::text=$1)
- AND (NOT $6 OR EXISTS(SELECT 1 FROM unnest($4::text[],$5::bytea[])k(chain,address) WHERE k.chain=r.chain::text AND k.address=r.token_address))
- ORDER BY r.chain::text COLLATE "C",r.token_address`, chain, window, native, chains, addresses, batch)
+	rows, err = results.Query()
 	if err != nil {
 		return out, err
 	}
-	out.Rows, err = pgx.CollectRows(rows, func(r pgx.CollectableRow) (InflowDataRow, error) {
-		var v InflowDataRow
-		err := r.Scan(&v.Chain, &v.Address, &v.Symbol, &v.Name, &v.ImageURL, &v.Platform, &v.LaunchAt, &v.Price, &v.MarketCap, &v.Change, &v.Liquidity,
-			&v.Trades, &v.Buys, &v.Sells, &v.ObservedTrades, &v.ObservedBuys, &v.ObservedSells, &v.Coverage, &v.Volume, &v.Net,
-			&v.SMHolders, &v.SMTrades, &v.Holders, &v.Age, &v.Dexes, &v.Socials, &v.Sparkline, &v.DevHoldingPct)
-		return v, err
-	})
+	if selection {
+		out.Rows, err = collectInflowSelectionRows(rows)
+	} else {
+		out.Rows, err = collectReadInflowRows(rows)
+	}
 	if err != nil {
 		return out, fmt.Errorf("store: read inflow rows: %w", err)
 	}
-	return out, tx.Commit(ctx)
+	var payloads []InflowDataRow
+	if selection {
+		rows, err = results.Query()
+		if err != nil {
+			return out, err
+		}
+		var readErr error
+		payloads, readErr = collectReadInflowRows(rows)
+		if readErr != nil {
+			return out, readErr
+		}
+	}
+	if _, err = results.Exec(); err != nil {
+		return out, err
+	}
+	if err = results.Close(); err != nil {
+		return out, err
+	}
+	if pending {
+		return out, ErrProjectionPending
+	}
+	if selection {
+		fresh := map[string][]InflowDataRow{}
+		for _, row := range out.Rows {
+			fresh[row.Chain] = append(fresh[row.Chain], row)
+		}
+		out.Rows = []InflowDataRow{}
+		for _, h := range out.Heads {
+			values, ok := cached[h.Version]
+			if !ok {
+				values = fresh[h.Chain]
+			}
+			out.Rows = append(out.Rows, values...)
+		}
+		if len(out.Rows) <= 100 {
+			if len(payloads) != len(out.Rows) {
+				return out, errors.New("store: incomplete small inflow projection")
+			}
+			out.Rows = payloads
+			out.PayloadComplete = true
+		}
+		selected := map[string][]InflowDataRow{}
+		for _, row := range out.Rows {
+			selected[row.Chain] = append(selected[row.Chain], row)
+		}
+		for _, h := range out.Heads {
+			s.inflowCache.putSelection(h.Version, native, selected[h.Chain], out.PayloadComplete)
+		}
+	}
+	return out, nil
+}
+
+// collectInflowSelectionRows decodes only attributes needed before pagination.
+// Presence bits preserve non-NULL social filtering, including empty URL values.
+func collectInflowSelectionRows(rows pgx.Rows) ([]InflowDataRow, error) {
+	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (InflowDataRow, error) {
+		v := InflowDataRow{Selection: true}
+		var mask int32
+		err := r.Scan(&v.Chain, &v.Address, &v.Platform, &v.MarketCap, &v.Change, &v.Liquidity, &v.Trades, &v.Volume, &v.Net,
+			&v.SMHolders, &v.SMTrades, &v.Holders, &v.Age, &v.Dexes, &mask, &v.DevHoldingPct)
+		if err != nil {
+			return v, err
+		}
+		if mask < 0 || mask > 15 {
+			return v, errors.New("store: invalid social presence mask")
+		}
+		v.SocialMask = uint8(mask)
+		return v, nil
+	})
+}
+
+func collectReadInflowRows(rows pgx.Rows) ([]InflowDataRow, error) {
+	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (InflowDataRow, error) {
+		var v InflowDataRow
+		var length int32
+		var positions []int32
+		var prices []*string
+		err := r.Scan(&v.Chain, &v.Address, &v.Symbol, &v.Name, &v.ImageURL, &v.Platform, &v.LaunchAt, &v.Price, &v.MarketCap, &v.Change, &v.Liquidity,
+			&v.Trades, &v.Buys, &v.Sells, &v.ObservedTrades, &v.ObservedBuys, &v.ObservedSells, &v.Coverage, &v.Volume, &v.Net,
+			&v.SMHolders, &v.SMTrades, &v.Holders, &v.Age, &v.Dexes, &v.Socials, &length, &positions, &prices, &v.DevHoldingPct)
+		if err == nil {
+			v.Sparkline, err = expandInflowSeries(length, positions, prices)
+		}
+		return v, err
+	})
+}
+
+// expandInflowSeries restores the original array without numeric conversion.
+// A change point may itself be NULL; equal neighbors share an immutable value.
+func expandInflowSeries(length int32, positions []int32, prices []*string) ([]*string, error) {
+	if length < 0 || len(positions) != len(prices) || (length > 0 && (len(positions) == 0 || positions[0] != 1)) {
+		return nil, errors.New("store: invalid inflow series")
+	}
+	out := make([]*string, int(length))
+	for i, position := range positions {
+		end := length + 1
+		if i+1 < len(positions) {
+			end = positions[i+1]
+		}
+		if position < 1 || position >= end || end > length+1 {
+			return nil, errors.New("store: invalid inflow change point")
+		}
+		for n := position; n < end; n++ {
+			out[n-1] = prices[i]
+		}
+	}
+	return out, nil
 }
 
 // fillInflowBuckets carries exact SQL numeric observations; it never computes

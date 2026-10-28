@@ -41,6 +41,7 @@ type apiConfig struct {
 	addr, store, adminToken, debugAddr string
 	dbURL                              string
 	cfg                                config.Config
+	readCacheMaxAge                    time.Duration
 }
 
 func parseConfig(args []string, getenv func(string) string) (apiConfig, error) {
@@ -53,8 +54,12 @@ func parseConfig(args []string, getenv func(string) string) (apiConfig, error) {
 	fs.StringVar(&c.addr, "addr", "127.0.0.1:8080", "listen address")
 	fs.StringVar(&c.store, "store", "", "data store (mock or pg)")
 	fs.StringVar(&c.debugAddr, "debug-addr", "", "loopback address for pprof; empty disables it")
+	fs.DurationVar(&c.readCacheMaxAge, "read-cache-max-age", 0, "health/detail maximum observation age, 0 disables, up to 1s")
 	if err := fs.Parse(args[1:]); err != nil {
 		return apiConfig{}, err
+	}
+	if c.readCacheMaxAge < 0 || c.readCacheMaxAge > time.Second {
+		return apiConfig{}, errors.New("--read-cache-max-age must be between 0 and 1s")
 	}
 	switch c.store {
 	case "mock":

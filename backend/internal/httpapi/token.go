@@ -57,6 +57,10 @@ func (s *server) tokenHandler(read func(r *http.Request, chain api.Chain, addres
 		if err == nil {
 			var v any
 			if v, err = read(r, chain, address); err == nil {
+				if err := writeDataTime(w, r); err != nil {
+					s.fail(w, r, err)
+					return
+				}
 				s.json(w, http.StatusOK, v)
 				return
 			}

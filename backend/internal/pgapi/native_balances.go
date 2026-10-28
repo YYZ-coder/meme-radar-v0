@@ -39,18 +39,15 @@ type nativeBalances struct {
 func newNativeBalances(cfg config.Config) *nativeBalances {
 	n := &nativeBalances{cache: map[nativeBalanceKey]nativeBalanceEntry{}, clients: map[api.Chain]*jsonrpc.Client{}}
 	for _, ch := range cfg.Chains {
-		endpoint := ch.LookupRPCURL
-		if endpoint == "" {
-			endpoint = ch.Ingest.RPCURL
-		}
-		if endpoint == "" {
+		endpoints := ch.RPCURLs(ch.LookupRPCURL)
+		if len(endpoints) == 0 || endpoints[0] == "" {
 			continue
 		}
 		rps := ch.LookupRPS
 		if rps <= 0 {
 			rps = 5
 		}
-		n.clients[api.Chain(ch.Name)] = jsonrpc.New(endpoint, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(rps), 1), nil)
+		n.clients[api.Chain(ch.Name)] = jsonrpc.New(endpoints[0], &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(rps), 1), nil, endpoints[1:]...)
 	}
 	return n
 }

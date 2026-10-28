@@ -91,6 +91,10 @@ func (s *server) reply(w http.ResponseWriter, r *http.Request, status int, v any
 		s.fail(w, r, err)
 		return
 	}
+	if err := writeDataTime(w, r); err != nil {
+		s.fail(w, r, err)
+		return
+	}
 	s.json(w, status, v)
 }
 

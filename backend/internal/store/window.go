@@ -9,13 +9,15 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const chainAsOfSQL = `SELECT CASE WHEN max(to_time) IS NOT NULL
+		THEN date_trunc('minute', least($2::timestamptz, max(to_time))) END
+		FROM coverage_ranges WHERE chain = $1`
+
 // ChainAsOf returns the latest covered cutoff, capped by now and rounded down
 // to a UTC minute. The boolean is false when the chain has no timed coverage.
 func (s *Store) ChainAsOf(ctx context.Context, chain string, now time.Time) (time.Time, bool, error) {
 	var cutoff *time.Time
-	err := s.pool.QueryRow(ctx, `SELECT CASE WHEN max(to_time) IS NOT NULL
-		THEN date_trunc('minute', least($2::timestamptz, max(to_time))) END
-		FROM coverage_ranges WHERE chain = $1`, chain, now.UTC()).Scan(&cutoff)
+	err := s.pool.QueryRow(ctx, chainAsOfSQL, chain, now.UTC()).Scan(&cutoff)
 	if err != nil {
 		return time.Time{}, false, fmt.Errorf("store: chain cutoff: %w", err)
 	}
@@ -54,15 +56,23 @@ func (s *Store) TokenWindows(ctx context.Context, chain string, token []byte, as
 	for i, w := range windows {
 		seconds[i] = int64(w / time.Second)
 	}
-	unit := "usd"
-	if native {
-		unit = "native"
-	}
-	query := fmt.Sprintf(windowValuesSQL, unit, nativeTradePriceSQL, "$2", windowCountsSQL+", "+fmt.Sprintf(windowAmountsSQL, unit), fmt.Sprintf(windowPriceJoinsSQL, unit, nativeTradePriceSQL, "$2", ""), fmt.Sprintf(windowChangeSQL, unit))
+	query := tokenWindowQuery(native)
 	rows, err := s.pool.Query(ctx, query, chain, token, asOf.UTC().Truncate(time.Minute), seconds, native)
 	if err != nil {
 		return nil, fmt.Errorf("store: token windows: %w", err)
 	}
+	return collectTokenWindows(rows)
+}
+
+func tokenWindowQuery(native bool) string {
+	unit := "usd"
+	if native {
+		unit = "native"
+	}
+	return fmt.Sprintf(windowValuesSQL, unit, nativeTradePriceSQL, "$2", windowCountsSQL+", "+fmt.Sprintf(windowAmountsSQL, unit), fmt.Sprintf(windowPriceJoinsSQL, unit, nativeTradePriceSQL, "$2", ""), fmt.Sprintf(windowChangeSQL, unit))
+}
+
+func collectTokenWindows(rows pgx.Rows) ([]WindowValues, error) {
 	values, err := pgx.CollectRows(rows, func(r pgx.CollectableRow) (WindowValues, error) {
 		var v WindowValues
 		var seconds int64
@@ -76,11 +86,18 @@ func (s *Store) TokenWindows(ctx context.Context, chain string, token []byte, as
 	return values, nil
 }
 
-// Shared by TokenWindows and H4's chain-wide batch query. The third
-// format argument is a trusted SQL expression naming the selected token.
+// All windows end at the same cutoff, so a wallet contributes exactly when
+// its latest trade is inside that window. Materializing this single bounded
+// scan avoids sorting/scanning the same overlapping raw trades four times.
+// The third format argument is a trusted selected-token SQL expression.
 const windowValuesSQL = `WITH windows AS (
 		SELECT seconds, n, $3::timestamptz - seconds * interval '1 second' AS from_time
 		FROM unnest($4::bigint[]) WITH ORDINALITY AS w(seconds, n)
+	), wallet_last AS MATERIALIZED (
+		SELECT t.wallet, max(t.block_time) AS last_at FROM trades t
+		WHERE t.chain=$1 AND t.token_address=%[3]s AND t.wallet IS NOT NULL
+		AND t.block_time>=(SELECT min(from_time) FROM windows) AND t.block_time<$3
+		GROUP BY t.wallet
 	)
 	SELECT w.seconds,
 		EXISTS (SELECT 1 FROM coverage_ranges cr WHERE cr.chain=$1 AND cr.from_time<=w.from_time AND cr.to_time >= $3),
@@ -91,8 +108,7 @@ const windowValuesSQL = `WITH windows AS (
 		SELECT %[4]s
 		FROM pool_minute_stats ps WHERE ps.chain=$1 AND ps.token_address=%[3]s AND ps.minute>=w.from_time AND ps.minute<$3
 	) v CROSS JOIN LATERAL (
-		SELECT count(DISTINCT t.wallet) AS traders FROM trades t
-		WHERE t.chain=$1 AND t.token_address=%[3]s AND t.block_time>=w.from_time AND t.block_time<$3
+		SELECT count(*) AS traders FROM wallet_last wl WHERE wl.last_at>=w.from_time
 	) wallets
  %[5]s
  ORDER BY w.n`

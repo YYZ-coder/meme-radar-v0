@@ -106,11 +106,8 @@ func runCompute(ctx context.Context, c computeCmd, log *slog.Logger) error {
 		if err := st.EnsureChain(ctx, ch.Name); err != nil {
 			return err
 		}
-		url := ch.LookupRPCURL
-		if url == "" {
-			url = ch.Ingest.RPCURL
-		}
-		rpc := jsonrpc.New(url, client, rate.NewLimiter(rate.Limit(ch.LookupRPS), 2), nil)
+		endpoints := ch.RPCURLs(ch.LookupRPCURL)
+		rpc := jsonrpc.New(endpoints[0], client, rate.NewLimiter(rate.Limit(ch.LookupRPS), 2), nil, endpoints[1:]...)
 		var look compute.Decimals
 		if ch.Family == "solana" {
 			look = decimalsFunc(chaininfo.NewSolana(rpc).MintDecimals)

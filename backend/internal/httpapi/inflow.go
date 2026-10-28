@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"container/list"
+	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
@@ -32,6 +33,11 @@ type snapshot struct {
 	window      string
 	native      bool
 	created     time.Time
+	load        func(context.Context, []api.TokenKey) ([]api.InflowRow, error)
+	mu          sync.Mutex
+	loaded      map[string]api.InflowRow
+	total       int
+	readPaged   func(context.Context, int, int) ([]api.InflowRow, error)
 }
 
 // snapshots is a bounded LRU of query snapshots.
@@ -141,6 +147,7 @@ type inflowQuery struct {
 	window    string
 	native    bool
 	sort      func(api.InflowRow) *float64
+	sortName  string
 	desc      bool
 	dexes     []string
 	platforms []string
@@ -189,6 +196,7 @@ func parseInflowQuery(r *http.Request) (inflowQuery, error) {
 	if iq.sort = sortKeys[sortName]; iq.sort == nil {
 		return iq, badParam("sort", "unknown sort key")
 	}
+	iq.sortName = sortName
 	switch q.Get("order") {
 	case "", "desc":
 		iq.desc = true
@@ -308,7 +316,12 @@ func (s *server) inflow(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, r, expired("query snapshot expired or unknown; re-query"))
 			return
 		}
-		s.json(w, http.StatusOK, snap.page(offset, limit))
+		page, err := snap.readPage(r.Context(), offset, limit)
+		if err != nil {
+			s.fail(w, r, err)
+			return
+		}
+		s.json(w, http.StatusOK, page)
 		return
 	}
 	iq, err := parseInflowQuery(r)
@@ -316,7 +329,36 @@ func (s *server) inflow(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, r, err)
 		return
 	}
-	proj, err := s.b.InflowProjection(r.Context(), iq.chain, iq.window, iq.native)
+	// The reported default ordering needs no application-side filters. Read
+	// only its page in PostgreSQL; other queries retain the general selector.
+	if iq.sortName == "sm_trades" && iq.desc && len(iq.bounds) == 0 && len(iq.dexes) == 0 && len(iq.platforms) == 0 && len(iq.socials) == 0 && iq.devStatus == "" {
+		if source, ok := s.b.(interface {
+			InflowTradePages(context.Context, api.Chain, string, bool, int) (api.InflowPages, error)
+		}); ok {
+			set, err := source.InflowTradePages(r.Context(), iq.chain, iq.window, iq.native, limit)
+			if err != nil {
+				s.fail(w, r, err)
+				return
+			}
+			snap := &snapshot{id: newQueryID(), truncated: set.Truncated, listVersion: set.ListVersion, asOf: set.AsOf, chainAsOf: set.ChainAsOf, window: iq.window, native: iq.native, created: now, total: set.Total, readPaged: set.LoadPage}
+			page, err := snap.readPage(r.Context(), 0, limit)
+			if err != nil {
+				s.fail(w, r, err)
+				return
+			}
+			s.snaps.put(snap)
+			s.json(w, http.StatusOK, page)
+			return
+		}
+	}
+	var proj api.Projection
+	if selector, ok := s.b.(interface {
+		InflowSelection(context.Context, api.Chain, string, bool) (api.Projection, error)
+	}); ok {
+		proj, err = selector.InflowSelection(r.Context(), iq.chain, iq.window, iq.native)
+	} else {
+		proj, err = s.b.InflowProjection(r.Context(), iq.chain, iq.window, iq.native)
+	}
 	if err != nil {
 		s.fail(w, r, err)
 		return
@@ -333,23 +375,89 @@ func (s *server) inflow(w http.ResponseWriter, r *http.Request) {
 		asOf: proj.AsOf, chainAsOf: proj.ChainAsOf, window: iq.window, native: iq.native, created: now,
 	}
 	snap.rows = rows[:min(len(rows), snapshotRows)]
+	snap.load = proj.LoadRows
+	snap.loaded = map[string]api.InflowRow{}
+	page, err := snap.readPage(r.Context(), 0, limit)
+	if err != nil {
+		s.fail(w, r, err)
+		return
+	}
 	s.snaps.put(snap)
-	s.json(w, http.StatusOK, snap.page(0, limit))
+	s.json(w, http.StatusOK, page)
 }
 
 func (sn *snapshot) page(offset, limit int) api.InflowPage {
-	end := min(offset+limit, len(sn.rows))
+	total := len(sn.rows)
+	if sn.readPaged != nil {
+		total = sn.total
+	}
+	end := min(offset+limit, total)
 	p := api.InflowPage{
 		QueryID: sn.id, ListVersion: sn.listVersion, AsOf: sn.asOf, ChainAsOf: sn.chainAsOf,
-		Window: sn.window, Total: int64(len(sn.rows)), Truncated: sn.truncated, Offset: int64(offset),
+		Window: sn.window, Total: int64(total), Truncated: sn.truncated, Offset: int64(offset),
 		Items: []api.InflowRow{},
 	}
-	if offset < end {
+	if offset < end && sn.readPaged == nil {
 		p.Items = sn.rows[offset:end]
 	}
-	if end < len(sn.rows) {
+	if end < total {
 		next := int64(end)
 		p.NextOffset = &next
 	}
 	return p
+}
+
+// readPage resolves payloads outside the lock. Only immutable values enter the
+// page cache; the ordered identities and query metadata never change.
+func (sn *snapshot) readPage(ctx context.Context, offset, limit int) (api.InflowPage, error) {
+	page := sn.page(offset, limit)
+	if sn.readPaged != nil {
+		wanted := min(offset+limit, sn.total) - offset
+		if wanted <= 0 {
+			return page, nil
+		}
+		rows, err := sn.readPaged(ctx, offset, wanted)
+		if err != nil {
+			return api.InflowPage{}, err
+		}
+		if len(rows) != wanted {
+			return api.InflowPage{}, api.Errorf(http.StatusServiceUnavailable, "busy", "", "published query rows unavailable")
+		}
+		page.Items = rows
+		return page, nil
+	}
+	if sn.load == nil || len(page.Items) == 0 {
+		return page, nil
+	}
+	keys := make([]api.TokenKey, 0, len(page.Items))
+	sn.mu.Lock()
+	for _, row := range page.Items {
+		if _, ok := sn.loaded[rowKey(row)]; !ok {
+			keys = append(keys, api.TokenKey{Chain: row.Token.Chain, Address: row.Token.Address})
+		}
+	}
+	sn.mu.Unlock()
+	if len(keys) > 0 {
+		rows, err := sn.load(ctx, keys)
+		if err != nil {
+			return api.InflowPage{}, err
+		}
+		sn.mu.Lock()
+		for _, row := range rows {
+			sn.loaded[rowKey(row)] = row
+		}
+		sn.mu.Unlock()
+	}
+	items := make([]api.InflowRow, 0, len(page.Items))
+	sn.mu.Lock()
+	defer sn.mu.Unlock()
+	for _, key := range page.Items {
+		row, ok := sn.loaded[rowKey(key)]
+		if !ok {
+			return api.InflowPage{}, api.Errorf(http.StatusServiceUnavailable, "busy", "", "published query rows unavailable")
+		}
+		items = append(items, row)
+	}
+	page.Items = items
+	return page, nil
 }

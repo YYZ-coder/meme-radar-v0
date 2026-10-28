@@ -9,6 +9,7 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -101,8 +102,10 @@ type Backfill struct {
 
 // Chain is one configured chain.
 type Chain struct {
-	Name   string `yaml:"name"`
-	Family string `yaml:"family"` // evm, solana
+	// RPCURLEnv names an optional private endpoint; public role URLs remain fallback sources.
+	RPCURLEnv string `yaml:"rpc_url_env"`
+	Name      string `yaml:"name"`
+	Family    string `yaml:"family"` // evm, solana
 	// QuoteAssets maps symbols to addresses of the chain's quote assets;
 	// a pool whose other side is one of them tracks the other token.
 	QuoteAssets map[string]string `yaml:"quote_assets"`
@@ -262,6 +265,12 @@ func (c Config) validate() error {
 		if !ok {
 			return fmt.Errorf("%s: family must be evm or solana, got %q", at, ch.Family)
 		}
+		if privateURL := strings.TrimSpace(os.Getenv(ch.RPCURLEnv)); privateURL != "" {
+			parsed, err := url.Parse(privateURL)
+			if err != nil || !httpURL(privateURL) || parsed.Hostname() == "" || parsed.Fragment != "" {
+				return fmt.Errorf("%s: environment variable %s must hold a valid http(s) RPC URL without a fragment", at, ch.RPCURLEnv)
+			}
+		}
 		in, bf := ch.Ingest, ch.Backfill
 		for _, u := range []string{in.RPCURL, bf.RPCURL, ch.LookupRPCURL} {
 			if u != "" && !httpURL(u) {
@@ -368,4 +377,16 @@ func (ch Chain) Protocol(t string) (Protocol, bool) {
 		}
 	}
 	return Protocol{}, false
+}
+
+// RPCURLs returns the ordered endpoints for one role; empty uses ingest's public URL.
+func (c Chain) RPCURLs(publicURL string) []string {
+	if publicURL == "" {
+		publicURL = c.Ingest.RPCURL
+	}
+	privateURL := strings.TrimSpace(os.Getenv(c.RPCURLEnv))
+	if privateURL == "" || privateURL == publicURL {
+		return []string{publicURL}
+	}
+	return []string{privateURL, publicURL}
 }

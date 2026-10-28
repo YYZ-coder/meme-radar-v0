@@ -67,11 +67,8 @@ func (f supplyFunc) Supply(ctx context.Context, token []byte) (string, int16, er
 
 // enrichRPC shares the existing chain RPC budget between the two steps.
 func enrichRPC(ch config.Chain) *jsonrpc.Client {
-	url := ch.LookupRPCURL
-	if url == "" {
-		url = ch.Ingest.RPCURL
-	}
-	return jsonrpc.New(url, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(ch.LookupRPS), 2), nil)
+	endpoints := ch.RPCURLs(ch.LookupRPCURL)
+	return jsonrpc.New(endpoints[0], &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(ch.LookupRPS), 2), nil, endpoints[1:]...)
 }
 
 // supplyLookup reads getTokenSupply on Solana, totalSupply/decimals on EVM.

@@ -39,6 +39,10 @@ func (b *Backend) InflowProjection(ctx context.Context, chain api.Chain, window 
 	if err != nil {
 		return api.Projection{}, err
 	}
+	return b.inflowProjection(data, chain, native)
+}
+
+func (b *Backend) inflowProjection(data store.InflowSnapshot, chain api.Chain, native bool) (api.Projection, error) {
 	out := api.Projection{AsOf: b.now().UTC().Format("2006-01-02T15:04:05.000Z"), ListVersion: strconv.FormatInt(data.ListVersion, 10), Rows: []api.ProjectionRow{}}
 	var latest time.Time
 	if chain == "" && len(data.Heads) > 0 {
@@ -61,6 +65,51 @@ func (b *Backend) InflowProjection(ctx context.Context, chain api.Chain, window 
 			return api.Projection{}, err
 		}
 		out.Rows = append(out.Rows, row)
+	}
+	return out, nil
+}
+
+// InflowSelection loads only filter/sort values and pins exact published
+// versions. Complete values are fetched for requested pages, never re-labeled
+// with a new publication or membership version.
+func (b *Backend) InflowSelection(ctx context.Context, chain api.Chain, window string, native bool) (api.Projection, error) {
+	data, err := b.st.ReadInflowSelection(ctx, string(chain), window, native)
+	if errors.Is(err, store.ErrProjectionPending) {
+		return api.Projection{}, unavailable()
+	}
+	if err != nil {
+		return api.Projection{}, err
+	}
+	out, err := b.inflowProjection(data, chain, native)
+	if err != nil {
+		return api.Projection{}, err
+	}
+	if data.PayloadComplete {
+		return out, nil
+	}
+	heads := append([]store.InflowHead(nil), data.Heads...)
+	out.LoadRows = func(ctx context.Context, keys []api.TokenKey) ([]api.InflowRow, error) {
+		wanted := make([]store.InflowKey, len(keys))
+		for i, k := range keys {
+			address, err := tokenAddress(k.Chain, k.Address)
+			if err != nil {
+				return nil, err
+			}
+			wanted[i] = store.InflowKey{Chain: string(k.Chain), Address: address}
+		}
+		values, err := b.st.ReadInflowVersionRows(ctx, window, native, heads, wanted)
+		if err != nil {
+			return nil, err
+		}
+		rows := make([]api.InflowRow, 0, len(values))
+		for _, v := range values {
+			row, err := b.inflowWireRow(v, native)
+			if err != nil {
+				return nil, err
+			}
+			rows = append(rows, row.Row)
+		}
+		return rows, nil
 	}
 	return out, nil
 }
@@ -101,7 +150,16 @@ func (b *Backend) inflowWireRow(v store.InflowDataRow, native bool) (api.Project
 		Currency: b.currency(api.Chain(v.Chain), native), Price: v.Price, MarketCap: v.MarketCap, PriceChangePct: v.Change, Liquidity: v.Liquidity,
 		Trades: v.Trades, Buys: v.Buys, Sells: v.Sells, Observed: api.Observed{Trades: v.ObservedTrades, Buys: v.ObservedBuys, Sells: v.ObservedSells}, Coverage: v.Coverage,
 		Volume: v.Volume, NetInflow: v.Net, SMHolders: v.SMHolders, SMTrades: v.SMTrades, Holders: v.Holders, AgeSeconds: v.Age, Dexes: append([]string{}, v.Dexes...), Sparkline: v.Sparkline}
-	if len(v.Socials) > 0 {
+	if v.Selection {
+		present := func(bit uint8) *string {
+			if v.SocialMask&bit == 0 {
+				return nil
+			}
+			value := ""
+			return &value
+		}
+		row.Socials = api.Socials{Twitter: present(1), Telegram: present(2), Github: present(4), Website: present(8)}
+	} else if len(v.Socials) > 0 {
 		if err := json.Unmarshal(v.Socials, &row.Socials); err != nil {
 			return api.ProjectionRow{}, err
 		}

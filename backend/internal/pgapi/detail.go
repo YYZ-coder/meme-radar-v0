@@ -10,40 +10,28 @@ import (
 
 // TokenDetail maps current projections and H1's observed all-pool windows.
 func (b *Backend) TokenDetail(ctx context.Context, chain api.Chain, address string, native bool) (api.TokenDetail, error) {
+	out, _, err := b.readTokenDetailObserved(ctx, chain, address, native)
+	return out, err
+}
+
+func (b *Backend) readTokenDetailObserved(ctx context.Context, chain api.Chain, address string, native bool) (api.TokenDetail, time.Time, error) {
 	token, err := tokenAddress(chain, address)
 	if err != nil {
-		return api.TokenDetail{}, err
-	}
-	t, found, err := b.st.APIToken(ctx, string(chain), token, native)
-	if err != nil {
-		return api.TokenDetail{}, err
-	}
-	if !found {
-		return api.TokenDetail{}, api.Errorf(http.StatusNotFound, "not_found", "", "token not found")
-	}
-	if t.Decimals == nil {
-		return api.TokenDetail{}, api.Errorf(http.StatusServiceUnavailable, "api_unavailable", "", "token decimals unknown")
-	}
-	holdings, err := b.st.APITokenHoldings(ctx, string(chain), token)
-	if err != nil {
-		return api.TokenDetail{}, err
+		return api.TokenDetail{}, time.Time{}, err
 	}
 	now := b.now().UTC()
-	asOf, ok, err := b.st.ChainAsOf(ctx, string(chain), now)
+	data, found, err := b.st.ReadTokenDetail(ctx, string(chain), token, native, now)
+	t := data.Token
 	if err != nil {
-		return api.TokenDetail{}, err
+		return api.TokenDetail{}, time.Time{}, err
 	}
-	if !ok {
-		asOf = now.Truncate(time.Minute)
+	if !found {
+		return api.TokenDetail{}, time.Time{}, api.Errorf(http.StatusNotFound, "not_found", "", "token not found")
 	}
-	windows, err := b.st.TokenWindows(ctx, string(chain), token, asOf, []time.Duration{5 * time.Minute, time.Hour, 4 * time.Hour, 24 * time.Hour}, native)
-	if err != nil {
-		return api.TokenDetail{}, err
+	if t.Decimals == nil {
+		return api.TokenDetail{}, time.Time{}, api.Errorf(http.StatusServiceUnavailable, "api_unavailable", "", "token decimals unknown")
 	}
-	same, err := b.st.APISameName(ctx, string(chain), token, t.Symbol, now)
-	if err != nil {
-		return api.TokenDetail{}, err
-	}
+	holdings, asOf, windows, same := data.Holdings, data.AsOf, data.Windows, data.SameName
 	stamp := asOf.UTC().Format("2006-01-02T15:04:05.000Z")
 	first := t.FirstSeenAt.UTC().Format("2006-01-02T15:04:05.000Z")
 	out := api.TokenDetail{Token: api.TokenRef{Chain: chain, Address: displayAddress(string(chain), token), Symbol: t.Symbol, Name: t.Name, LaunchPlatform: t.LaunchPlatform, LaunchAt: optionalTime(t.LaunchAt)},
@@ -71,5 +59,5 @@ func (b *Backend) TokenDetail(ctx context.Context, chain api.Chain, address stri
 	for _, r := range same {
 		out.SameName = append(out.SameName, api.SearchToken{TokenRef: api.TokenRef{Chain: api.Chain(r.Chain), Address: displayAddress(r.Chain, r.Address), Symbol: r.Symbol, Name: r.Name, LaunchPlatform: r.LaunchPlatform, LaunchAt: optionalTime(r.LaunchAt)}, MarketCapUSD: r.MarketCapUSD, AgeSeconds: r.AgeSeconds, LastTradeAt: optionalTime(r.LastTradeAt)})
 	}
-	return out, nil
+	return out, data.ReadAt, nil
 }

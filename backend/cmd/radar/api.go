@@ -21,5 +21,19 @@ func openAPIBackend(ctx context.Context, c apiConfig) (httpapi.Backend, func(), 
 		st.Close()
 		return nil, nil, err
 	}
-	return pgapi.New(st, c.cfg, nil), st.Close, nil
+	backend := pgapi.New(st, c.cfg, nil)
+	if c.readCacheMaxAge == 0 {
+		return backend, st.Close, nil
+	}
+	cached, err := pgapi.NewCached(backend, c.readCacheMaxAge)
+	if err != nil {
+		st.Close()
+		return nil, nil, err
+	}
+	if err := cached.PrimeHealth(ctx); err != nil {
+		cached.Close()
+		st.Close()
+		return nil, nil, err
+	}
+	return cached, func() { cached.Close(); st.Close() }, nil
 }

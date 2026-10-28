@@ -41,8 +41,11 @@ retention:
   raw_blocks_days: 30
   ledger_days: 30
 
+# Optional private mainnet URLs are read only from the named environment variables.
+# Each role keeps its configured public rpc_url as automatic fallback.
 chains:
   - name: solana
+    rpc_url_env: QUICKNODE_SOLANA_RPC_URL
     family: solana
     native: SOL
     wrapped_native: So11111111111111111111111111111111111111112
@@ -68,6 +71,7 @@ chains:
         addresses: {program: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA}
 
   - name: base
+    rpc_url_env: QUICKNODE_BASE_RPC_URL
     family: evm
     native: ETH
     wrapped_native: "0x4200000000000000000000000000000000000006"
@@ -105,6 +109,7 @@ chains:
           - "0x660740d7d6fb2c8998fa3fff459cceb9ac12c84b" # RehypeDopplerHookMigrator
 
   - name: bsc
+    rpc_url_env: QUICKNODE_BSC_RPC_URL
     family: evm
     native: BNB
     # Four.meme lookups (eth_call) stay off publicnode, which ingest uses heavily.

@@ -119,7 +119,8 @@ func blockDecoder(c parseCmd, st *store.Store) (parser.BlockDecoder, int, error)
 	if hasFour {
 		helper3 = evm.MustAddress(four.Addresses["helper3"])
 	}
-	rpc := jsonrpc.New(c.lookupURL, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.ch.LookupRPS), 4), nil)
+	endpoints := c.ch.RPCURLs(c.lookupURL)
+	rpc := jsonrpc.New(endpoints[0], &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.ch.LookupRPS), 4), nil, endpoints[1:]...)
 	lookup := chaininfo.NewCached(c.chain, st, chaininfo.New(rpc, helper3))
 	quotes := map[evm.Address]string{}
 	for sym, a := range c.ch.QuoteAssets {

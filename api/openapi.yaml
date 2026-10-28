@@ -249,6 +249,9 @@ paths:
       responses:
         "200":
           description: OK
+          headers:
+            X-Data-As-Of: { $ref: "#/components/headers/XDataAsOf" }
+            X-Data-Age-Ms: { $ref: "#/components/headers/XDataAgeMs" }
           content:
             application/json:
               schema: { $ref: "#/components/schemas/TokenDetail" }
@@ -712,6 +715,9 @@ paths:
       responses:
         "200":
           description: OK
+          headers:
+            X-Data-As-Of: { $ref: "#/components/headers/XDataAsOf" }
+            X-Data-Age-Ms: { $ref: "#/components/headers/XDataAgeMs" }
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AdminHealth" }
@@ -797,6 +803,12 @@ components:
   headers:
     XTraceId:
       schema: { type: string, pattern: '^[0-9a-f]{32}$' }
+    XDataAsOf:
+      description: Actual PostgreSQL transaction observation time when the optional read cache is enabled. Waiting before query dispatch is not data age. Cache hits preserve this timestamp; body as_of retains its chain/window meaning.
+      schema: { type: string, format: date-time }
+    XDataAgeMs:
+      description: Observation age at the response boundary, recomputed after body delivery by the frontend proxy when applicable. Cached success responses never exceed one second.
+      schema: { type: integer, minimum: 0, maximum: 1000 }
 
   responses:
     BadRequest:

@@ -1167,6 +1167,10 @@ export interface components {
     requestBodies: never;
     headers: {
         XTraceId: string;
+        /** @description Actual PostgreSQL transaction observation time when the optional read cache is enabled. Waiting before query dispatch is not data age. Cache hits preserve this timestamp; body as_of retains its chain/window meaning. */
+        XDataAsOf: string;
+        /** @description Observation age at the response boundary, recomputed after body delivery by the frontend proxy when applicable. Cached success responses never exceed one second. */
+        XDataAgeMs: number;
     };
     pathItems: never;
 }
@@ -1421,6 +1425,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    "X-Data-As-Of": components["headers"]["XDataAsOf"];
+                    "X-Data-Age-Ms": components["headers"]["XDataAgeMs"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -1961,6 +1967,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    "X-Data-As-Of": components["headers"]["XDataAsOf"];
+                    "X-Data-Age-Ms": components["headers"]["XDataAgeMs"];
                     [name: string]: unknown;
                 };
                 content: {

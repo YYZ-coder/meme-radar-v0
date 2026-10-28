@@ -8,14 +8,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meme-radar/radar/internal/metrics"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/time/rate"
+
+	"github.com/meme-radar/radar/internal/metrics"
 )
 
 // Error is a JSON-RPC error object returned by the server.
@@ -45,25 +48,115 @@ type Client struct {
 	http      *http.Client
 	limit     *rate.Limiter
 	perMethod map[string]*rate.Limiter
+	fallbacks []*Client
 }
 
-// New returns a client for url. limit applies to every call (nil means
-// unlimited); perMethod adds tighter limits for specific methods.
-func New(url string, hc *http.Client, limit *rate.Limiter, perMethod map[string]*rate.Limiter) *Client {
-	return &Client{url: url, http: hc, limit: limit, perMethod: perMethod}
+// New returns a client for url, optionally followed by ordered fallback URLs.
+// Read-only requests try each distinct endpoint at most once on provider failure.
+// limit (nil means unlimited) and perMethod limits are shared by all attempts.
+func New(url string, hc *http.Client, limit *rate.Limiter, perMethod map[string]*rate.Limiter, fallbacks ...string) *Client {
+	c := &Client{url: url, http: hc, limit: limit, perMethod: perMethod}
+	seen := map[string]bool{url: true}
+	for _, endpoint := range fallbacks {
+		if endpoint != "" && !seen[endpoint] {
+			seen[endpoint] = true
+			c.fallbacks = append(c.fallbacks, New(endpoint, hc, limit, perMethod))
+		}
+	}
+	return c
 }
 
-// Call invokes method and returns the raw result, which is "null" when the
-// server returned a null result.
-// URL returns the endpoint.
+// URL returns the configured primary endpoint, which may contain credentials.
+// Use only its parsed host for logs and metrics.
 func (c *Client) URL() string { return c.url }
 
-// Call sends one request and reports its outcome and duration
-// (radar_rpc_requests_total, radar_rpc_duration_seconds) by endpoint host.
+// Call returns the raw JSON-RPC result, including a valid null. Provider failures
+// may use public fallbacks for the explicitly supported read methods. Caller
+// cancellation and business errors retain their meaning. Metrics count attempts
+// by endpoint host, excluding authentication paths and query parameters.
 func (c *Client) Call(ctx context.Context, method string, params any) (json.RawMessage, error) {
+	budget := time.Duration(0)
+	if len(c.fallbacks) > 0 && readOnlyMethod(method) {
+		budget = attemptBudget(ctx, len(c.fallbacks)+1)
+	}
+	result, err := c.callObserved(ctx, method, params, budget)
+	for i, fallback := range c.fallbacks {
+		if !readOnlyMethod(method) || ctx.Err() != nil || !fallbackError(err) {
+			break
+		}
+		result, err = fallback.callObserved(ctx, method, params, attemptBudget(ctx, len(c.fallbacks)-i))
+	}
+	return result, err
+}
+
+// A provider cannot consume the entire caller deadline before fallback starts.
+func attemptBudget(ctx context.Context, remaining int) time.Duration {
+	budget := 15 * time.Second
+	if deadline, ok := ctx.Deadline(); ok {
+		budget = min(budget, max(time.Nanosecond, time.Until(deadline)/time.Duration(remaining)))
+	}
+	return budget
+}
+
+func fallbackError(err error) bool {
+	var response *responseError
+	if errors.As(err, &response) {
+		return true
+	}
+	var rpcErr *Error
+	if errors.As(err, &rpcErr) {
+		if rpcErr.Code == 3 || strings.Contains(strings.ToLower(rpcErr.Message), "revert") {
+			return false
+		}
+		return rpcErr.Code == -32603 || rpcErr.Code == -32601 || rpcErr.Code == -32005
+	}
+	var network net.Error
+	if errors.As(err, &network) {
+		return true
+	}
+	var limited *RateLimitError
+	if errors.As(err, &limited) {
+		return true
+	}
+	var status *statusError
+	return errors.As(err, &status) && (status.code == http.StatusUnauthorized || status.code == http.StatusForbidden || status.code >= 500 && status.code < 600)
+}
+
+// Only the project's read methods may be replayed on another provider.
+func readOnlyMethod(method string) bool {
+	switch method {
+	case "eth_chainId", "eth_blockNumber", "eth_getBlockByNumber", "eth_getBlockReceipts", "eth_call", "eth_getBalance",
+		"getSlot", "getBlock", "getTokenSupply", "getMultipleAccounts", "getGenesisHash", "getAccountInfo":
+		return true
+	default:
+		return false
+	}
+}
+
+type responseError struct{ err error }
+
+func (e *responseError) Error() string { return e.err.Error() }
+func (e *responseError) Unwrap() error { return e.err }
+
+type statusError struct {
+	method string
+	code   int
+}
+
+func (e *statusError) Error() string {
+	return fmt.Sprintf("jsonrpc: %s: HTTP %d", e.method, e.code)
+}
+
+func (c *Client) callObserved(ctx context.Context, method string, params any, budget time.Duration) (json.RawMessage, error) {
 	start := time.Now()
-	res, err := c.call(ctx, method, params)
-	host := c.url
+	requestCtx := ctx
+	if budget > 0 {
+		var cancel context.CancelFunc
+		requestCtx, cancel = context.WithTimeout(ctx, budget)
+		defer cancel()
+	}
+	res, err := c.call(requestCtx, method, params)
+	host := "invalid"
 	if u, perr := url.Parse(c.url); perr == nil && u.Host != "" {
 		host = u.Host
 	}
@@ -105,11 +198,16 @@ func (c *Client) call(ctx context.Context, method string, params any) (json.RawM
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewReader(body))
 	if err != nil {
-		return nil, fmt.Errorf("jsonrpc: %s: %w", method, err)
+		return nil, fmt.Errorf("jsonrpc: %s: invalid RPC endpoint", method)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.http.Do(req)
 	if err != nil {
+		// net/http wraps transport failures with the full authentication-bearing URL.
+		var requestErr *url.Error
+		if errors.As(err, &requestErr) {
+			err = requestErr.Err
+		}
 		return nil, fmt.Errorf("jsonrpc: %s: %w", method, err)
 	}
 	defer resp.Body.Close()
@@ -119,26 +217,27 @@ func (c *Client) call(ctx context.Context, method string, params any) (json.RawM
 	}
 	data, err := io.ReadAll(io.LimitReader(resp.Body, maxResponse+1))
 	if err != nil {
-		return nil, fmt.Errorf("jsonrpc: %s: read: %w", method, err)
+		return nil, &responseError{fmt.Errorf("jsonrpc: %s: read: %w", method, err)}
 	}
 	if len(data) > maxResponse {
 		return nil, fmt.Errorf("jsonrpc: %s: response exceeds %d bytes", method, maxResponse)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("jsonrpc: %s: HTTP %d: %.200s", method, resp.StatusCode, data)
+		return nil, &statusError{method: method, code: resp.StatusCode}
 	}
 	var out struct {
 		Result json.RawMessage `json:"result"`
 		Error  *Error          `json:"error"`
 	}
 	if err := json.Unmarshal(data, &out); err != nil {
-		return nil, fmt.Errorf("jsonrpc: %s: decode: %w", method, err)
+		return nil, &responseError{fmt.Errorf("jsonrpc: %s: decode: %w", method, err)}
 	}
 	if out.Error != nil {
+		out.Error.Message = redactEndpoint(out.Error.Message, c.url)
 		return nil, out.Error
 	}
 	if out.Result == nil {
-		return nil, fmt.Errorf("jsonrpc: %s: response has neither result nor error", method)
+		return nil, &responseError{fmt.Errorf("jsonrpc: %s: response has neither result nor error", method)}
 	}
 	return out.Result, nil
 }
@@ -152,4 +251,31 @@ func retryAfter(v string) time.Duration {
 		return time.Duration(n) * time.Second
 	}
 	return time.Second
+}
+
+// Providers may reflect an authentication path/query in otherwise useful errors.
+func redactEndpoint(message, endpoint string) string {
+	message = strings.ReplaceAll(message, endpoint, "[RPC endpoint]")
+	parsed, err := url.Parse(endpoint)
+	if err != nil {
+		return message
+	}
+	for _, part := range strings.Split(strings.Trim(parsed.Path, "/"), "/") {
+		if len(part) >= 16 {
+			message = strings.ReplaceAll(message, part, "[redacted]")
+		}
+	}
+	for _, values := range parsed.Query() {
+		for _, value := range values {
+			if value != "" {
+				message = strings.ReplaceAll(message, value, "[redacted]")
+			}
+		}
+	}
+	if parsed.User != nil {
+		if password, ok := parsed.User.Password(); ok && password != "" {
+			message = strings.ReplaceAll(message, password, "[redacted]")
+		}
+	}
+	return message
 }

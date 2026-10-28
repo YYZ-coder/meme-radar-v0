@@ -154,6 +154,7 @@ func (s *server) middleware(next http.Handler) http.Handler {
 		}
 		ctx, cancel := context.WithTimeout(r.Context(), s.opt.QueryTimeout)
 		defer cancel()
+		ctx = context.WithValue(ctx, dataTimeKey{}, &dataTime{})
 		r = r.WithContext(context.WithValue(ctx, traceKey{}, id))
 		defer func() {
 			if v := recover(); v != nil {

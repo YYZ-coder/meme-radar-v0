@@ -28,7 +28,7 @@ type fixture struct {
 	now  time.Time
 }
 
-func newFixture(t *testing.T) *fixture {
+func newFixture(t testing.TB) *fixture {
 	t.Helper()
 	ctx := context.Background()
 	url := testdb.New(t)

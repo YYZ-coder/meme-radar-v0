@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -27,6 +28,7 @@ const ingestUsage = "usage: radar ingest --chain=NAME [--config=FILE] [--rpc-url
 type ingestConfig struct {
 	chain, family string
 	rpcURL, dbURL string
+	rpcFallback   string
 	// rps limits every call; blockRPS additionally limits block requests.
 	rps, blockRPS  float64
 	followHead     bool
@@ -82,8 +84,12 @@ func parseIngest(args []string, getenv func(string) string) (ingestConfig, error
 	c := ingestConfig{chain: ch.Name, family: ch.Family, rpcURL: p.RPCURL, rps: p.RPS, blockRPS: p.BlockRPS,
 		followHead: p.FollowHead, confirmations: p.Confirmations, reorgDepth: p.ReorgDepth, prefetch: p.Prefetch,
 		poll: time.Duration(p.Poll), debugAddr: *debugAddr}
+	if endpoints := ch.RPCURLs(p.RPCURL); len(endpoints) > 1 {
+		c.rpcURL, c.rpcFallback = endpoints[0], endpoints[1]
+	}
 	if *url != "" {
 		c.rpcURL = *url
+		c.rpcFallback = ""
 	}
 	if !strings.HasPrefix(c.rpcURL, "https://") && !strings.HasPrefix(c.rpcURL, "http://") {
 		return ingestConfig{}, fmt.Errorf("--rpc-url must be http(s), got %q", c.rpcURL)
@@ -146,14 +152,14 @@ func runIngest(ctx context.Context, c ingestConfig, log *slog.Logger) error {
 		perMethod = map[string]*rate.Limiter{"getBlock": rate.NewLimiter(rate.Limit(c.blockRPS), 1)}
 	}
 	newSource := func(url string) ingest.Source {
-		rpc := jsonrpc.New(url, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.rps), 1), perMethod)
+		rpc := jsonrpc.New(url, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.rps), 1), perMethod, c.rpcFallback)
 		if c.family == "solana" {
 			return solanarpc.New(rpc)
 		}
 		return evmrpc.New(rpc)
 	}
 	src := newSource(c.rpcURL)
-	log.Info("ingest started", "chain", c.chain, "rpc", c.rpcURL, "follow_head", c.followHead, "window_blocks", c.backfillBlocks,
+	log.Info("ingest started", "chain", c.chain, "rpc_host", rpcHost(c.rpcURL), "follow_head", c.followHead, "window_blocks", c.backfillBlocks,
 		"skip_fill", c.skipFill, "prefetch", c.prefetch)
 	err = ingest.NewFollower(ingest.Config{
 		Chain: c.chain, Source: src, SourceName: c.chain + "-rpc", Store: st, FollowHead: c.followHead,
@@ -170,6 +176,7 @@ const backfillUsage = "usage: radar backfill --chain=NAME [--config=FILE] (RADAR
 // window blocks behind the head, newest first, without following the head.
 type backfillConfig struct {
 	chain, family, rpcURL, dbURL string
+	rpcFallback                  string
 	rps, blockRPS                float64
 	confirmations, window        uint64
 	pauseLag                     uint64
@@ -203,8 +210,10 @@ func parseBackfill(args []string, getenv func(string) string) (backfillConfig, e
 	c := backfillConfig{chain: ch.Name, family: ch.Family, rpcURL: b.RPCURL, rps: b.RPS, blockRPS: b.BlockRPS,
 		confirmations: ch.Ingest.Confirmations, pauseLag: b.PauseLag, prefetch: b.Prefetch, poll: time.Duration(ch.Ingest.Poll),
 		window: uint64(time.Duration(b.Hours*float64(time.Hour)) / time.Duration(ch.Ingest.BlockInterval))}
-	if c.rpcURL == "" {
-		c.rpcURL = ch.Ingest.RPCURL
+	endpoints := ch.RPCURLs(c.rpcURL)
+	c.rpcURL = endpoints[0]
+	if len(endpoints) > 1 {
+		c.rpcFallback = endpoints[1]
 	}
 	if c.dbURL = getenv("RADAR_DATABASE_URL"); c.dbURL == "" {
 		return backfillConfig{}, errors.New("RADAR_DATABASE_URL is required")
@@ -233,12 +242,12 @@ func runBackfill(ctx context.Context, c backfillConfig, log *slog.Logger) error 
 	if c.blockRPS > 0 {
 		perMethod = map[string]*rate.Limiter{"getBlock": rate.NewLimiter(rate.Limit(c.blockRPS), 1)}
 	}
-	rpc := jsonrpc.New(c.rpcURL, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.rps), 1), perMethod)
+	rpc := jsonrpc.New(c.rpcURL, &http.Client{Timeout: 30 * time.Second}, rate.NewLimiter(rate.Limit(c.rps), 1), perMethod, c.rpcFallback)
 	var src ingest.Source = evmrpc.New(rpc)
 	if c.family == "solana" {
 		src = solanarpc.New(rpc)
 	}
-	log.Info("backfill started", "chain", c.chain, "rpc", c.rpcURL, "window_blocks", c.window, "prefetch", c.prefetch)
+	log.Info("backfill started", "chain", c.chain, "rpc_host", rpcHost(c.rpcURL), "window_blocks", c.window, "prefetch", c.prefetch)
 	err = ingest.NewFollower(ingest.Config{Chain: c.chain, Source: src, SourceName: c.chain + "-backfill", Store: st,
 		Confirmations: c.confirmations, Backfill: c.window, GapsOnly: true, PauseLag: c.pauseLag, Prefetch: c.prefetch, PollInterval: c.poll, Log: log}).Run(ctx)
 	log.Info("stopped", "chain", c.chain, "role", "backfill")
@@ -295,4 +304,13 @@ func runPruneRaw(ctx context.Context, c pruneRawConfig, log *slog.Logger) error 
 	}
 	log.Info("raw blocks pruned", "before", c.before.Format("2006-01-02"), "chain", c.chain)
 	return nil
+}
+
+// rpcHost excludes authentication paths, queries and user information from logs.
+func rpcHost(endpoint string) string {
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return ""
+	}
+	return u.Host
 }

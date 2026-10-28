@@ -20,6 +20,11 @@ func (b *Backend) CheckHealth(ctx context.Context) error {
 
 // Health reports ingest progress and parser quality from PostgreSQL.
 func (b *Backend) Health(ctx context.Context) (api.AdminHealth, error) {
+	out, _, err := b.readHealthObserved(ctx)
+	return out, err
+}
+
+func (b *Backend) readHealthObserved(ctx context.Context) (api.AdminHealth, time.Time, error) {
 	now := b.now().UTC()
 	chains := make([]store.HealthChainConfig, 0, len(b.cfg.Chains))
 	for _, c := range b.cfg.Chains {
@@ -29,13 +34,13 @@ func (b *Backend) Health(ctx context.Context) (api.AdminHealth, error) {
 		}
 		chains = append(chains, store.HealthChainConfig{Chain: c.Name, WindowBlocks: blocks})
 	}
-	rows, err := b.st.HealthChains(ctx, chains, now)
+	data, err := b.st.ReadHealth(ctx, chains, now)
 	if err != nil {
-		return api.AdminHealth{}, err
+		return api.AdminHealth{}, time.Time{}, err
 	}
 	out := api.AdminHealth{AsOf: now.Format("2006-01-02T15:04:05.000Z"), Chains: []api.ChainHealth{}, Parsers: []api.ParserHealth{}, Failures: []api.ParseFailure{},
 		Budget: api.Budget{Month: now.Format("2006-01"), SpentUSD: healthSpentUSD, LimitUSD: healthLimitUSD, State: "normal"}}
-	for _, c := range rows {
+	for _, c := range data.Chains {
 		item := api.ChainHealth{Chain: api.Chain(c.Chain), Head: c.Head, Anchor: c.Anchor, LowerBound: c.LowerBound, ForwardPosition: c.ForwardPosition, HistoryPosition: c.HistoryPosition, BacklogBlocks: c.BacklogBlocks, LagSeconds: c.LagSeconds, GapsOpen: c.GapsOpen, GapsByReason: c.GapsByReason}
 		if c.ErrorKind != nil && c.ErrorMessage != nil && c.ErrorAt != nil {
 			kind := *c.ErrorKind
@@ -52,26 +57,14 @@ func (b *Backend) Health(ctx context.Context) (api.AdminHealth, error) {
 		}
 		out.Chains = append(out.Chains, item)
 	}
-	names := make([]string, 0, len(chains))
-	for _, c := range chains {
-		names = append(names, c.Chain)
-	}
-	parsers, err := b.st.HealthParsers(ctx, names, now)
-	if err != nil {
-		return api.AdminHealth{}, err
-	}
-	for _, p := range parsers {
+	for _, p := range data.Parsers {
 		lag := p.LagBlocks
 		out.Parsers = append(out.Parsers, api.ParserHealth{Chain: api.Chain(p.Chain), Module: p.Module, Version: strconv.Itoa(p.Version), Position: p.Position, LagBlocks: &lag, Failures: p.Failures, Quarantined: p.Quarantined})
 	}
-	failures, err := b.st.HealthFailures(ctx)
-	if err != nil {
-		return api.AdminHealth{}, err
-	}
-	for _, f := range failures {
+	for _, f := range data.Failures {
 		out.Failures = append(out.Failures, failureResponse(f))
 	}
-	return out, nil
+	return out, data.ReadAt, nil
 }
 
 var authStatus = regexp.MustCompile(`\b(?:401|403)\b`)

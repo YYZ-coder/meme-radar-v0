@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -43,7 +44,15 @@ var ErrLocked = errors.New("store: chain is locked by another ingest")
 type Store struct {
 	pool *pgxpool.Pool
 	// days caches daily partitions known to exist (table + "YYYYMMDD").
-	days sync.Map
+	days           sync.Map
+	readHedges     readHedgeLimiter
+	apiHedges      readHedgeLimiter
+	inflowCache    inflowReadCache
+	inflowPages    inflowPageReadCache
+	healthFailures healthFailureReadCache
+	apiReads       atomic.Pointer[pgxpool.Pool]
+	apiReadMu      sync.Mutex
+	closed         bool
 }
 
 var (
@@ -64,8 +73,17 @@ func Open(ctx context.Context, url string) (*Store, error) {
 	return &Store{pool: pool}, nil
 }
 
-// Close releases all connections.
-func (s *Store) Close() { s.pool.Close() }
+// Close releases all owned connections after callers have stopped serving.
+func (s *Store) Close() {
+	s.apiReadMu.Lock()
+	s.closed = true
+	p := s.apiReads.Swap(nil)
+	s.apiReadMu.Unlock()
+	if p != nil {
+		p.Close()
+	}
+	s.pool.Close()
+}
 
 // migrateLock serialises concurrent Migrate calls across processes.
 const migrateLock = 7_100_001

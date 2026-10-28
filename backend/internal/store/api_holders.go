@@ -3,6 +3,8 @@ package store
 import (
 	"context"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
 	"time"
 )
 
@@ -95,10 +97,7 @@ type APITokenHoldings struct {
 	CreatorHoldingPct *string
 }
 
-// APITokenHoldings reads coverage, count and developer holdings in one snapshot.
-func (s *Store) APITokenHoldings(ctx context.Context, chain string, token []byte) (APITokenHoldings, error) {
-	var out APITokenHoldings
-	err := s.pool.QueryRow(ctx, `SELECT CASE WHEN h.coverage<>'unknown' THEN h.holders END,
+const apiTokenHoldingsSQL = `SELECT CASE WHEN h.coverage<>'unknown' THEN h.holders END,
     coalesce(h.coverage,'unknown'),h.since,h.as_of,
     CASE WHEN h.coverage<>'unknown' THEN (
       SELECT count(*) FROM token_balances tb JOIN sm_list_members sm
@@ -111,7 +110,16 @@ func (s *Store) APITokenHoldings(ctx context.Context, chain string, token []byte
    LEFT JOIN token_holder_state h ON h.chain=t.chain AND h.token_address=t.address
    LEFT JOIN token_market m ON m.chain=t.chain AND m.address=t.address
    LEFT JOIN token_balances b ON b.chain=t.chain AND b.token_address=t.address AND b.owner=t.creator
-   WHERE t.chain=$1 AND t.address=$2`, chain, token).Scan(&out.Holders, &out.Coverage, &out.Since, &out.AsOf, &out.SMHolders, &out.CreatorHoldingPct)
+   WHERE t.chain=$1 AND t.address=$2`
+
+// APITokenHoldings reads coverage, count and developer holdings in one snapshot.
+func (s *Store) APITokenHoldings(ctx context.Context, chain string, token []byte) (APITokenHoldings, error) {
+	return scanAPITokenHoldings(s.pool.QueryRow(ctx, apiTokenHoldingsSQL, chain, token))
+}
+
+func scanAPITokenHoldings(row pgx.Row) (APITokenHoldings, error) {
+	var out APITokenHoldings
+	err := row.Scan(&out.Holders, &out.Coverage, &out.Since, &out.AsOf, &out.SMHolders, &out.CreatorHoldingPct)
 	if err != nil {
 		return APITokenHoldings{}, fmt.Errorf("store: API token holdings: %w", err)
 	}

@@ -1,5 +1,9 @@
 // Server-only same-origin forwarding. A failed upstream remains an API error;
 // it must never select the built-in demonstration handlers.
+const maximumObservationAgeMs = 1000;
+// Leave room for the local socket handoff after this response is constructed.
+const finalDeliveryReserveMs = 10;
+
 export async function proxyAPI(request: Request, origin: string): Promise<Response> {
   try {
     const signal = AbortSignal.any([request.signal, AbortSignal.timeout(10_000)]);
@@ -34,9 +38,34 @@ export async function proxyAPI(request: Request, origin: string): Promise<Respon
       signal,
     });
     const responseHeaders = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "retry-after", "x-trace-id", "x-radar-mock"]) {
+    for (const name of [
+      "content-type",
+      "retry-after",
+      "x-trace-id",
+      "x-radar-mock",
+      "x-data-as-of",
+      "x-data-age-ms",
+    ]) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
+    }
+    const observed = upstream.headers.get("x-data-as-of");
+    if (upstream.status === 200 && observed) {
+      // These small health/detail responses must still satisfy the age cap
+      // after the upstream body is delivered, not only when its headers arrive.
+      const body = await upstream.arrayBuffer();
+      const at = Date.parse(observed);
+      const age = Date.now() - at;
+      if (!Number.isFinite(at) || age + finalDeliveryReserveMs > maximumObservationAgeMs) {
+        return errorAPI(
+          503,
+          "busy",
+          "data observation expired",
+          upstream.headers.get("x-trace-id")
+        );
+      }
+      responseHeaders.set("X-Data-Age-Ms", String(Math.max(0, age)));
+      return new Response(body, { status: upstream.status, headers: responseHeaders });
     }
     return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
   } catch (error) {
@@ -54,8 +83,16 @@ export function unavailableAPI(): Response {
   return errorAPI(503, "api_unavailable", "API origin not reachable");
 }
 
-function errorAPI(status: number, code: string, message: string): Response {
-  const traceId = crypto.randomUUID().replaceAll("-", "");
+function errorAPI(
+  status: number,
+  code: string,
+  message: string,
+  originalTraceId?: string | null
+): Response {
+  const traceId =
+    originalTraceId && /^[a-f0-9]{32}$/.test(originalTraceId)
+      ? originalTraceId
+      : crypto.randomUUID().replaceAll("-", "");
   return Response.json(
     {
       error: {
